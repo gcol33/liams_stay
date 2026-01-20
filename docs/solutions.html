@@ -2258,605 +2258,708 @@ calculate_accumulation &lt;- function(data, n_runs = 100) {
 #   theme_minimal()</code></pre>
 <hr />
 </div>
-<div id="part-4-real-data-analysisteil-4-echte-datenanalyse" class="section level1">
-<h1><span class="en">Part 4: Real Data Analysis</span><span class="de">Teil 4: Echte Datenanalyse</span></h1>
-<div id="exercise-12-load-and-exploreubung-12-laden-und-erkunden" class="section level2">
-<h2><span class="en">Exercise 12: Load and Explore</span><span class="de">Ubung 12: Laden und Erkunden</span></h2>
-<pre class="r"><code># Solution / Losung
+<div id="part-4-the-research-questionteil-4-die-forschungsfrage" class="section level1">
+<h1><span class="en">Part 4: The Research Question</span><span class="de">Teil 4: Die Forschungsfrage</span></h1>
+<div id="our-hypothesis" class="section level2 en">
+<h2>Our Hypothesis</h2>
+<p><strong>Do alien and native plant species accumulate differently
+across space?</strong></p>
+<ul>
+<li><strong>Natives</strong> might <strong>saturate faster</strong> -
+their species pool is already well-represented locally</li>
+<li><strong>Aliens</strong> might <strong>accumulate more
+steadily</strong> - they’re patchy, concentrated in disturbed
+hotspots</li>
+</ul>
+<p><strong>The shape of the curve tells the story!</strong></p>
+</div>
+<div id="unsere-hypothese" class="section level2 de">
+<h2>Unsere Hypothese</h2>
+<p><strong>Akkumulieren Alien- und heimische Pflanzenarten
+unterschiedlich uber den Raum?</strong></p>
+<ul>
+<li><strong>Heimische</strong> konnten <strong>schneller
+saturieren</strong> - ihr Artenpool ist lokal gut vertreten</li>
+<li><strong>Aliens</strong> konnten <strong>gleichmassiger
+akkumulieren</strong> - sie sind fleckenhaft, in gestorten Hotspots
+konzentriert</li>
+</ul>
+<p><strong>Die Form der Kurve erzahlt die Geschichte!</strong></p>
+</div>
+<hr />
+<div id="exercise-12-meet-the-dataubung-12-die-daten-kennenlernen" class="section level2">
+<h2><span class="en">Exercise 12: Meet the Data</span><span class="de">Ubung 12: Die Daten kennenlernen</span></h2>
+<pre class="r"><code># =============================================================================
+# EXERCISE 12: Meet the Data - SOLUTION
+# =============================================================================
 
-# Load the data
+library(dplyr)
+library(ggplot2)
+
+# Load the data files
 header &lt;- read.csv(&quot;../data/austria_header.csv&quot;)
 species &lt;- read.csv(&quot;../data/austria_species.csv&quot;)
 
-# 1. How many plots?
+# ----- EXPLORE THE HEADER -----
+
 n_plots &lt;- nrow(header)
-print(paste(&quot;Number of plots:&quot;, n_plots))  # ~15,000+
+print(paste(&quot;Number of plots:&quot;, n_plots))
 
-# 2. How many species records?
+names(header)
+head(header)
+
+print(paste(&quot;Longitude range:&quot;,
+            round(min(header$Longitude), 2), &quot;to&quot;,
+            round(max(header$Longitude), 2)))
+print(paste(&quot;Latitude range:&quot;,
+            round(min(header$Latitude), 2), &quot;to&quot;,
+            round(max(header$Latitude), 2)))
+
+print(paste(&quot;Year range:&quot;, min(header$Year), &quot;to&quot;, max(header$Year)))
+
+# ----- EXPLORE THE SPECIES DATA -----
+
 n_records &lt;- nrow(species)
-print(paste(&quot;Species records:&quot;, n_records))  # ~700,000+
+print(paste(&quot;Total species records:&quot;, n_records))
 
-# 3. How many unique species?
-n_species &lt;- length(unique(species$WFO_TAXON))
-print(paste(&quot;Unique species:&quot;, n_species))  # ~2,500+
+head(species)
 
-# 4. Count native vs alien species
+# THE KEY COLUMN: STATUS
 table(species$STATUS)
-# alien   native
-# ~35000  ~665000
 
-# 5. What proportion are aliens?
-n_alien &lt;- sum(species$STATUS == &quot;alien&quot;)
-n_native &lt;- sum(species$STATUS == &quot;native&quot;)
-prop_alien &lt;- n_alien / (n_alien + n_native)
-print(paste(&quot;Proportion alien:&quot;, round(prop_alien, 3)))  # ~5%
+n_unique &lt;- length(unique(species$WFO_TAXON))
+print(paste(&quot;Unique species:&quot;, n_unique))
 
-# 6. Which families have the most alien species?
-alien_species &lt;- species[species$STATUS == &quot;alien&quot;, ]
-family_counts &lt;- table(alien_species$WFO_FAMILY)
-head(sort(family_counts, decreasing = TRUE), 10)
-# Asteraceae, Poaceae typically top
+# ----- ALIENS VS NATIVES -----
 
-# 7. Year range of the data
-range(header$Year)  # e.g., 1950-2020</code></pre>
+status_counts &lt;- species %&gt;%
+  group_by(STATUS) %&gt;%
+  summarise(
+    n_records = n(),
+    n_species = n_distinct(WFO_TAXON),
+    .groups = &quot;drop&quot;
+  )
+print(status_counts)
+
+alien_records &lt;- sum(species$STATUS == &quot;alien&quot;)
+pct_alien_records &lt;- round(100 * alien_records / nrow(species), 1)
+print(paste(&quot;Alien records:&quot;, pct_alien_records, &quot;%&quot;))
+
+alien_spp &lt;- length(unique(species$WFO_TAXON[species$STATUS == &quot;alien&quot;]))
+native_spp &lt;- length(unique(species$WFO_TAXON[species$STATUS == &quot;native&quot;]))
+pct_alien_species &lt;- round(100 * alien_spp / (alien_spp + native_spp), 1)
+print(paste(&quot;Alien species:&quot;, pct_alien_species, &quot;%&quot;))
+
+# DISCUSSION: Aliens are rare in records (~5%) but represent ~10% of species
+# This means each alien species is recorded fewer times = more patchy!</code></pre>
 <hr />
 </div>
-<div id="exercise-13-merge-and-prepareubung-13-zusammenfuhren-und-vorbereiten" class="section level2">
-<h2><span class="en">Exercise 13: Merge and Prepare</span><span class="de">Ubung 13: Zusammenfuhren und Vorbereiten</span></h2>
-<pre class="r"><code># Solution / Losung
+<div id="exercise-13-map-the-plotsubung-13-die-plots-kartieren" class="section level2">
+<h2><span class="en">Exercise 13: Map the Plots</span><span class="de">Ubung 13: Die Plots kartieren</span></h2>
+<pre class="r"><code># =============================================================================
+# EXERCISE 13: Map the Plots - SOLUTION
+# =============================================================================
 
+library(ggplot2)
 library(dplyr)
 
-# Merge species with plot coordinates
-full_data &lt;- merge(species, header, by = &quot;PlotObservationID&quot;)
+# Simple map of plot locations
+ggplot(header, aes(x = Longitude, y = Latitude)) +
+  geom_point(alpha = 0.3, size = 0.5, color = &quot;darkgreen&quot;) +
+  coord_quickmap() +
+  labs(
+    title = &quot;Vegetation Plot Locations in Austria&quot;,
+    subtitle = paste(nrow(header), &quot;plots&quot;),
+    x = &quot;Longitude&quot;,
+    y = &quot;Latitude&quot;
+  ) +
+  theme_minimal()
 
-# Check the merge worked
-head(full_data)
-nrow(full_data)  # Should equal nrow(species)
+# ----- WHERE ARE THE ALIENS? -----
 
-# Create separate datasets for native and alien species
-native_data &lt;- full_data %&gt;%
-  filter(STATUS == &quot;native&quot;)
+aliens_per_plot &lt;- species %&gt;%
+  filter(STATUS == &quot;alien&quot;) %&gt;%
+  group_by(PlotObservationID) %&gt;%
+  summarise(n_alien_species = n_distinct(WFO_TAXON), .groups = &quot;drop&quot;)
 
-alien_data &lt;- full_data %&gt;%
-  filter(STATUS == &quot;alien&quot;)
+plot_aliens &lt;- merge(header, aliens_per_plot, by = &quot;PlotObservationID&quot;, all.x = TRUE)
+plot_aliens$n_alien_species[is.na(plot_aliens$n_alien_species)] &lt;- 0
 
-print(paste(&quot;Native records:&quot;, nrow(native_data)))
-print(paste(&quot;Alien records:&quot;, nrow(alien_data)))
+ggplot(plot_aliens, aes(x = Longitude, y = Latitude)) +
+  geom_point(aes(color = n_alien_species), alpha = 0.5, size = 1) +
+  scale_color_gradient(low = &quot;gray90&quot;, high = &quot;red&quot;, name = &quot;Alien\nspecies&quot;) +
+  coord_quickmap() +
+  labs(
+    title = &quot;Alien Species Richness Across Austria&quot;,
+    subtitle = &quot;Where are the invasion hotspots?&quot;
+  ) +
+  theme_minimal()
 
-# How many unique alien species?
-n_alien_species &lt;- length(unique(alien_data$WFO_TAXON))
-print(paste(&quot;Unique alien species:&quot;, n_alien_species))  # ~200-300
+# ----- STATISTICS -----
 
-# How many unique native species?
-n_native_species &lt;- length(unique(native_data$WFO_TAXON))
-print(paste(&quot;Unique native species:&quot;, n_native_species))  # ~2000+
+plots_with_aliens &lt;- sum(plot_aliens$n_alien_species &gt; 0)
+pct_invaded &lt;- round(100 * plots_with_aliens / nrow(plot_aliens), 1)
+print(paste(&quot;Plots with at least 1 alien:&quot;, plots_with_aliens,
+            &quot;(&quot;, pct_invaded, &quot;%)&quot;))
 
-# Get unique plots with coordinates
-plot_coords &lt;- header %&gt;%
-  select(PlotObservationID, Longitude, Latitude) %&gt;%
-  distinct()
+mean_aliens &lt;- round(mean(plot_aliens$n_alien_species[plot_aliens$n_alien_species &gt; 0]), 1)
+print(paste(&quot;Mean aliens per invaded plot:&quot;, mean_aliens))
 
-head(plot_coords)</code></pre>
+max_aliens &lt;- max(plot_aliens$n_alien_species)
+print(paste(&quot;Maximum aliens in one plot:&quot;, max_aliens))
+
+# DISCUSSION: Aliens cluster in lowland areas - valleys, along rivers
+# These are often near roads, agriculture, and human settlements</code></pre>
 <hr />
 </div>
-<div id="exercise-14-simple-accumulation-curveubung-14-einfache-akkumulationskurve" class="section level2">
-<h2><span class="en">Exercise 14: Simple Accumulation Curve</span><span class="de">Ubung 14: Einfache Akkumulationskurve</span></h2>
-<pre class="r"><code># Solution / Losung
+<div id="exercise-14-your-first-accumulation-curveubung-14-deine-erste-akkumulationskurve" class="section level2">
+<h2><span class="en">Exercise 14: Your First Accumulation
+Curve</span><span class="de">Ubung 14: Deine erste
+Akkumulationskurve</span></h2>
+<pre class="r"><code># =============================================================================
+# EXERCISE 14: Your First Accumulation Curve - SOLUTION
+# =============================================================================
 
 library(dplyr)
+library(ggplot2)
 
-# Get unique plot IDs
-plot_ids &lt;- unique(header$PlotObservationID)
-n_plots &lt;- length(plot_ids)
+set.seed(42)
+sample_size &lt;- 200
 
-# Shuffle plot order randomly
-set.seed(42)  # For reproducibility
-shuffled_plots &lt;- sample(plot_ids, n_plots)
+sample_plot_ids &lt;- sample(unique(header$PlotObservationID), sample_size)
+sample_species &lt;- species %&gt;% filter(PlotObservationID %in% sample_plot_ids)
 
-# Build accumulation curve
+# ----- BUILD THE CURVE MANUALLY -----
+
+plot_order &lt;- sample(sample_plot_ids)
+
 found_species &lt;- c()
-accumulation &lt;- numeric(n_plots)
+accumulation &lt;- numeric(sample_size)
 
-for (i in 1:n_plots) {
-  # Get current plot ID
-  current_plot &lt;- shuffled_plots[i]
+for (i in 1:sample_size) {
+  current_plot &lt;- plot_order[i]
 
-  # Get species in this plot
-  plot_species &lt;- species %&gt;%
+  plot_spp &lt;- sample_species %&gt;%
     filter(PlotObservationID == current_plot) %&gt;%
     pull(WFO_TAXON) %&gt;%
     unique()
 
-  # Add new species to found list
-  new_species &lt;- setdiff(plot_species, found_species)
-  found_species &lt;- c(found_species, new_species)
-
-  # Record cumulative count
+  new_spp &lt;- setdiff(plot_spp, found_species)
+  found_species &lt;- c(found_species, new_spp)
   accumulation[i] &lt;- length(found_species)
 
-  # Print progress every 1000 plots
-  if (i %% 1000 == 0) {
-    cat(&quot;Plot&quot;, i, &quot;- Total species:&quot;, accumulation[i], &quot;\n&quot;)
+  if (i %% 50 == 0) {
+    cat(&quot;After&quot;, i, &quot;plots: found&quot;, accumulation[i], &quot;species\n&quot;)
   }
 }
 
-# Plot the curve
-plot(1:n_plots, accumulation, type = &quot;l&quot;,
-     xlab = &quot;Number of plots&quot;,
-     ylab = &quot;Cumulative species&quot;,
-     main = &quot;Species Accumulation Curve - Austria&quot;)</code></pre>
-<hr />
-</div>
-<div id="exercise-15-native-vs-alien-comparisonubung-15-heimisch-vs.-alien-vergleich" class="section level2">
-<h2><span class="en">Exercise 15: Native vs Alien Comparison</span><span class="de">Ubung 15: Heimisch vs. Alien Vergleich</span></h2>
-<pre class="r"><code># Solution / Losung
+# ----- PLOT THE CURVE -----
 
-library(dplyr)
-library(ggplot2)
-
-# Use same plot order for both
-set.seed(42)
-plot_ids &lt;- unique(header$PlotObservationID)
-shuffled_plots &lt;- sample(plot_ids, length(plot_ids))
-n_plots &lt;- length(shuffled_plots)
-
-# Function to build accumulation for a subset
-build_accumulation &lt;- function(species_data, plot_order) {
-  found &lt;- c()
-  accum &lt;- numeric(length(plot_order))
-
-  for (i in seq_along(plot_order)) {
-    plot_sp &lt;- species_data %&gt;%
-      filter(PlotObservationID == plot_order[i]) %&gt;%
-      pull(WFO_TAXON) %&gt;%
-      unique()
-
-    new_sp &lt;- setdiff(plot_sp, found)
-    found &lt;- c(found, new_sp)
-    accum[i] &lt;- length(found)
-  }
-  return(accum)
-}
-
-# Build curves for native and alien separately
-native_accum &lt;- build_accumulation(
-  species %&gt;% filter(STATUS == &quot;native&quot;),
-  shuffled_plots
-)
-
-alien_accum &lt;- build_accumulation(
-  species %&gt;% filter(STATUS == &quot;alien&quot;),
-  shuffled_plots
-)
-
-# Create data frame for plotting
 curve_data &lt;- data.frame(
-  plots = rep(1:n_plots, 2),
-  species = c(native_accum, alien_accum),
-  status = rep(c(&quot;Native&quot;, &quot;Alien&quot;), each = n_plots)
+  plots_visited = 1:sample_size,
+  cumulative_species = accumulation
 )
 
-# Plot comparison
-ggplot(curve_data, aes(x = plots, y = species, color = status)) +
-  geom_line(linewidth = 1) +
-  scale_color_manual(values = c(&quot;Native&quot; = &quot;darkgreen&quot;, &quot;Alien&quot; = &quot;red&quot;)) +
+ggplot(curve_data, aes(x = plots_visited, y = cumulative_species)) +
+  geom_line(color = &quot;darkgreen&quot;, linewidth = 1.2) +
+  geom_point(color = &quot;darkgreen&quot;, size = 0.5) +
   labs(
-    title = &quot;Species Accumulation: Native vs. Alien&quot;,
-    subtitle = &quot;Austrian vegetation plots&quot;,
-    x = &quot;Number of Plots&quot;,
-    y = &quot;Cumulative Species&quot;,
-    color = &quot;Status&quot;
+    title = &quot;Species Accumulation Curve&quot;,
+    subtitle = paste(&quot;Random order,&quot;, sample_size, &quot;plots&quot;),
+    x = &quot;Number of Plots Visited&quot;,
+    y = &quot;Cumulative Species Found&quot;
   ) +
-  theme_minimal() +
-  theme(legend.position = &quot;bottom&quot;)</code></pre>
+  theme_minimal()
+
+# ----- KEY METRICS -----
+
+print(paste(&quot;Species after 50 plots:&quot;, accumulation[50]))
+print(paste(&quot;Species after 100 plots:&quot;, accumulation[100]))
+print(paste(&quot;Species after all plots:&quot;, accumulation[sample_size]))
+
+new_in_last_50 &lt;- accumulation[sample_size] - accumulation[sample_size - 50]
+print(paste(&quot;New species in last 50 plots:&quot;, new_in_last_50))
+
+# DISCUSSION: The curve is still rising - we haven&#39;t found all species yet
+# The slower rise at the end suggests we&#39;re approaching saturation</code></pre>
 <hr />
 </div>
-<div id="exercise-16-bootstrapping-for-confidence-intervalsubung-16-bootstrapping-fur-konfidenzintervalle" class="section level2">
-<h2><span class="en">Exercise 16: Bootstrapping for Confidence
-Intervals</span><span class="de">Ubung 16: Bootstrapping fur
-Konfidenzintervalle</span></h2>
-<pre class="r"><code># Solution / Losung
+<div id="exercise-15-natives-vs-aliens---first-lookubung-15-heimische-vs-aliens---erster-blick" class="section level2">
+<h2><span class="en">Exercise 15: Natives vs Aliens - First
+Look</span><span class="de">Ubung 15: Heimische vs Aliens - Erster
+Blick</span></h2>
+<pre class="r"><code># =============================================================================
+# EXERCISE 15: Natives vs Aliens - SOLUTION
+# =============================================================================
 
 library(dplyr)
 library(ggplot2)
 
-# Simplified: work with a random subset of plots for speed
 set.seed(42)
-sample_plots &lt;- sample(unique(header$PlotObservationID), 500)
-sample_species &lt;- species %&gt;%
-  filter(PlotObservationID %in% sample_plots)
+sample_size &lt;- 300
+sample_plot_ids &lt;- sample(unique(header$PlotObservationID), sample_size)
+sample_species &lt;- species %&gt;% filter(PlotObservationID %in% sample_plot_ids)
 
-# Function to calculate one accumulation run
-one_accumulation_run &lt;- function(species_data, status_filter = NULL) {
+plot_order &lt;- sample(sample_plot_ids)
+
+# ----- REUSABLE FUNCTION -----
+
+build_accumulation &lt;- function(species_data, plot_order, status_filter = NULL) {
   if (!is.null(status_filter)) {
     species_data &lt;- species_data %&gt;% filter(STATUS == status_filter)
   }
 
-  plot_ids &lt;- unique(species_data$PlotObservationID)
-  shuffled &lt;- sample(plot_ids, length(plot_ids))
-
   found &lt;- c()
-  accum &lt;- numeric(length(shuffled))
+  accum &lt;- numeric(length(plot_order))
 
-  for (i in seq_along(shuffled)) {
-    plot_sp &lt;- species_data %&gt;%
-      filter(PlotObservationID == shuffled[i]) %&gt;%
+  for (i in seq_along(plot_order)) {
+    plot_spp &lt;- species_data %&gt;%
+      filter(PlotObservationID == plot_order[i]) %&gt;%
       pull(WFO_TAXON) %&gt;%
       unique()
 
-    new_sp &lt;- setdiff(plot_sp, found)
-    found &lt;- c(found, new_sp)
+    new_spp &lt;- setdiff(plot_spp, found)
+    found &lt;- c(found, new_spp)
     accum[i] &lt;- length(found)
   }
+
   return(accum)
 }
 
-# Run multiple bootstrap iterations
-n_bootstrap &lt;- 50
-n_plots &lt;- length(sample_plots)
+# ----- BUILD CURVES -----
 
-# Store results
-all_runs &lt;- matrix(NA, nrow = n_bootstrap, ncol = n_plots)
+native_curve &lt;- build_accumulation(sample_species, plot_order, &quot;native&quot;)
+alien_curve &lt;- build_accumulation(sample_species, plot_order, &quot;alien&quot;)
+all_curve &lt;- build_accumulation(sample_species, plot_order, NULL)
 
-for (b in 1:n_bootstrap) {
-  all_runs[b, ] &lt;- one_accumulation_run(sample_species)
-  if (b %% 10 == 0) cat(&quot;Bootstrap iteration:&quot;, b, &quot;\n&quot;)
-}
-
-# Calculate mean and confidence intervals
-mean_curve &lt;- apply(all_runs, 2, mean)
-ci_lower &lt;- apply(all_runs, 2, function(x) quantile(x, 0.025))
-ci_upper &lt;- apply(all_runs, 2, function(x) quantile(x, 0.975))
-
-# Create summary data frame
-boot_summary &lt;- data.frame(
-  plots = 1:n_plots,
-  mean_species = mean_curve,
-  ci_lower = ci_lower,
-  ci_upper = ci_upper
+comparison &lt;- data.frame(
+  plots = rep(1:sample_size, 3),
+  species = c(native_curve, alien_curve, all_curve),
+  group = rep(c(&quot;Native&quot;, &quot;Alien&quot;, &quot;All&quot;), each = sample_size)
 )
 
-# Plot with confidence ribbon
-ggplot(boot_summary, aes(x = plots)) +
-  geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper),
-              fill = &quot;darkgreen&quot;, alpha = 0.3) +
-  geom_line(aes(y = mean_species),
-            color = &quot;darkgreen&quot;, linewidth = 1.5) +
+ggplot(comparison, aes(x = plots, y = species, color = group)) +
+  geom_line(linewidth = 1.2) +
+  scale_color_manual(
+    values = c(&quot;Native&quot; = &quot;darkgreen&quot;, &quot;Alien&quot; = &quot;red&quot;, &quot;All&quot; = &quot;gray50&quot;),
+    name = &quot;Species\ngroup&quot;
+  ) +
   labs(
-    title = &quot;Bootstrapped Species Accumulation&quot;,
-    subtitle = paste(n_bootstrap, &quot;iterations, 95% CI&quot;),
-    x = &quot;Number of Plots&quot;,
+    title = &quot;Species Accumulation: Native vs Alien&quot;,
+    subtitle = &quot;Same plots, same order - how do they differ?&quot;,
+    x = &quot;Number of Plots Visited&quot;,
     y = &quot;Cumulative Species&quot;
   ) +
-  theme_minimal()</code></pre>
+  theme_minimal() +
+  theme(legend.position = &quot;right&quot;)
+
+# ----- COMPARE SHAPES -----
+
+native_100 &lt;- native_curve[100]
+native_total &lt;- native_curve[sample_size]
+alien_100 &lt;- alien_curve[100]
+alien_total &lt;- alien_curve[sample_size]
+
+print(paste(&quot;Natives: after 100 plots found&quot;, native_100, &quot;of&quot;, native_total,
+            &quot;(&quot;, round(100 * native_100/native_total), &quot;%)&quot;))
+print(paste(&quot;Aliens: after 100 plots found&quot;, alien_100, &quot;of&quot;, alien_total,
+            &quot;(&quot;, round(100 * alien_100/alien_total), &quot;%)&quot;))
+
+# DISCUSSION: Compare the percentages - which group saturates faster?
+# Natives should reach a higher % faster = more evenly distributed</code></pre>
 <hr />
 </div>
-<div id="exercise-17-nearest-neighbour-accumulationubung-17-nearest-neighbour-akkumulation" class="section level2">
-<h2><span class="en">Exercise 17: Nearest Neighbour
-Accumulation</span><span class="de">Ubung 17: Nearest-Neighbour
-Akkumulation</span></h2>
-<pre class="r"><code># Solution / Losung
+<div id="exercise-16-the-nearest-neighbour-algorithmubung-16-der-nearest-neighbour-algorithmus" class="section level2">
+<h2><span class="en">Exercise 16: The Nearest Neighbour
+Algorithm</span><span class="de">Ubung 16: Der
+Nearest-Neighbour-Algorithmus</span></h2>
+<pre class="r"><code># =============================================================================
+# EXERCISE 16: Nearest Neighbour Algorithm - SOLUTION
+# =============================================================================
 
 library(dplyr)
 library(ggplot2)
 
-# Work with subset for speed
-set.seed(42)
-sample_plots &lt;- sample(unique(header$PlotObservationID), 300)
-sample_header &lt;- header %&gt;% filter(PlotObservationID %in% sample_plots)
-sample_species &lt;- species %&gt;% filter(PlotObservationID %in% sample_plots)
+set.seed(123)
+sample_size &lt;- 300
+sample_ids &lt;- sample(unique(header$PlotObservationID), sample_size)
+sample_header &lt;- header %&gt;% filter(PlotObservationID %in% sample_ids)
+sample_species &lt;- species %&gt;% filter(PlotObservationID %in% sample_ids)
 
-# Function: calculate distance between two points
+# ----- DISTANCE FUNCTION -----
+
 calc_distance &lt;- function(x1, y1, x2, y2) {
   sqrt((x2 - x1)^2 + (y2 - y1)^2)
 }
 
-# Nearest neighbour walk function
-nn_accumulation &lt;- function(header_data, species_data, start_idx = NULL) {
+# ----- NEAREST NEIGHBOUR WALK -----
+
+nn_walk &lt;- function(header_data, start_idx = NULL) {
   n &lt;- nrow(header_data)
 
-  # Random start if not specified
   if (is.null(start_idx)) {
     start_idx &lt;- sample(1:n, 1)
   }
 
-  visited &lt;- rep(FALSE, n)  # Track visited plots
+  visited &lt;- rep(FALSE, n)
   visit_order &lt;- numeric(n)
-  found_species &lt;- c()
-  accumulation &lt;- numeric(n)
-
-  current_idx &lt;- start_idx
+  current &lt;- start_idx
 
   for (i in 1:n) {
-    # Mark current as visited
-    visited[current_idx] &lt;- TRUE
-    visit_order[i] &lt;- header_data$PlotObservationID[current_idx]
+    visited[current] &lt;- TRUE
+    visit_order[i] &lt;- header_data$PlotObservationID[current]
 
-    # Get species in current plot
-    plot_sp &lt;- species_data %&gt;%
-      filter(PlotObservationID == visit_order[i]) %&gt;%
-      pull(WFO_TAXON) %&gt;%
-      unique()
-
-    # Update accumulation
-    new_sp &lt;- setdiff(plot_sp, found_species)
-    found_species &lt;- c(found_species, new_sp)
-    accumulation[i] &lt;- length(found_species)
-
-    # Find nearest unvisited plot
     if (i &lt; n) {
-      current_x &lt;- header_data$Longitude[current_idx]
-      current_y &lt;- header_data$Latitude[current_idx]
-
-      # Calculate distances to all unvisited plots
       distances &lt;- calc_distance(
-        current_x, current_y,
-        header_data$Longitude, header_data$Latitude
+        header_data$Longitude[current],
+        header_data$Latitude[current],
+        header_data$Longitude,
+        header_data$Latitude
       )
-
-      # Set visited plots to Inf so they won&#39;t be chosen
       distances[visited] &lt;- Inf
-
-      # Select nearest
-      current_idx &lt;- which.min(distances)
+      current &lt;- which.min(distances)
     }
   }
 
-  return(accumulation)
+  return(visit_order)
 }
 
-# Run the nearest neighbour accumulation
-nn_curve &lt;- nn_accumulation(sample_header, sample_species)
+# ----- BUILD CURVES -----
 
-# Compare with random order
-random_curve &lt;- one_accumulation_run(sample_species)
+nn_order &lt;- nn_walk(sample_header)
 
-# Plot comparison
+native_nn &lt;- build_accumulation(sample_species, nn_order, &quot;native&quot;)
+alien_nn &lt;- build_accumulation(sample_species, nn_order, &quot;alien&quot;)
+
+random_order &lt;- sample(sample_ids)
+native_random &lt;- build_accumulation(sample_species, random_order, &quot;native&quot;)
+alien_random &lt;- build_accumulation(sample_species, random_order, &quot;alien&quot;)
+
 comparison &lt;- data.frame(
-  plots = rep(1:length(nn_curve), 2),
-  species = c(nn_curve, random_curve),
-  method = rep(c(&quot;Nearest Neighbour&quot;, &quot;Random&quot;), each = length(nn_curve))
+  plots = rep(1:sample_size, 4),
+  species = c(native_nn, alien_nn, native_random, alien_random),
+  group = rep(c(&quot;Native (spatial)&quot;, &quot;Alien (spatial)&quot;,
+                &quot;Native (random)&quot;, &quot;Alien (random)&quot;), each = sample_size),
+  method = rep(c(&quot;Spatial&quot;, &quot;Spatial&quot;, &quot;Random&quot;, &quot;Random&quot;), each = sample_size),
+  status = rep(c(&quot;Native&quot;, &quot;Alien&quot;, &quot;Native&quot;, &quot;Alien&quot;), each = sample_size)
 )
 
-ggplot(comparison, aes(x = plots, y = species, color = method)) +
+ggplot(comparison, aes(x = plots, y = species, color = status, linetype = method)) +
   geom_line(linewidth = 1) +
-  scale_color_manual(values = c(&quot;Nearest Neighbour&quot; = &quot;blue&quot;,
-                                &quot;Random&quot; = &quot;orange&quot;)) +
+  scale_color_manual(values = c(&quot;Native&quot; = &quot;darkgreen&quot;, &quot;Alien&quot; = &quot;red&quot;)) +
+  scale_linetype_manual(values = c(&quot;Spatial&quot; = &quot;solid&quot;, &quot;Random&quot; = &quot;dashed&quot;)) +
   labs(
-    title = &quot;Accumulation Curve Comparison&quot;,
-    subtitle = &quot;Spatial vs. random plot ordering&quot;,
-    x = &quot;Number of Plots&quot;,
+    title = &quot;Spatial vs Random Accumulation&quot;,
+    subtitle = &quot;Does visiting nearest neighbours change the pattern?&quot;,
+    x = &quot;Number of Plots Visited&quot;,
     y = &quot;Cumulative Species&quot;
   ) +
   theme_minimal()
 
-# Key insight: Nearest neighbour accumulates slower because
-# spatially close plots share more species (spatial autocorrelation)</code></pre>
+# DISCUSSION: Spatial curves are LOWER than random
+# Because nearby plots share species (spatial autocorrelation)
+# This is more realistic - you can&#39;t sample random plots across Austria!</code></pre>
 <hr />
 </div>
-<div id="exercise-18-habitat-comparisonubung-18-habitatvergleich" class="section level2">
-<h2><span class="en">Exercise 18: Habitat Comparison</span><span class="de">Ubung 18: Habitatvergleich</span></h2>
-<pre class="r"><code># Solution / Losung
+<div id="exercise-17-multiple-seedsubung-17-mehrere-seeds" class="section level2">
+<h2><span class="en">Exercise 17: Multiple Seeds</span><span class="de">Ubung 17: Mehrere Seeds</span></h2>
+<pre class="r"><code># =============================================================================
+# EXERCISE 17: Multiple Seeds - SOLUTION
+# =============================================================================
 
 library(dplyr)
 library(ggplot2)
 
-# Check available habitat types
-table(header$Eunis_lvl1)
+n_seeds &lt;- 30
+sample_size &lt;- 200
 
-# Merge species with header to get habitat info
-full_data &lt;- merge(species, header, by = &quot;PlotObservationID&quot;)
-
-# Function to build accumulation for a habitat subset
-habitat_accumulation &lt;- function(data, habitat_code, n_plots_max = 200) {
-  habitat_data &lt;- data %&gt;%
-    filter(Eunis_lvl1 == habitat_code)
-
-  plot_ids &lt;- unique(habitat_data$PlotObservationID)
-
-  # Limit number of plots
-  if (length(plot_ids) &gt; n_plots_max) {
-    plot_ids &lt;- sample(plot_ids, n_plots_max)
-  }
-
-  shuffled &lt;- sample(plot_ids, length(plot_ids))
-  found &lt;- c()
-  accum &lt;- numeric(length(shuffled))
-
-  for (i in seq_along(shuffled)) {
-    plot_sp &lt;- habitat_data %&gt;%
-      filter(PlotObservationID == shuffled[i]) %&gt;%
-      pull(WFO_TAXON) %&gt;%
-      unique()
-
-    new_sp &lt;- setdiff(plot_sp, found)
-    found &lt;- c(found, new_sp)
-    accum[i] &lt;- length(found)
-  }
-
-  return(data.frame(
-    plots = 1:length(accum),
-    species = accum,
-    habitat = habitat_code
-  ))
-}
-
-# Build curves for different habitats
 set.seed(42)
-habitat_codes &lt;- c(&quot;R&quot;, &quot;T&quot;, &quot;S&quot;)  # Grasslands, Forests, Shrubs
-habitat_names &lt;- c(&quot;R&quot; = &quot;Grassland&quot;, &quot;T&quot; = &quot;Forest&quot;, &quot;S&quot; = &quot;Shrub&quot;)
+sample_ids &lt;- sample(unique(header$PlotObservationID), sample_size)
+sample_header &lt;- header %&gt;% filter(PlotObservationID %in% sample_ids)
+sample_species &lt;- species %&gt;% filter(PlotObservationID %in% sample_ids)
 
-all_curves &lt;- data.frame()
-for (hab in habitat_codes) {
-  curve &lt;- habitat_accumulation(full_data, hab, n_plots_max = 300)
-  all_curves &lt;- rbind(all_curves, curve)
+# ----- RUN MULTIPLE SEEDS -----
+
+native_runs &lt;- matrix(NA, nrow = n_seeds, ncol = sample_size)
+alien_runs &lt;- matrix(NA, nrow = n_seeds, ncol = sample_size)
+
+cat(&quot;Running&quot;, n_seeds, &quot;seeds...\n&quot;)
+
+for (seed in 1:n_seeds) {
+  nn_order &lt;- nn_walk(sample_header, start_idx = seed)
+  native_runs[seed, ] &lt;- build_accumulation(sample_species, nn_order, &quot;native&quot;)
+  alien_runs[seed, ] &lt;- build_accumulation(sample_species, nn_order, &quot;alien&quot;)
+  if (seed %% 10 == 0) cat(&quot;Completed seed&quot;, seed, &quot;\n&quot;)
 }
 
-# Rename habitats for plotting
-all_curves$habitat_name &lt;- habitat_names[all_curves$habitat]
+# ----- CALCULATE STATISTICS -----
 
-# Plot
-ggplot(all_curves, aes(x = plots, y = species, color = habitat_name)) +
-  geom_line(linewidth = 1.2) +
+native_mean &lt;- apply(native_runs, 2, mean)
+native_lower &lt;- apply(native_runs, 2, function(x) quantile(x, 0.025))
+native_upper &lt;- apply(native_runs, 2, function(x) quantile(x, 0.975))
+
+alien_mean &lt;- apply(alien_runs, 2, mean)
+alien_lower &lt;- apply(alien_runs, 2, function(x) quantile(x, 0.025))
+alien_upper &lt;- apply(alien_runs, 2, function(x) quantile(x, 0.975))
+
+# ----- PLOT -----
+
+summary_data &lt;- data.frame(
+  plots = rep(1:sample_size, 2),
+  mean = c(native_mean, alien_mean),
+  lower = c(native_lower, alien_lower),
+  upper = c(native_upper, alien_upper),
+  status = rep(c(&quot;Native&quot;, &quot;Alien&quot;), each = sample_size)
+)
+
+ggplot(summary_data, aes(x = plots)) +
+  geom_ribbon(aes(ymin = lower, ymax = upper, fill = status), alpha = 0.3) +
+  geom_line(aes(y = mean, color = status), linewidth = 1.2) +
+  scale_color_manual(values = c(&quot;Native&quot; = &quot;darkgreen&quot;, &quot;Alien&quot; = &quot;red&quot;)) +
+  scale_fill_manual(values = c(&quot;Native&quot; = &quot;darkgreen&quot;, &quot;Alien&quot; = &quot;red&quot;)) +
   labs(
-    title = &quot;Species Accumulation by Habitat Type&quot;,
-    subtitle = &quot;Austrian vegetation plots&quot;,
-    x = &quot;Number of Plots&quot;,
-    y = &quot;Cumulative Species&quot;,
-    color = &quot;Habitat&quot;
+    title = &quot;Accumulation Curves from Multiple Starting Points&quot;,
+    subtitle = paste(n_seeds, &quot;different seeds - shaded area shows 95% range&quot;),
+    x = &quot;Number of Plots Visited (Nearest Neighbour Order)&quot;,
+    y = &quot;Cumulative Species&quot;
   ) +
   theme_minimal() +
-  theme(legend.position = &quot;bottom&quot;)</code></pre>
+  theme(legend.position = &quot;bottom&quot;)
+
+# ----- VARIATION -----
+
+native_cv &lt;- round(100 * sd(native_runs[, 100]) / mean(native_runs[, 100]), 1)
+alien_cv &lt;- round(100 * sd(alien_runs[, 100]) / mean(alien_runs[, 100]), 1)
+
+print(paste(&quot;Variation at 100 plots - Native CV:&quot;, native_cv, &quot;%, Alien CV:&quot;, alien_cv, &quot;%&quot;))
+
+# DISCUSSION: Aliens show MORE variation between seeds
+# This confirms they&#39;re patchily distributed - where you start matters!</code></pre>
 <hr />
 </div>
-<div id="exercise-19-estimating-total-richnessubung-19-gesamtreichtum-schatzen" class="section level2">
-<h2><span class="en">Exercise 19: Estimating Total Richness</span><span class="de">Ubung 19: Gesamtreichtum schatzen</span></h2>
-<pre class="r"><code># Solution / Losung
+<div id="exercise-18-comparing-curve-shapesubung-18-kurvenformen-vergleichen" class="section level2">
+<h2><span class="en">Exercise 18: Comparing Curve Shapes</span><span class="de">Ubung 18: Kurvenformen vergleichen</span></h2>
+<pre class="r"><code># =============================================================================
+# EXERCISE 18: Comparing Curve Shapes - SOLUTION
+# =============================================================================
 
-library(dplyr)
+library(ggplot2)
 
-# Calculate species frequencies (how many plots each species occurs in)
-species_freq &lt;- species %&gt;%
-  group_by(WFO_TAXON) %&gt;%
-  summarise(n_plots = n_distinct(PlotObservationID), .groups = &quot;drop&quot;)
+# ----- METRIC 1: Saturation point -----
 
-# Observed richness
-S_obs &lt;- nrow(species_freq)
-print(paste(&quot;Observed species:&quot;, S_obs))
-
-# Count singletons (f1) and doubletons (f2)
-f1 &lt;- sum(species_freq$n_plots == 1)  # Species in exactly 1 plot
-f2 &lt;- sum(species_freq$n_plots == 2)  # Species in exactly 2 plots
-
-print(paste(&quot;Singletons (f1):&quot;, f1))
-print(paste(&quot;Doubletons (f2):&quot;, f2))
-
-# Chao1 estimator
-# Be careful: if f2 = 0, use modified formula
-if (f2 &gt; 0) {
-  S_chao &lt;- S_obs + (f1^2 / (2 * f2))
-} else {
-  S_chao &lt;- S_obs + (f1 * (f1 - 1) / 2)
+find_saturation &lt;- function(curve, threshold = 0.8) {
+  total &lt;- max(curve)
+  target &lt;- total * threshold
+  which(curve &gt;= target)[1]
 }
 
-print(paste(&quot;Chao1 estimate:&quot;, round(S_chao, 0)))
-print(paste(&quot;Estimated unseen species:&quot;, round(S_chao - S_obs, 0)))
+native_sat &lt;- apply(native_runs, 1, find_saturation, threshold = 0.8)
+alien_sat &lt;- apply(alien_runs, 1, find_saturation, threshold = 0.8)
 
-# What percentage have we observed?
-coverage &lt;- (S_obs / S_chao) * 100
-print(paste(&quot;Sample coverage:&quot;, round(coverage, 1), &quot;%&quot;))
+native_sat_pct &lt;- 100 * native_sat / sample_size
+alien_sat_pct &lt;- 100 * alien_sat / sample_size
 
-# Apply same analysis to alien species only
-alien_freq &lt;- species %&gt;%
-  filter(STATUS == &quot;alien&quot;) %&gt;%
-  group_by(WFO_TAXON) %&gt;%
-  summarise(n_plots = n_distinct(PlotObservationID), .groups = &quot;drop&quot;)
+print(paste(&quot;Plots to reach 80% - Native:&quot;, round(mean(native_sat_pct)),
+            &quot;%, Alien:&quot;, round(mean(alien_sat_pct)), &quot;%&quot;))
 
-S_obs_alien &lt;- nrow(alien_freq)
-f1_alien &lt;- sum(alien_freq$n_plots == 1)
-f2_alien &lt;- sum(alien_freq$n_plots == 2)
+# ----- METRIC 2: Slope ratio -----
 
-if (f2_alien &gt; 0) {
-  S_chao_alien &lt;- S_obs_alien + (f1_alien^2 / (2 * f2_alien))
-} else {
-  S_chao_alien &lt;- S_obs_alien + (f1_alien * (f1_alien - 1) / 2)
+calc_slopes &lt;- function(curve) {
+  n &lt;- length(curve)
+  early_end &lt;- round(n * 0.2)
+  early_slope &lt;- (curve[early_end] - curve[1]) / early_end
+
+  late_start &lt;- round(n * 0.8)
+  late_slope &lt;- (curve[n] - curve[late_start]) / (n - late_start)
+
+  if (late_slope &gt; 0) {
+    return(early_slope / late_slope)
+  } else {
+    return(Inf)
+  }
 }
 
-print(paste(&quot;Alien species observed:&quot;, S_obs_alien))
-print(paste(&quot;Alien species estimated (Chao1):&quot;, round(S_chao_alien, 0)))
+native_slope_ratio &lt;- apply(native_runs, 1, calc_slopes)
+alien_slope_ratio &lt;- apply(alien_runs, 1, calc_slopes)
 
-# Interpretation: If coverage is high (&gt;90%), we&#39;ve sampled well
-# If many singletons, likely more unseen species exist</code></pre>
+native_ratio_clean &lt;- native_slope_ratio[is.finite(native_slope_ratio)]
+alien_ratio_clean &lt;- alien_slope_ratio[is.finite(alien_slope_ratio)]
+
+print(paste(&quot;Slope ratio (early/late) - Native:&quot;, round(mean(native_ratio_clean), 1),
+            &quot;, Alien:&quot;, round(mean(alien_ratio_clean), 1)))
+print(&quot;Higher ratio = steeper start relative to end = faster saturation&quot;)
+
+# ----- VISUALIZATION -----
+
+metrics &lt;- data.frame(
+  saturation_pct = c(native_sat_pct, alien_sat_pct),
+  status = rep(c(&quot;Native&quot;, &quot;Alien&quot;), each = n_seeds)
+)
+
+ggplot(metrics, aes(x = status, y = saturation_pct, fill = status)) +
+  geom_boxplot() +
+  scale_fill_manual(values = c(&quot;Native&quot; = &quot;darkgreen&quot;, &quot;Alien&quot; = &quot;red&quot;)) +
+  labs(
+    title = &quot;How quickly do species saturate?&quot;,
+    subtitle = &quot;Percentage of plots needed to find 80% of species&quot;,
+    y = &quot;% of Plots Needed&quot;,
+    x = &quot;&quot;
+  ) +
+  theme_minimal() +
+  theme(legend.position = &quot;none&quot;)
+
+# DISCUSSION: Lower % = faster saturation = more evenly distributed
+# If natives need fewer plots to reach 80%, hypothesis supported!</code></pre>
 <hr />
 </div>
-<div id="exercise-20-final-challenge---complete-pipelineubung-20-finale-herausforderung---komplette-pipeline" class="section level2">
-<h2><span class="en">Exercise 20: Final Challenge - Complete
-Pipeline</span><span class="de">Ubung 20: Finale Herausforderung -
-Komplette Pipeline</span></h2>
-<pre class="r"><code># Solution / Losung
+<div id="exercise-19-mapping-seed-effectsubung-19-seed-effekte-kartieren" class="section level2">
+<h2><span class="en">Exercise 19: Mapping Seed Effects</span><span class="de">Ubung 19: Seed-Effekte kartieren</span></h2>
+<pre class="r"><code># =============================================================================
+# EXERCISE 19: Mapping Seed Effects - SOLUTION
+# =============================================================================
 
 library(dplyr)
 library(ggplot2)
 
-# Parameters
-n_bootstrap &lt;- 50
-n_sample_plots &lt;- 500
+n_seeds &lt;- 50
+n_plots_check &lt;- 100
 
-# Sample plots for manageable runtime
 set.seed(42)
-sample_plots &lt;- sample(unique(header$PlotObservationID), n_sample_plots)
-sample_species &lt;- species %&gt;%
-  filter(PlotObservationID %in% sample_plots)
+sample_ids &lt;- sample(unique(header$PlotObservationID), 300)
+sample_header &lt;- header %&gt;% filter(PlotObservationID %in% sample_ids)
+sample_species &lt;- species %&gt;% filter(PlotObservationID %in% sample_ids)
 
-# Bootstrap function
-bootstrap_accumulation &lt;- function(species_data, status_filter, n_runs) {
-  plot_ids &lt;- unique(species_data$PlotObservationID)
-  n_plots &lt;- length(plot_ids)
-  all_runs &lt;- matrix(NA, nrow = n_runs, ncol = n_plots)
+seed_results &lt;- data.frame(
+  seed_idx = 1:n_seeds,
+  seed_plot = NA,
+  seed_lon = NA,
+  seed_lat = NA,
+  native_at_100 = NA,
+  alien_at_100 = NA
+)
 
-  filtered_data &lt;- species_data %&gt;%
-    filter(STATUS == status_filter)
+cat(&quot;Analyzing&quot;, n_seeds, &quot;starting points...\n&quot;)
 
-  for (b in 1:n_runs) {
-    shuffled &lt;- sample(plot_ids, n_plots)
-    found &lt;- c()
+for (i in 1:n_seeds) {
+  nn_order &lt;- nn_walk(sample_header, start_idx = i)
 
-    for (i in seq_along(shuffled)) {
-      plot_sp &lt;- filtered_data %&gt;%
-        filter(PlotObservationID == shuffled[i]) %&gt;%
-        pull(WFO_TAXON) %&gt;%
-        unique()
+  seed_results$seed_plot[i] &lt;- sample_header$PlotObservationID[i]
+  seed_results$seed_lon[i] &lt;- sample_header$Longitude[i]
+  seed_results$seed_lat[i] &lt;- sample_header$Latitude[i]
 
-      found &lt;- unique(c(found, plot_sp))
-      all_runs[b, i] &lt;- length(found)
-    }
-  }
+  native_curve &lt;- build_accumulation(sample_species, nn_order, &quot;native&quot;)
+  alien_curve &lt;- build_accumulation(sample_species, nn_order, &quot;alien&quot;)
 
-  data.frame(
-    plots = 1:n_plots,
-    mean = apply(all_runs, 2, mean),
-    ci_lower = apply(all_runs, 2, function(x) quantile(x, 0.025)),
-    ci_upper = apply(all_runs, 2, function(x) quantile(x, 0.975))
-  )
+  seed_results$native_at_100[i] &lt;- native_curve[min(n_plots_check, length(native_curve))]
+  seed_results$alien_at_100[i] &lt;- alien_curve[min(n_plots_check, length(alien_curve))]
 }
 
-# Run for both native and alien
-cat(&quot;Bootstrapping native species...\n&quot;)
-native_boot &lt;- bootstrap_accumulation(sample_species, &quot;native&quot;, n_bootstrap)
-native_boot$status &lt;- &quot;Native&quot;
+seed_results$alien_proportion &lt;- seed_results$alien_at_100 /
+  (seed_results$native_at_100 + seed_results$alien_at_100)
 
-cat(&quot;Bootstrapping alien species...\n&quot;)
-alien_boot &lt;- bootstrap_accumulation(sample_species, &quot;alien&quot;, n_bootstrap)
-alien_boot$status &lt;- &quot;Alien&quot;
+# ----- MAP -----
 
-# Combine
-combined &lt;- rbind(native_boot, alien_boot)
+ggplot(seed_results, aes(x = seed_lon, y = seed_lat)) +
+  geom_point(aes(color = alien_proportion), size = 3) +
+  scale_color_gradient2(
+    low = &quot;darkgreen&quot;,
+    mid = &quot;yellow&quot;,
+    high = &quot;red&quot;,
+    midpoint = mean(seed_results$alien_proportion),
+    name = &quot;Alien\nproportion&quot;
+  ) +
+  coord_quickmap() +
+  labs(
+    title = &quot;How Starting Location Affects Alien Detection&quot;,
+    subtitle = paste(&quot;Alien proportion after&quot;, n_plots_check, &quot;plots (nearest neighbour)&quot;),
+    x = &quot;Longitude&quot;,
+    y = &quot;Latitude&quot;
+  ) +
+  theme_minimal()
 
-# Final publication-ready plot
-p &lt;- ggplot(combined, aes(x = plots)) +
-  geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper, fill = status),
-              alpha = 0.3) +
-  geom_line(aes(y = mean, color = status), linewidth = 1.2) +
+# ----- TOP SEEDS -----
+
+top_alien_seeds &lt;- seed_results %&gt;%
+  arrange(desc(alien_proportion)) %&gt;%
+  head(5)
+
+print(&quot;Top 5 starting points for finding aliens:&quot;)
+print(top_alien_seeds[, c(&quot;seed_lon&quot;, &quot;seed_lat&quot;, &quot;alien_at_100&quot;, &quot;native_at_100&quot;)])
+
+# DISCUSSION: Red points = starting here finds more aliens
+# These are likely near lowland valleys, cities, agricultural areas</code></pre>
+<hr />
+</div>
+<div id="exercise-20-the-complete-analysisubung-20-die-komplette-analyse" class="section level2">
+<h2><span class="en">Exercise 20: The Complete Analysis</span><span class="de">Ubung 20: Die komplette Analyse</span></h2>
+<pre class="r"><code># =============================================================================
+# EXERCISE 20: Complete Analysis - SOLUTION
+# =============================================================================
+
+library(dplyr)
+library(ggplot2)
+
+# ----- PARAMETERS -----
+n_seeds &lt;- 50
+sample_size &lt;- 400
+set.seed(2024)
+
+# ----- SAMPLE DATA -----
+
+sample_ids &lt;- sample(unique(header$PlotObservationID), sample_size)
+sample_header &lt;- header %&gt;% filter(PlotObservationID %in% sample_ids)
+sample_species &lt;- species %&gt;% filter(PlotObservationID %in% sample_ids)
+
+# ----- FULL ANALYSIS -----
+
+native_curves &lt;- matrix(NA, nrow = n_seeds, ncol = sample_size)
+alien_curves &lt;- matrix(NA, nrow = n_seeds, ncol = sample_size)
+
+cat(&quot;Running full analysis with&quot;, n_seeds, &quot;seeds and&quot;, sample_size, &quot;plots each...\n&quot;)
+
+for (seed in 1:n_seeds) {
+  nn_order &lt;- nn_walk(sample_header, start_idx = seed)
+  native_curves[seed, ] &lt;- build_accumulation(sample_species, nn_order, &quot;native&quot;)
+  alien_curves[seed, ] &lt;- build_accumulation(sample_species, nn_order, &quot;alien&quot;)
+  if (seed %% 10 == 0) cat(&quot;  Seed&quot;, seed, &quot;complete\n&quot;)
+}
+
+# ----- SUMMARIZE -----
+
+results &lt;- data.frame(
+  plots = rep(1:sample_size, 2),
+  mean = c(apply(native_curves, 2, mean), apply(alien_curves, 2, mean)),
+  lower = c(apply(native_curves, 2, function(x) quantile(x, 0.025)),
+            apply(alien_curves, 2, function(x) quantile(x, 0.025))),
+  upper = c(apply(native_curves, 2, function(x) quantile(x, 0.975)),
+            apply(alien_curves, 2, function(x) quantile(x, 0.975))),
+  status = rep(c(&quot;Native&quot;, &quot;Alien&quot;), each = sample_size)
+)
+
+# ----- FINAL PLOT -----
+
+p &lt;- ggplot(results, aes(x = plots)) +
+  geom_ribbon(aes(ymin = lower, ymax = upper, fill = status), alpha = 0.25) +
+  geom_line(aes(y = mean, color = status), linewidth = 1.3) +
   scale_color_manual(
-    values = c(&quot;Native&quot; = &quot;darkgreen&quot;, &quot;Alien&quot; = &quot;red&quot;),
-    name = &quot;Status&quot;
+    values = c(&quot;Native&quot; = &quot;#228B22&quot;, &quot;Alien&quot; = &quot;#DC143C&quot;),
+    name = &quot;&quot;
   ) +
   scale_fill_manual(
-    values = c(&quot;Native&quot; = &quot;darkgreen&quot;, &quot;Alien&quot; = &quot;red&quot;),
-    name = &quot;Status&quot;
+    values = c(&quot;Native&quot; = &quot;#228B22&quot;, &quot;Alien&quot; = &quot;#DC143C&quot;),
+    name = &quot;&quot;
   ) +
   labs(
-    title = &quot;Species Accumulation: Native vs. Alien Plants&quot;,
-    subtitle = paste0(&quot;Austrian vegetation data (n=&quot;, n_sample_plots,
-                      &quot; plots, &quot;, n_bootstrap, &quot; bootstrap iterations)&quot;),
+    title = &quot;Species Accumulation: Native vs Alien Plants in Austria&quot;,
+    subtitle = paste0(&quot;Nearest-neighbour sampling from &quot;, n_seeds,
+                      &quot; starting points (95% CI shown)&quot;),
     x = &quot;Number of Plots Sampled&quot;,
-    y = &quot;Cumulative Species Richness&quot;,
-    caption = &quot;Shaded areas represent 95% confidence intervals&quot;
+    y = &quot;Cumulative Species Count&quot;,
+    caption = &quot;Data: Austrian vegetation plots | Method: Nearest-neighbour spatial accumulation&quot;
   ) +
-  theme_minimal(base_size = 12) +
+  theme_minimal(base_size = 13) +
   theme(
-    legend.position = c(0.85, 0.25),
+    legend.position = c(0.85, 0.2),
     legend.background = element_rect(fill = &quot;white&quot;, color = &quot;gray80&quot;),
     plot.title = element_text(face = &quot;bold&quot;),
     panel.grid.minor = element_blank()
@@ -2864,8 +2967,33 @@ p &lt;- ggplot(combined, aes(x = plots)) +
 
 print(p)
 
-# Save the plot
-# ggsave(&quot;accumulation_comparison.png&quot;, p, width = 10, height = 7, dpi = 300)</code></pre>
+# ggsave(&quot;austria_accumulation_curves.png&quot;, p, width = 10, height = 7, dpi = 300)
+
+# ----- RESULTS SUMMARY -----
+
+cat(&quot;\n===== RESULTS SUMMARY =====\n\n&quot;)
+
+cat(&quot;Species found:\n&quot;)
+cat(&quot;  Native:&quot;, round(mean(native_curves[, sample_size])),
+    &quot;(range:&quot;, min(native_curves[, sample_size]), &quot;-&quot;, max(native_curves[, sample_size]), &quot;)\n&quot;)
+cat(&quot;  Alien:&quot;, round(mean(alien_curves[, sample_size])),
+    &quot;(range:&quot;, min(alien_curves[, sample_size]), &quot;-&quot;, max(alien_curves[, sample_size]), &quot;)\n\n&quot;)
+
+native_sat &lt;- apply(native_curves, 1, find_saturation, threshold = 0.8)
+alien_sat &lt;- apply(alien_curves, 1, find_saturation, threshold = 0.8)
+
+cat(&quot;Plots to reach 80% of species:\n&quot;)
+cat(&quot;  Native:&quot;, round(mean(native_sat)), &quot;plots (&quot;, round(100*mean(native_sat)/sample_size), &quot;%)\n&quot;)
+cat(&quot;  Alien:&quot;, round(mean(alien_sat)), &quot;plots (&quot;, round(100*mean(alien_sat)/sample_size), &quot;%)\n\n&quot;)
+
+cat(&quot;Variation between starting points (CV at 200 plots):\n&quot;)
+cat(&quot;  Native:&quot;, round(100 * sd(native_curves[,200]) / mean(native_curves[,200]), 1), &quot;%\n&quot;)
+cat(&quot;  Alien:&quot;, round(100 * sd(alien_curves[,200]) / mean(alien_curves[,200]), 1), &quot;%\n&quot;)
+
+# FINAL DISCUSSION:
+# 1. Do natives saturate faster? Compare the 80% threshold results
+# 2. Do aliens have more variation? Compare the CV values
+# 3. What next? Try filtering by habitat, year, or region!</code></pre>
 </div>
 </div>
 

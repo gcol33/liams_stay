@@ -1,0 +1,1429 @@
+---
+title: '<span class="en">Species Accumulation Curves</span><span class="de">Artenakkumulationskurven</span>'
+subtitle: '<span class="en">Data Analysis in R</span><span class="de">Datenanalyse in R</span>'
+author: '<span class="en">Ecology Practicum - Day 2</span><span class="de">Okologie-Praktikum - Tag 2</span>'
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: flatly
+    self_contained: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, fig.width = 9, fig.height = 5)
+library(tidyverse)
+library(knitr)
+```
+
+```{css, echo=FALSE}
+/* ========== PLAYFUL WORKSHOP THEME ========== */
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.7;
+  background-color: #fafffe;
+}
+
+/* Headings with green theme */
+h1 {
+  color: #2E7D32 !important;
+  border-bottom: 3px solid #4CAF50;
+  padding-bottom: 10px;
+}
+
+h2 {
+  color: #388E3C !important;
+  margin-top: 2em;
+}
+
+h3 {
+  color: #43A047 !important;
+}
+
+/* Tables - green headers, hover effects */
+table {
+  border-collapse: collapse;
+  margin: 1em 0;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+th {
+  background-color: #4CAF50 !important;
+  color: white !important;
+  padding: 12px;
+  text-align: left;
+}
+
+td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #ddd;
+}
+
+tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+tr:hover {
+  background-color: #E8F5E9;
+}
+
+/* Code blocks */
+pre {
+  background-color: #f5f5f5 !important;
+  border-left: 4px solid #4CAF50 !important;
+  padding: 15px;
+  border-radius: 8px;
+  overflow-x: auto;
+}
+
+code {
+  background-color: #E8F5E9;
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: #2E7D32;
+}
+
+/* Blockquotes - orange accent */
+blockquote {
+  border-left: 4px solid #FF9800;
+  background-color: #FFF8E1;
+  padding: 15px 20px;
+  margin: 1em 0;
+  border-radius: 0 8px 8px 0;
+}
+
+/* Key insights in blue */
+p > strong:first-child {
+  color: #1565C0;
+}
+
+/* Figures */
+.figure img, img {
+  max-width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Horizontal rules - gradient */
+hr {
+  border: none;
+  height: 3px;
+  background: linear-gradient(to right, #4CAF50, #81C784, #C8E6C9, #81C784, #4CAF50);
+  margin: 2em 0;
+  border-radius: 2px;
+}
+
+/* TOC styling */
+.tocify {
+  border: none !important;
+  border-radius: 12px !important;
+  background-color: #f1f8e9 !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.tocify-item {
+  padding: 8px 15px;
+}
+
+.tocify-item.active, .tocify-item.active:hover {
+  background-color: #4CAF50 !important;
+  color: white !important;
+}
+
+/* Discussion questions - orange highlight */
+h2 > span:only-child {
+  display: block;
+}
+
+/* Lists */
+ul, ol {
+  margin: 1em 0;
+}
+
+li {
+  margin: 0.5em 0;
+}
+
+/* ========== LANGUAGE TOGGLE ========== */
+
+.lang-toggle {
+  position: fixed;
+  top: 10px;
+  right: 20px;
+  z-index: 9999;
+  background: linear-gradient(135deg, #2E7D32, #4CAF50);
+  padding: 8px 12px;
+  border-radius: 25px;
+  box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3);
+}
+
+.lang-toggle button {
+  background: transparent;
+  border: none;
+  color: #fff;
+  padding: 6px 14px;
+  cursor: pointer;
+  font-weight: bold;
+  border-radius: 20px;
+  transition: all 0.3s;
+  font-size: 14px;
+}
+
+.lang-toggle button.active {
+  background: white;
+  color: #2E7D32;
+}
+
+.lang-toggle button:hover:not(.active) {
+  background: rgba(255,255,255,0.2);
+}
+
+/* Hide inactive language by default */
+.de { display: none; }
+.en { display: inline; }
+
+body.lang-de .de { display: inline; }
+body.lang-de .en { display: none; }
+
+/* For block elements */
+div.de, p.de, li.de, h1.de, h2.de, h3.de, h4.de, section.de { display: none; }
+div.en, p.en, li.en, h1.en, h2.en, h3.en, h4.en, section.en { display: block; }
+
+body.lang-de div.de, body.lang-de p.de, body.lang-de li.de,
+body.lang-de h1.de, body.lang-de h2.de, body.lang-de h3.de,
+body.lang-de h4.de, body.lang-de section.de { display: block; }
+
+body.lang-de div.en, body.lang-de p.en, body.lang-de li.en,
+body.lang-de h1.en, body.lang-de h2.en, body.lang-de h3.en,
+body.lang-de h4.en, body.lang-de section.en { display: none; }
+
+/* Table of contents language fix */
+body.lang-de #TOC .en { display: none; }
+body.lang-de #TOC .de { display: inline; }
+#TOC .de { display: none; }
+#TOC .en { display: inline; }
+
+/* ========== PRINT STYLES ========== */
+@media print {
+  .tocify, .lang-toggle { display: none; }
+  body { font-size: 11pt; }
+  h1 { page-break-before: always; }
+  h1:first-of-type { page-break-before: avoid; }
+}
+```
+
+```{js, echo=FALSE}
+document.addEventListener('DOMContentLoaded', function() {
+  // Create language toggle
+  var toggle = document.createElement('div');
+  toggle.className = 'lang-toggle';
+  toggle.innerHTML = '<button id="btn-en" class="active">EN</button><button id="btn-de">DE</button>';
+  document.body.appendChild(toggle);
+
+  // Check for saved preference or browser language
+  var savedLang = localStorage.getItem('workshop-lang');
+  var browserLang = navigator.language.substring(0, 2);
+  var defaultLang = savedLang || (browserLang === 'de' ? 'de' : 'en');
+
+  if (defaultLang === 'de') {
+    setLanguage('de');
+  }
+
+  document.getElementById('btn-en').addEventListener('click', function() {
+    setLanguage('en');
+  });
+
+  document.getElementById('btn-de').addEventListener('click', function() {
+    setLanguage('de');
+  });
+
+  function setLanguage(lang) {
+    document.body.classList.remove('lang-en', 'lang-de');
+    document.body.classList.add('lang-' + lang);
+    document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+    document.getElementById('btn-de').classList.toggle('active', lang === 'de');
+    localStorage.setItem('workshop-lang', lang);
+  }
+});
+```
+
+---
+
+# <span class="en">Part 4: Building Accumulation Curves</span><span class="de">Teil 4: Akkumulationskurven bauen</span>
+
+## <span class="en">Review from Yesterday</span><span class="de">Wiederholung von gestern</span>
+
+<div class="en">
+
+**What is a species accumulation curve?**
+
+- Shows how many species we find as we sample more plots
+- Flattens because new species become rarer
+- The asymptote estimates the total species count
+
+</div>
+
+<div class="de">
+
+**Was ist eine Artenakkumulationskurve?**
+
+- Zeigt, wie viele Arten wir finden, wenn wir mehr Plots untersuchen
+- Flacht ab, weil neue Arten seltener werden
+- Die Asymptote schatzt die Gesamtartenzahl
+
+</div>
+
+```{r recap-curve, fig.height=4}
+set.seed(123)
+n_plots <- 30
+species_pool <- 50
+
+accumulation <- data.frame(plots = 1:n_plots, species = 0)
+current <- 10
+for(i in 1:n_plots) {
+  current <- current + rbinom(1, 5, (species_pool - current) / species_pool)
+  accumulation$species[i] <- current
+}
+
+ggplot(accumulation, aes(x = plots, y = species)) +
+  geom_line(color = "darkgreen", linewidth = 2) +
+  geom_point(color = "darkgreen", size = 2) +
+  labs(title = "Review: Accumulation Curve / Wiederholung: Akkumulationskurve",
+       x = "Plots Sampled / Untersuchte Plots",
+       y = "Species Found / Gefundene Arten") +
+  theme_minimal(base_size = 14)
+```
+
+---
+
+## <span class="en">Warm-up Exercise</span><span class="de">Warm-up Ubung</span>
+
+```{r warmup-exercise, echo=TRUE, eval=FALSE}
+# Quick review: What does this code output?
+# Schnelle Wiederholung: Was gibt dieser Code aus?
+
+species_plot1 <- c("Beech", "Oak", "Spruce")
+species_plot2 <- c("Oak", "Pine", "Linden")
+
+# Combine both lists / Kombiniere beide Listen
+all_species <- c(species_plot1, species_plot2)
+
+# How many unique species? / Wie viele einzigartige Arten?
+count <- length(unique(all_species))
+print(count)  # ?
+```
+
+<div class="en">
+
+**Discuss in pairs (3 min):** Why is `unique()` important for accumulation curves?
+
+</div>
+
+<div class="de">
+
+**Diskutiert zu zweit (3 min):** Warum ist `unique()` wichtig fur Akkumulationskurven?
+
+</div>
+
+---
+
+## <span class="en">Today: Building Curves in R</span><span class="de">Heute: Kurven in R bauen</span>
+
+<div class="en">
+
+**Goal:** Program an accumulation curve step by step in R.
+
+**Why?**
+- Understand how the algorithm works
+- Reproducible analysis
+- Later: Compare native vs. alien
+
+</div>
+
+<div class="de">
+
+**Ziel:** Eine Akkumulationskurve Schritt fur Schritt in R programmieren.
+
+**Warum?**
+- Verstehen, wie der Algorithmus funktioniert
+- Reproduzierbare Analyse
+- Spater: Vergleich heimisch vs. alien
+
+</div>
+
+---
+
+## <span class="en">Understanding the Algorithm</span><span class="de">Den Algorithmus verstehen</span>
+
+<div class="en">
+
+**The 5 Steps:**
+
+1. **Choose starting point** - a random plot
+2. **Count species** - how many species in this plot?
+3. **Find next plot** - the geographically nearest
+4. **Add new species** - only those we don't have yet
+5. **Repeat** - until all plots are visited
+
+</div>
+
+<div class="de">
+
+**Die 5 Schritte:**
+
+1. **Startpunkt wahlen** - ein zufalliger Plot
+2. **Arten zahlen** - wie viele Arten in diesem Plot?
+3. **Nachsten Plot finden** - der geografisch nachste
+4. **Neue Arten addieren** - nur die, die wir noch nicht haben
+5. **Wiederholen** - bis alle Plots besucht sind
+
+</div>
+
+```{r algorithm-diagram, fig.height=3}
+steps <- data.frame(
+  x = 1:5,
+  y = 1,
+  label_en = c("Start\npoint", "Count\nspecies", "Find\nnext", "Add new\nspecies", "Repeat"),
+  label_de = c("Start-\npunkt", "Arten\nzahlen", "Nachsten\nPlot", "Neue Arten\naddieren", "Wieder-\nholen")
+)
+
+ggplot(steps, aes(x, y)) +
+  geom_point(size = 20, color = "steelblue", alpha = 0.7) +
+  geom_text(aes(label = label_en), size = 3.5) +
+  geom_segment(aes(x = x + 0.3, xend = x + 0.7, y = y, yend = y),
+               arrow = arrow(length = unit(0.2, "cm")),
+               data = steps[1:4,]) +
+  theme_void() +
+  xlim(0.5, 5.5)
+```
+
+---
+
+## <span class="en">Paper Exercise: Algorithm by Hand</span><span class="de">Papierubung: Algorithmus per Hand</span>
+
+<div class="en">
+
+**Example Data (simplified):**
+
+| Plot | X | Y | Species |
+|------|---|---|---------|
+| A | 0 | 0 | Beech, Oak |
+| B | 1 | 1 | Oak, Spruce |
+| C | 3 | 0 | Beech, Pine |
+| D | 1 | 3 | Linden, Oak |
+
+**Task (10 min in pairs):**
+
+1. Start at Plot A
+2. Which plot is nearest? (Calculate distances!)
+3. How many new species do you find?
+4. Repeat until all plots are visited
+5. Draw the curve on paper
+
+</div>
+
+<div class="de">
+
+**Beispiel-Daten (vereinfacht):**
+
+| Plot | X | Y | Arten |
+|------|---|---|-------|
+| A | 0 | 0 | Buche, Eiche |
+| B | 1 | 1 | Eiche, Fichte |
+| C | 3 | 0 | Buche, Kiefer |
+| D | 1 | 3 | Linde, Eiche |
+
+**Aufgabe (10 min in Zweiergruppen):**
+
+1. Startet bei Plot A
+2. Welcher Plot ist der nachste? (Berechnet Distanzen!)
+3. Wie viele neue Arten findet ihr?
+4. Wiederholt bis alle Plots besucht sind
+5. Zeichnet die Kurve auf Papier
+
+</div>
+
+```{r paper-exercise-solution, fig.height=4}
+paper_solution <- data.frame(
+  Plot = c("A", "B", "C", "D"),
+  Reihenfolge = 1:4,
+  Arten_neu = c(2, 1, 1, 1),
+  Arten_kumulativ = c(2, 3, 4, 5)
+)
+
+ggplot(paper_solution, aes(x = Reihenfolge, y = Arten_kumulativ)) +
+  geom_line(linewidth = 2, color = "darkgreen") +
+  geom_point(size = 4, color = "darkgreen") +
+  geom_text(aes(label = Plot), vjust = -1, size = 5) +
+  scale_x_continuous(breaks = 1:4) +
+  labs(title = "Solution / Losung",
+       x = "Visited Plots / Besuchte Plots", y = "Cumulative Species / Kumulative Artenzahl") +
+  theme_minimal(base_size = 14) +
+  ylim(0, 6)
+```
+
+---
+
+## <span class="en">Visualization: Spatial Order</span><span class="de">Visualisierung: Raumliche Reihenfolge</span>
+
+```{r spatial-order-viz, fig.height=4}
+plot_coords <- data.frame(
+  plot = c("A", "B", "C", "D"),
+  x = c(0, 1, 3, 1),
+  y = c(0, 1, 0, 3),
+  order = 1:4
+)
+
+ggplot(plot_coords, aes(x, y)) +
+  geom_path(arrow = arrow(length = unit(0.3, "cm")),
+            linewidth = 1, color = "steelblue", alpha = 0.6) +
+  geom_point(size = 8, color = "steelblue") +
+  geom_text(aes(label = plot), color = "white", size = 5, fontface = "bold") +
+  geom_text(aes(label = paste("Step/Schritt", order)),
+            vjust = -2, size = 3.5, color = "darkblue") +
+  labs(title = "Nearest Neighbour: Spatial Order / Raumliche Reihenfolge",
+       x = "X", y = "Y") +
+  theme_minimal(base_size = 14) +
+  coord_fixed()
+```
+
+---
+
+## <span class="en">Discussion: Why Spatial Order?</span><span class="de">Diskussion: Warum raumliche Ordnung?</span>
+
+<div class="en">
+
+**Question:** What would change if we visited plots randomly?
+
+**Hypotheses:**
+- Curve flatter or steeper?
+- More or less variance?
+- Biological interpretation?
+
+**Answer:** Spatial autocorrelation! Nearby plots often have similar species.
+- **Nearest Neighbour** - finds new species slowly (conservative)
+- **Random** - finds new species faster (optimistic)
+
+</div>
+
+<div class="de">
+
+**Frage:** Was wurde sich andern, wenn wir die Plots zufallig besuchen?
+
+**Hypothesen:**
+- Kurve flacher oder steiler?
+- Mehr oder weniger Varianz?
+- Biologische Interpretation?
+
+**Antwort:** Raumliche Autokorrelation! Nahe Plots haben oft ahnliche Arten.
+- **Nearest Neighbour** - findet langsam neue Arten (konservativ)
+- **Zufallig** - findet schneller neue Arten (optimistisch)
+
+</div>
+
+---
+
+## <span class="en">R Exercise: Loops</span><span class="de">R Ubung: Schleifen</span>
+
+<div class="en">
+
+**Loops** repeat code multiple times - essential for our algorithm!
+
+```r
+# A simple for loop
+for (i in 1:5) {
+  print(i)
+}
+
+# Fill in the blanks!
+
+# 1. Print numbers 1 to 10
+for (i in ____) {
+  print(____)
+}
+
+# 2. Iterate over letters
+letters <- c("A", "B", "C", "D")
+for (letter in ____) {
+  print(paste("Plot", ____))
+}
+
+# 3. Build a vector with squares
+squares <- c()
+for (i in 1:10) {
+  squares[i] <- ____^2
+}
+print(squares)
+```
+
+</div>
+
+<div class="de">
+
+**Schleifen** wiederholen Code mehrmals - essentiell fur unseren Algorithmus!
+
+```r
+# Eine einfache for-Schleife
+for (i in 1:5) {
+  print(i)
+}
+
+# Luckentext: Fulle aus!
+
+# 1. Drucke die Zahlen 1 bis 10
+for (i in ____) {
+  print(____)
+}
+
+# 2. Iteriere uber Buchstaben
+buchstaben <- c("A", "B", "C", "D")
+for (buchstabe in ____) {
+  print(paste("Plot", ____))
+}
+
+# 3. Baue einen Vektor mit Quadratzahlen
+quadrate <- c()
+for (i in 1:10) {
+  quadrate[i] <- ____^2
+}
+print(quadrate)
+```
+
+</div>
+
+---
+
+## <span class="en">Calculating Distance</span><span class="de">Distanz berechnen</span>
+
+<div class="en">
+
+To find the "nearest plot", we need the **Euclidean distance**.
+
+**Formula:** $d = \sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2}$
+
+```r
+# Two points
+point1 <- c(x = 10, y = 20)
+point2 <- c(x = 13, y = 24)
+
+# Euclidean distance
+distance <- sqrt((point2["x"] - point1["x"])^2 +
+                 (point2["y"] - point1["y"])^2)
+print(distance)  # 5
+```
+
+</div>
+
+<div class="de">
+
+Um den "nachsten Plot" zu finden, brauchen wir die **euklidische Distanz**.
+
+**Formel:** $d = \sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2}$
+
+```r
+# Zwei Punkte
+punkt1 <- c(x = 10, y = 20)
+punkt2 <- c(x = 13, y = 24)
+
+# Euklidische Distanz
+distanz <- sqrt((punkt2["x"] - punkt1["x"])^2 +
+                (punkt2["y"] - punkt1["y"])^2)
+print(distanz)  # 5
+```
+
+</div>
+
+```{r distance-visual, fig.height=4}
+ggplot() +
+  geom_point(aes(x = 10, y = 20), size = 5, color = "red") +
+  geom_point(aes(x = 13, y = 24), size = 5, color = "blue") +
+  geom_segment(aes(x = 10, xend = 13, y = 20, yend = 24),
+               linetype = "dashed", linewidth = 1) +
+  geom_segment(aes(x = 10, xend = 13, y = 20, yend = 20), color = "gray") +
+  geom_segment(aes(x = 13, xend = 13, y = 20, yend = 24), color = "gray") +
+  annotate("text", x = 11.5, y = 19.5, label = "3", size = 4) +
+  annotate("text", x = 13.5, y = 22, label = "4", size = 4) +
+  annotate("text", x = 11, y = 23, label = "5", size = 5, fontface = "bold") +
+  labs(title = "Euclidean Distance / Euklidische Distanz: sqrt(3^2 + 4^2) = 5",
+       x = "X", y = "Y") +
+  theme_minimal(base_size = 14) +
+  coord_fixed()
+```
+
+---
+
+# <span class="en">Part 5: Analyzing Vegetation Data</span><span class="de">Teil 5: Vegetationsdaten analysieren</span>
+
+## <span class="en">Our Research Question</span><span class="de">Unsere Forschungsfrage</span>
+
+<div class="en">
+
+> **Do alien species accumulate differently than native species?**
+
+**Hypotheses:**
+- H1: Aliens accumulate more slowly (fewer species overall)
+- H2: Aliens accumulate more evenly (less spatially clustered)
+
+</div>
+
+<div class="de">
+
+> **Akkumulieren Alien-Arten anders als heimische Arten?**
+
+**Hypothesen:**
+- H1: Aliens akkumulieren langsamer (weniger Arten insgesamt)
+- H2: Aliens akkumulieren gleichmassiger (weniger raumlich geclustert)
+
+</div>
+
+---
+
+## <span class="en">The Data: EVA Database</span><span class="de">Die Daten: EVA-Datenbank</span>
+
+<div class="en">
+
+### What is EVA?
+
+**European Vegetation Archive** - the largest vegetation database in Europe
+
+| Property | Value |
+|----------|-------|
+| Plots | ~52,000 |
+| Region | Austria |
+| Time period | 1950-2023 |
+| Native species | ~2,800 |
+| Alien species | ~450 |
+
+</div>
+
+<div class="de">
+
+### Was ist EVA?
+
+**European Vegetation Archive** - die grosste Vegetationsdatenbank Europas
+
+| Eigenschaft | Wert |
+|-------------|------|
+| Plots | ~52.000 |
+| Region | Osterreich |
+| Zeitraum | 1950-2023 |
+| Heimische Arten | ~2.800 |
+| Alien-Arten | ~450 |
+
+</div>
+
+---
+
+## <span class="en">EVA Data Structure</span><span class="de">EVA Datenstruktur</span>
+
+<div class="en">
+
+**Typical columns in EVA data:**
+
+| Column | Meaning | Example |
+|--------|---------|---------|
+| `plot_id` | Unique plot number | "AT_2019_0042" |
+| `x`, `y` | Coordinates (UTM) | 450123, 5230456 |
+| `species` | Scientific name | "Fagus sylvatica" |
+| `cover` | Cover percentage | 60 |
+| `status` | Native/Alien status | "native" |
+| `habitat` | Habitat type | "Forest" |
+| `year` | Survey year | 2019 |
+
+</div>
+
+<div class="de">
+
+**Typische Spalten in EVA-Daten:**
+
+| Spalte | Bedeutung | Beispiel |
+|--------|-----------|----------|
+| `plot_id` | Eindeutige Plot-Nummer | "AT_2019_0042" |
+| `x`, `y` | Koordinaten (UTM) | 450123, 5230456 |
+| `species` | Artname (wissenschaftlich) | "Fagus sylvatica" |
+| `cover` | Deckungsgrad (%) | 60 |
+| `status` | Native/Alien Status | "native" |
+| `habitat` | Habitattyp | "Wald" |
+| `year` | Aufnahmejahr | 2019 |
+
+</div>
+
+---
+
+## <span class="en">Native vs. Alien: Distribution</span><span class="de">Heimisch vs. Alien: Verteilung</span>
+
+```{r status-distribution, fig.height=4}
+status_example <- data.frame(
+  status = c("Native / Heimisch", "Alien"),
+  count = c(2845, 453),
+  percent = c(86.3, 13.7)
+)
+
+ggplot(status_example, aes(x = status, y = count, fill = status)) +
+  geom_col() +
+  geom_text(aes(label = paste0(percent, "%")), vjust = -0.5, size = 5) +
+  scale_fill_manual(values = c("Native / Heimisch" = "darkgreen", "Alien" = "red")) +
+  labs(title = "Native vs. Alien Species in Austrian Plots / Arten in osterreichischen Plots",
+       x = "Status", y = "Number of Observations / Anzahl Beobachtungen") +
+  theme_minimal(base_size = 14) +
+  theme(legend.position = "none")
+```
+
+---
+
+## <span class="en">R Exercise: Filtering Data</span><span class="de">R Ubung: Daten filtern</span>
+
+<div class="en">
+
+### Method 1: Square brackets [ ]
+
+```r
+# Example data
+data <- data.frame(
+  species = c("Oak", "Balsam", "Beech", "Goldenrod"),
+  status = c("native", "alien", "native", "alien"),
+  count = c(150, 45, 120, 30)
+)
+
+# 1. Only native species
+native <- data[data$status == ____, ]
+
+# 2. Only aliens
+aliens <- data[data$____ == "alien", ]
+
+# 3. Only species with more than 50 occurrences
+frequent <- data[data$count ____ 50, ]
+
+# 4. Native AND frequent
+native_frequent <- data[data$status == "native" ____ data$count > 100, ]
+```
+
+</div>
+
+<div class="de">
+
+### Methode 1: Eckige Klammern [ ]
+
+```r
+# Beispieldaten
+daten <- data.frame(
+  art = c("Eiche", "Springkraut", "Buche", "Goldrute"),
+  status = c("native", "alien", "native", "alien"),
+  anzahl = c(150, 45, 120, 30)
+)
+
+# 1. Nur heimische Arten
+heimisch <- daten[daten$status == ____, ]
+
+# 2. Nur Aliens
+aliens <- daten[daten$____ == "alien", ]
+
+# 3. Nur Arten mit mehr als 50 Vorkommen
+haeufig <- daten[daten$anzahl ____ 50, ]
+
+# 4. Heimisch UND haufig
+heimisch_haeufig <- daten[daten$status == "native" ____ daten$anzahl > 100, ]
+```
+
+</div>
+
+---
+
+## <span class="en">Exploratory Data Analysis</span><span class="de">Explorative Datenanalyse</span>
+
+```{r eda-map, fig.height=4.5}
+set.seed(456)
+n_plots_example <- 500
+plot_map <- data.frame(
+  x = runif(n_plots_example, 9, 17),
+  y = runif(n_plots_example, 46, 49),
+  n_species = rpois(n_plots_example, 25)
+)
+
+ggplot(plot_map, aes(x, y, color = n_species)) +
+  geom_point(alpha = 0.6, size = 2) +
+  scale_color_viridis_c() +
+  labs(title = "Spatial Distribution of Vegetation Plots / Raumliche Verteilung der Plots",
+       subtitle = "Color = Species count per plot / Farbe = Artenzahl pro Plot",
+       x = "Longitude / Langengrad", y = "Latitude / Breitengrad",
+       color = "Species / Arten") +
+  theme_minimal(base_size = 14) +
+  coord_fixed(ratio = 1.5)
+```
+
+---
+
+## <span class="en">Species Richness Distribution</span><span class="de">Verteilung der Artenzahl</span>
+
+```{r richness-histogram, fig.height=4}
+set.seed(789)
+species_per_plot <- rpois(500, lambda = 25) + 5
+
+ggplot(data.frame(n_species = species_per_plot), aes(x = n_species)) +
+  geom_histogram(binwidth = 5, fill = "steelblue", color = "white") +
+  geom_vline(xintercept = mean(species_per_plot),
+             linetype = "dashed", color = "red", linewidth = 1) +
+  annotate("text", x = mean(species_per_plot) + 8, y = 50,
+           label = paste("Mean:", round(mean(species_per_plot), 1)),
+           color = "red") +
+  labs(title = "Distribution of Species Richness / Verteilung der Artenzahl",
+       x = "Number of Species / Anzahl Arten", y = "Number of Plots / Anzahl Plots") +
+  theme_minimal(base_size = 14)
+```
+
+---
+
+## <span class="en">Preparing Data: Native vs. Alien</span><span class="de">Daten vorbereiten: Heimisch vs. Alien</span>
+
+<div class="en">
+
+### Step 1: Separate datasets
+
+```r
+# Keep only native species
+native_data <- data[data$status == "native", ]
+
+# Keep only alien species
+alien_data <- data[data$status == "alien", ]
+
+# Check
+nrow(native_data)
+nrow(alien_data)
+```
+
+### Step 2: Check sample sizes
+
+```r
+# How many plots contain at least one native species?
+plots_with_native <- length(unique(native_data$plot_id))
+
+# How many plots contain at least one alien species?
+plots_with_alien <- length(unique(alien_data$plot_id))
+
+print(paste("Plots with Native:", plots_with_native))
+print(paste("Plots with Alien:", plots_with_alien))
+```
+
+**Discussion:** Is the comparison fair if we have fewer alien plots?
+
+</div>
+
+<div class="de">
+
+### Schritt 1: Datensatze trennen
+
+```r
+# Nur heimische Arten behalten
+native_daten <- daten[daten$status == "native", ]
+
+# Nur alien Arten behalten
+alien_daten <- daten[daten$status == "alien", ]
+
+# Kontrolle
+nrow(native_daten)
+nrow(alien_daten)
+```
+
+### Schritt 2: Stichprobengrossen prufen
+
+```r
+# Wie viele Plots enthalten mindestens eine heimische Art?
+plots_mit_native <- length(unique(native_daten$plot_id))
+
+# Wie viele Plots enthalten mindestens eine alien Art?
+plots_mit_alien <- length(unique(alien_daten$plot_id))
+
+print(paste("Plots mit Native:", plots_mit_native))
+print(paste("Plots mit Alien:", plots_mit_alien))
+```
+
+**Diskussion:** Ist der Vergleich fair, wenn wir viel weniger Alien-Plots haben?
+
+</div>
+
+---
+
+# <span class="en">Part 6: Analysis & Interpretation</span><span class="de">Teil 6: Analyse & Interpretation</span>
+
+## <span class="en">Multiple Starting Points</span><span class="de">Multiple Startpunkte</span>
+
+<div class="en">
+
+### The Problem of Randomness
+
+**Problem:** The starting point massively influences the curve!
+
+- Different start = different route
+- Different route = different curve
+- **Solution:** Try many starting points and average
+
+</div>
+
+<div class="de">
+
+### Das Problem der Zufalligkeit
+
+**Problem:** Der Startpunkt beeinflusst die Kurve massiv!
+
+- Unterschiedlicher Start = unterschiedliche Route
+- Unterschiedliche Route = unterschiedliche Kurve
+- **Losung:** Viele Startpunkte ausprobieren und mitteln
+
+</div>
+
+```{r multiple-seeds, fig.height=4}
+set.seed(1)
+curves_data <- data.frame()
+for(seed in 1:10) {
+  set.seed(seed)
+  n <- 50
+  curve <- data.frame(
+    plots = 1:n,
+    species = cumsum(c(15, pmax(0, round(10 * exp(-0.05 * 1:(n-1)) + rnorm(n-1, 0, 2))))),
+    seed = paste("Start", seed)
+  )
+  curves_data <- rbind(curves_data, curve)
+}
+
+ggplot(curves_data, aes(x = plots, y = species, group = seed)) +
+  geom_line(alpha = 0.3, color = "darkgreen") +
+  stat_summary(aes(group = 1), fun = mean, geom = "line",
+               color = "darkgreen", linewidth = 2) +
+  labs(title = "10 Different Starting Points / Verschiedene Startpunkte",
+       subtitle = "Thin lines = individual runs, thick line = mean / Dunne Linien = einzelne Laufe, dicke Linie = Mittelwert",
+       x = "Plots", y = "Species / Arten") +
+  theme_minimal(base_size = 14)
+```
+
+---
+
+## <span class="en">Confidence Intervals</span><span class="de">Konfidenzintervalle</span>
+
+```{r confidence-intervals, fig.height=4.5}
+set.seed(42)
+n_runs <- 50
+n_plots <- 40
+all_curves <- data.frame()
+
+for (run in 1:n_runs) {
+  curve <- data.frame(
+    plots = 1:n_plots,
+    species = cumsum(c(20, pmax(0, round(15 * exp(-0.04 * 1:(n_plots-1)) + rnorm(n_plots-1, 0, 2))))),
+    run = run
+  )
+  all_curves <- rbind(all_curves, curve)
+}
+
+summary_data <- all_curves %>%
+  group_by(plots) %>%
+  summarise(
+    mean_sp = mean(species),
+    ci_lower = quantile(species, 0.025),
+    ci_upper = quantile(species, 0.975)
+  )
+
+ggplot(summary_data, aes(x = plots)) +
+  geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper),
+              fill = "darkgreen", alpha = 0.3) +
+  geom_line(aes(y = mean_sp), color = "darkgreen", linewidth = 2) +
+  labs(title = "Accumulation Curve with 95% Confidence Interval / mit 95% Konfidenzintervall",
+       subtitle = "Based on 50 different starting points / Basierend auf 50 verschiedenen Startpunkten",
+       x = "Plots Sampled / Untersuchte Plots",
+       y = "Species Found / Gefundene Arten") +
+  theme_minimal(base_size = 14)
+```
+
+<div class="en">
+
+**What does the 95% confidence interval mean?**
+
+- We are 95% confident the "true" value lies in this range
+- Wide interval = much uncertainty
+- Narrow interval = precise estimate
+
+</div>
+
+<div class="de">
+
+**Was bedeutet das 95% Konfidenzintervall?**
+
+- Wir sind zu 95% sicher, dass der "wahre" Wert in diesem Bereich liegt
+- Breites Intervall = viel Unsicherheit
+- Schmales Intervall = prazise Schatzung
+
+</div>
+
+---
+
+## <span class="en">Final Comparison: Native vs. Alien</span><span class="de">Finaler Vergleich: Heimisch vs. Alien</span>
+
+```{r final-comparison, fig.height=5.5}
+set.seed(123)
+n_plots <- 100
+
+native_sim <- data.frame(
+  plots = 1:n_plots,
+  mean_species = cumsum(c(80, pmax(0, round(50 * exp(-0.02 * 1:(n_plots-1)) + rnorm(n_plots-1, 0, 3))))),
+  status = "Native / Heimisch"
+)
+native_sim$ci_lower <- native_sim$mean_species - runif(n_plots, 15, 25)
+native_sim$ci_upper <- native_sim$mean_species + runif(n_plots, 15, 25)
+
+alien_sim <- data.frame(
+  plots = 1:n_plots,
+  mean_species = cumsum(c(20, pmax(0, round(15 * exp(-0.025 * 1:(n_plots-1)) + rnorm(n_plots-1, 0, 1.5))))),
+  status = "Alien"
+)
+alien_sim$ci_lower <- alien_sim$mean_species - runif(n_plots, 5, 10)
+alien_sim$ci_upper <- alien_sim$mean_species + runif(n_plots, 5, 10)
+
+final_data <- rbind(native_sim, alien_sim)
+
+ggplot(final_data, aes(x = plots, color = status, fill = status)) +
+  geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper),
+              alpha = 0.2, color = NA) +
+  geom_line(aes(y = mean_species), linewidth = 1.8) +
+  scale_color_manual(values = c("Native / Heimisch" = "darkgreen", "Alien" = "red")) +
+  scale_fill_manual(values = c("Native / Heimisch" = "darkgreen", "Alien" = "red")) +
+  labs(
+    title = "Species Accumulation in Austrian Vegetation Plots / Artenakkumulation in osterreichischen Plots",
+    subtitle = "Comparison native vs. alien species (100 runs, 95% CI) / Vergleich heimisch vs. alien Arten",
+    x = "Plots Sampled / Untersuchte Plots",
+    y = "Cumulative Species / Kumulative Artenzahl",
+    color = "Status",
+    fill = "Status"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    legend.position = "bottom",
+    plot.title = element_text(face = "bold"),
+    panel.grid.minor = element_blank()
+  )
+```
+
+---
+
+## <span class="en">What Do the Curves Tell Us?</span><span class="de">Was sagen uns die Kurven?</span>
+
+<div class="en">
+
+| Observation | Meaning |
+|-------------|---------|
+| Native: Higher asymptote | More native species overall in Austria |
+| Native: Steeper rise | Native species discovered faster |
+| Alien: Flatter curve | Fewer alien species in total pool |
+| Alien: Earlier saturation | Alien species more spatially concentrated |
+| Different CI width | Different spatial variability |
+
+</div>
+
+<div class="de">
+
+| Beobachtung | Bedeutung |
+|-------------|-----------|
+| Heimisch: Hohere Asymptote | Mehr heimische Arten insgesamt in Osterreich |
+| Heimisch: Steilerer Anstieg | Heimische Arten werden schneller entdeckt |
+| Alien: Flachere Kurve | Weniger Alien-Arten im Gesamtpool |
+| Alien: Fruhere Sattigung | Alien-Arten raumlich konzentrierter |
+| Unterschiedliche CI-Breite | Unterschiedliche raumliche Variabilitat |
+
+</div>
+
+---
+
+## <span class="en">Biological Interpretation</span><span class="de">Biologische Interpretation</span>
+
+<div class="en">
+
+| Pattern | Possible Explanation |
+|---------|---------------------|
+| Aliens flatter | Fewer alien species overall |
+| Aliens steeper at start | Aliens concentrated in certain habitats |
+| Aliens flatter at end | Faster saturation due to smaller species pool |
+| Same shape | Similar spatial distribution patterns |
+| Higher variance in aliens | Stronger spatial clustering |
+
+**Discussion:** Which pattern do we expect based on invasion biology?
+
+</div>
+
+<div class="de">
+
+| Muster | Mogliche Erklarung |
+|--------|-------------------|
+| Aliens flacher | Weniger Alien-Arten insgesamt |
+| Aliens steiler am Anfang | Aliens konzentriert in bestimmten Habitaten |
+| Aliens flacher am Ende | Schnellere Sattigung durch kleineren Artenpool |
+| Gleiche Form | Ahnliche raumliche Verteilungsmuster |
+| Hohere Varianz bei Aliens | Starkeres raumliches Clustering |
+
+**Diskussion:** Welches Muster erwarten wir basierend auf der Invasionsbiologie?
+
+</div>
+
+---
+
+## <span class="en">Discussion: Mechanisms</span><span class="de">Diskussion: Mechanismen</span>
+
+<div class="en">
+
+**What could explain the different accumulation patterns?**
+
+1. **Species pool size**
+   - Simply fewer alien than native species
+   - Historical: Natives had millennia to evolve
+
+2. **Spatial distribution**
+   - Aliens concentrated at entry points (cities, traffic routes)
+   - Natives more evenly distributed
+
+3. **Habitat specialization**
+   - Aliens restricted to few habitat types
+   - Natives in all habitats
+
+4. **Invasion stage**
+   - Some aliens only recently established
+   - Not yet fully spread
+
+**Which explanation is most likely? How could we test it?**
+
+</div>
+
+<div class="de">
+
+**Was konnte die unterschiedliche Akkumulation erklaren?**
+
+1. **Artenpool-Grosse**
+   - Einfach weniger Alien- als heimische Arten
+   - Historisch: Heimische hatten Jahrtausende Zeit
+
+2. **Raumliche Verteilung**
+   - Aliens konzentriert an Eintrittspforten (Stadte, Verkehrswege)
+   - Heimische gleichmassiger verteilt
+
+3. **Habitat-Spezialisierung**
+   - Aliens auf wenige Habitattypen beschrankt
+   - Heimische in allen Habitaten
+
+4. **Invasions-Stadium**
+   - Manche Aliens erst seit kurzem etabliert
+   - Noch nicht vollstandig ausgebreitet
+
+**Welche Erklarung ist am wahrscheinlichsten? Wie konnten wir das testen?**
+
+</div>
+
+---
+
+## <span class="en">Limitations</span><span class="de">Limitationen</span>
+
+<div class="en">
+
+**What have we NOT considered?**
+
+| Limitation | Consequence | Possible Solution |
+|-----------|-------------|-------------------|
+| **Temporal dynamics** | Aliens might be more frequent in newer plots | Filter plots by year |
+| **Habitat types** | Some habitats have more aliens | Stratify by habitat |
+| **Detectability** | Some species harder to find | Rarefaction curves |
+| **Sampling bias** | Some regions overrepresented | Spatially stratified sampling |
+| **Plot size** | Different plot sizes | Standardize by area |
+
+**Which limitation is most problematic for our conclusions?**
+
+</div>
+
+<div class="de">
+
+**Was haben wir NICHT berucksichtigt?**
+
+| Limitation | Konsequenz | Mogliche Losung |
+|-----------|-----------|----------------|
+| **Zeitliche Dynamik** | Aliens konnten in neueren Plots haufiger sein | Plots nach Jahr filtern |
+| **Habitattypen** | Manche Habitate haben mehr Aliens | Nach Habitat stratifizieren |
+| **Detektierbarkeit** | Manche Arten schwerer zu finden | Rarefaction curves |
+| **Sampling Bias** | Manche Regionen uberreprasentiert | Raumlich stratifiziertes Sampling |
+| **Plot-Grosse** | Unterschiedliche Plotgrossen | Auf Flache standardisieren |
+
+**Welche Limitation ist am problematischsten fur unsere Schlussfolgerungen?**
+
+</div>
+
+---
+
+## <span class="en">Conservation Implications</span><span class="de">Naturschutz-Implikationen</span>
+
+<div class="en">
+
+**What do our results mean for conservation?**
+
+If aliens show lower diversity:
+- Low threat to native diversity?
+- Or only problematic in certain habitats?
+
+If aliens are spatially clustered:
+- Focused control possible?
+- Early detection at hotspots?
+
+**Caution with conclusions:**
+- Our analysis shows PATTERNS, not PROCESSES
+- Correlation =/= Causation
+- Need experimental data for management decisions
+
+</div>
+
+<div class="de">
+
+**Was bedeuten unsere Ergebnisse fur den Naturschutz?**
+
+Wenn Aliens niedrigere Diversitat zeigen:
+- Geringe Bedrohung fur native Diversitat?
+- Oder nur in bestimmten Habitaten problematisch?
+
+Wenn Aliens raumlich geclustert sind:
+- Fokussierte Bekampfung moglich?
+- Fruherkennung an Hotspots?
+
+**Vorsicht mit Schlussfolgerungen:**
+- Unsere Analyse zeigt MUSTER, nicht PROZESSE
+- Korrelation =/= Kausalitat
+- Brauchen experimentelle Daten fur Management-Entscheidungen
+
+</div>
+
+---
+
+# <span class="en">Summary: What We Learned</span><span class="de">Zusammenfassung: Was wir gelernt haben</span>
+
+<div class="en">
+
+## Key Concepts from Day 2
+
+- **Building accumulation curves** step by step in R
+- **Nearest Neighbour algorithm** for spatial ordering
+- **EVA database** - real Austrian vegetation data
+- **Filtering data** by status (native vs. alien)
+- **Multiple starting points** to account for randomness
+- **Confidence intervals** to visualize uncertainty
+- **Interpretation** of curve patterns
+
+## Main Findings
+
+- Native species: ~2,800 species, steeper accumulation
+- Alien species: ~450 species, earlier saturation
+- Different patterns suggest different spatial distributions
+
+## Take-Home Message
+
+Accumulation curves are powerful tools to understand biodiversity patterns and compare species groups. But always consider:
+- The method matters (random vs. nearest neighbour)
+- Uncertainty is real (use confidence intervals)
+- Patterns suggest hypotheses, not definitive answers
+
+</div>
+
+<div class="de">
+
+## Kernkonzepte von Tag 2
+
+- **Akkumulationskurven bauen** Schritt fur Schritt in R
+- **Nearest Neighbour Algorithmus** fur raumliche Ordnung
+- **EVA-Datenbank** - echte osterreichische Vegetationsdaten
+- **Daten filtern** nach Status (heimisch vs. alien)
+- **Multiple Startpunkte** um Zufalligkeit zu berucksichtigen
+- **Konfidenzintervalle** um Unsicherheit zu visualisieren
+- **Interpretation** von Kurvenmustern
+
+## Hauptergebnisse
+
+- Heimische Arten: ~2.800 Arten, steilere Akkumulation
+- Alien-Arten: ~450 Arten, fruhere Sattigung
+- Unterschiedliche Muster deuten auf unterschiedliche raumliche Verteilungen hin
+
+## Take-Home Message
+
+Akkumulationskurven sind machtige Werkzeuge um Biodiversitatsmuster zu verstehen und Artengruppen zu vergleichen. Aber immer bedenken:
+- Die Methode ist wichtig (zufallig vs. nearest neighbour)
+- Unsicherheit ist real (Konfidenzintervalle nutzen)
+- Muster deuten Hypothesen an, keine definitiven Antworten
+
+</div>
+
+---
+
+# <span class="en">Appendix: R Code Reference</span><span class="de">Anhang: R Code Referenz</span>
+
+<div class="en">
+
+## Essential Functions
+
+| Function | Purpose |
+|----------|---------|
+| `unique()` | Get unique values |
+| `length()` | Count elements |
+| `setdiff()` | Find elements in A but not in B |
+| `cumsum()` | Cumulative sum |
+| `sqrt()` | Square root |
+| `which.min()` | Index of minimum value |
+| `subset()` | Filter data |
+| `ggplot()` | Create visualizations |
+| `geom_line()` | Line plot |
+| `geom_ribbon()` | Confidence band |
+
+## Useful Patterns
+
+```r
+# Cumulative species count
+cumsum(c(10, 5, 3, 2, 1))
+
+# Find new species
+new <- setdiff(plot_species, found_species)
+
+# Calculate distance
+sqrt((x2 - x1)^2 + (y2 - y1)^2)
+
+# Filter by condition
+data[data$status == "native", ]
+```
+
+</div>
+
+<div class="de">
+
+## Wichtige Funktionen
+
+| Funktion | Zweck |
+|----------|-------|
+| `unique()` | Einzigartige Werte |
+| `length()` | Elemente zahlen |
+| `setdiff()` | Elemente in A aber nicht in B |
+| `cumsum()` | Kumulative Summe |
+| `sqrt()` | Quadratwurzel |
+| `which.min()` | Index des Minimums |
+| `subset()` | Daten filtern |
+| `ggplot()` | Visualisierungen |
+| `geom_line()` | Linienplot |
+| `geom_ribbon()` | Konfidenzband |
+
+## Nutzliche Muster
+
+```r
+# Kumulative Artenzahl
+cumsum(c(10, 5, 3, 2, 1))
+
+# Neue Arten finden
+neue <- setdiff(plot_arten, gefundene_arten)
+
+# Distanz berechnen
+sqrt((x2 - x1)^2 + (y2 - y1)^2)
+
+# Nach Bedingung filtern
+daten[daten$status == "native", ]
+```
+
+</div>

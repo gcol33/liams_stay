@@ -1,0 +1,1486 @@
+---
+title: '<span class="en">Code Exercises & Solutions</span><span class="de">Code-Ubungen & Losungen</span>'
+subtitle: '<span class="en">Species Accumulation Curves Workshop</span><span class="de">Artenakkumulationskurven Workshop</span>'
+author: '<span class="en">Copy-paste ready code</span><span class="de">Code zum Kopieren</span>'
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: flatly
+    self_contained: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE, message = FALSE, warning = FALSE)
+```
+
+```{css, echo=FALSE}
+/* ========== PLAYFUL WORKSHOP THEME ========== */
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.7;
+  background-color: #fafffe;
+}
+
+h1 {
+  color: #2E7D32 !important;
+  border-bottom: 3px solid #4CAF50;
+  padding-bottom: 10px;
+}
+
+h2 {
+  color: #388E3C !important;
+  margin-top: 2em;
+}
+
+h3 {
+  color: #43A047 !important;
+}
+
+h4 {
+  color: #66BB6A !important;
+  border-left: 4px solid #4CAF50;
+  padding-left: 10px;
+}
+
+pre {
+  background-color: #f5f5f5 !important;
+  border-left: 4px solid #4CAF50 !important;
+  padding: 15px;
+  border-radius: 8px;
+  overflow-x: auto;
+}
+
+code {
+  background-color: #E8F5E9;
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: #2E7D32;
+}
+
+blockquote {
+  border-left: 4px solid #FF9800;
+  background-color: #FFF8E1;
+  padding: 15px 20px;
+  margin: 1em 0;
+  border-radius: 0 8px 8px 0;
+}
+
+hr {
+  border: none;
+  height: 3px;
+  background: linear-gradient(to right, #4CAF50, #81C784, #C8E6C9, #81C784, #4CAF50);
+  margin: 2em 0;
+  border-radius: 2px;
+}
+
+.tocify {
+  border: none !important;
+  border-radius: 12px !important;
+  background-color: #f1f8e9 !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.tocify-item.active, .tocify-item.active:hover {
+  background-color: #4CAF50 !important;
+  color: white !important;
+}
+
+/* Solution styling */
+details {
+  background-color: #E8F5E9;
+  border: 1px solid #4CAF50;
+  border-radius: 8px;
+  padding: 10px 15px;
+  margin: 1em 0;
+}
+
+details summary {
+  cursor: pointer;
+  font-weight: bold;
+  color: #2E7D32;
+  padding: 5px;
+}
+
+details summary:hover {
+  color: #1B5E20;
+}
+
+details[open] summary {
+  border-bottom: 1px solid #4CAF50;
+  margin-bottom: 10px;
+}
+
+/* Exercise box */
+.exercise-box {
+  background-color: #FFF3E0;
+  border: 2px solid #FF9800;
+  border-radius: 8px;
+  padding: 15px;
+  margin: 1em 0;
+}
+
+/* ========== LANGUAGE TOGGLE ========== */
+
+.lang-toggle {
+  position: fixed;
+  top: 10px;
+  right: 20px;
+  z-index: 9999;
+  background: linear-gradient(135deg, #2E7D32, #4CAF50);
+  padding: 8px 12px;
+  border-radius: 25px;
+  box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3);
+}
+
+.lang-toggle button {
+  background: transparent;
+  border: none;
+  color: #fff;
+  padding: 6px 14px;
+  cursor: pointer;
+  font-weight: bold;
+  border-radius: 20px;
+  transition: all 0.3s;
+  font-size: 14px;
+}
+
+.lang-toggle button.active {
+  background: white;
+  color: #2E7D32;
+}
+
+.lang-toggle button:hover:not(.active) {
+  background: rgba(255,255,255,0.2);
+}
+
+.de { display: none; }
+.en { display: inline; }
+
+body.lang-de .de { display: inline; }
+body.lang-de .en { display: none; }
+
+div.de, p.de, li.de, h1.de, h2.de, h3.de, h4.de, section.de { display: none; }
+div.en, p.en, li.en, h1.en, h2.en, h3.en, h4.en, section.en { display: block; }
+
+body.lang-de div.de, body.lang-de p.de, body.lang-de li.de,
+body.lang-de h1.de, body.lang-de h2.de, body.lang-de h3.de,
+body.lang-de h4.de, body.lang-de section.de { display: block; }
+
+body.lang-de div.en, body.lang-de p.en, body.lang-de li.en,
+body.lang-de h1.en, body.lang-de h2.en, body.lang-de h3.en,
+body.lang-de h4.en, body.lang-de section.en { display: none; }
+
+body.lang-de #TOC .en { display: none; }
+body.lang-de #TOC .de { display: inline; }
+#TOC .de { display: none; }
+#TOC .en { display: inline; }
+
+@media print {
+  .tocify, .lang-toggle { display: none; }
+}
+```
+
+```{js, echo=FALSE}
+document.addEventListener('DOMContentLoaded', function() {
+  var toggle = document.createElement('div');
+  toggle.className = 'lang-toggle';
+  toggle.innerHTML = '<button id="btn-en" class="active">EN</button><button id="btn-de">DE</button>';
+  document.body.appendChild(toggle);
+
+  var savedLang = localStorage.getItem('workshop-lang');
+  var browserLang = navigator.language.substring(0, 2);
+  var defaultLang = savedLang || (browserLang === 'de' ? 'de' : 'en');
+
+  if (defaultLang === 'de') {
+    setLanguage('de');
+  }
+
+  document.getElementById('btn-en').addEventListener('click', function() {
+    setLanguage('en');
+  });
+
+  document.getElementById('btn-de').addEventListener('click', function() {
+    setLanguage('de');
+  });
+
+  function setLanguage(lang) {
+    document.body.classList.remove('lang-en', 'lang-de');
+    document.body.classList.add('lang-' + lang);
+    document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+    document.getElementById('btn-de').classList.toggle('active', lang === 'de');
+    localStorage.setItem('workshop-lang', lang);
+  }
+});
+```
+
+---
+
+# <span class="en">Day 1: R Basics</span><span class="de">Tag 1: R Grundlagen</span>
+
+## <span class="en">Exercise 1: Variables and Vectors</span><span class="de">Ubung 1: Variablen und Vektoren</span>
+
+<div class="en">
+
+**Task:** Create variables and vectors, then perform basic operations.
+
+</div>
+
+<div class="de">
+
+**Aufgabe:** Erstelle Variablen und Vektoren, dann fuhre grundlegende Operationen aus.
+
+</div>
+
+```{r}
+# Exercise 1: Variables and Vectors
+# Ubung 1: Variablen und Vektoren
+
+# 1. Create a variable with your favorite number
+# 1. Erstelle eine Variable mit deiner Lieblingszahl
+my_number <- ____
+
+# 2. Create a vector with 5 numbers
+# 2. Erstelle einen Vektor mit 5 Zahlen
+my_vector <- c(____, ____, ____, ____, ____)
+
+# 3. Calculate the sum of the vector
+# 3. Berechne die Summe des Vektors
+total <- ____(my_vector)
+print(total)
+
+# 4. Calculate the mean
+# 4. Berechne den Mittelwert
+average <- ____(my_vector)
+print(average)
+
+# 5. Create a vector of species names
+# 5. Erstelle einen Vektor mit Artnamen
+species <- c("____", "____", "____")
+
+# 6. How many species?
+# 6. Wie viele Arten?
+n_species <- ____(species)
+print(n_species)
+```
+
+<details>
+<summary><span class="en">Show Solution</span><span class="de">Losung anzeigen</span></summary>
+
+```{r}
+# Solution / Losung
+
+# 1. Create a variable with your favorite number
+my_number <- 42
+
+# 2. Create a vector with 5 numbers
+my_vector <- c(10, 20, 30, 40, 50)
+
+# 3. Calculate the sum of the vector
+total <- sum(my_vector)
+print(total)  # 150
+
+# 4. Calculate the mean
+average <- mean(my_vector)
+print(average)  # 30
+
+# 5. Create a vector of species names
+species <- c("Oak", "Beech", "Pine")
+
+# 6. How many species?
+n_species <- length(species)
+print(n_species)  # 3
+```
+
+</details>
+
+---
+
+## <span class="en">Exercise 2: Working with Data</span><span class="de">Ubung 2: Mit Daten arbeiten</span>
+
+<div class="en">
+
+**Task:** Load data and explore its structure.
+
+</div>
+
+<div class="de">
+
+**Aufgabe:** Lade Daten und erkunde ihre Struktur.
+
+</div>
+
+```{r}
+# Exercise 2: Working with Data
+# Ubung 2: Mit Daten arbeiten
+
+# Create example data / Beispieldaten erstellen
+plants <- data.frame(
+  species = c("Quercus robur", "Fagus sylvatica", "Pinus sylvestris",
+              "Betula pendula", "Acer pseudoplatanus"),
+  height = c(25, 30, 20, 18, 22),
+  native = c(TRUE, TRUE, TRUE, TRUE, TRUE)
+)
+
+# 1. View first rows / Erste Zeilen anzeigen
+____(plants)
+
+# 2. Check structure / Struktur prufen
+____(plants)
+
+# 3. How many rows? / Wie viele Zeilen?
+____(plants)
+
+# 4. Column names / Spaltennamen
+____(plants)
+
+# 5. Access the height column / Auf Hohe-Spalte zugreifen
+plants$____
+
+# 6. Mean height / Mittlere Hohe
+mean(plants$____)
+
+# 7. Tallest tree / Hochster Baum
+max(plants$____)
+```
+
+<details>
+<summary><span class="en">Show Solution</span><span class="de">Losung anzeigen</span></summary>
+
+```{r}
+# Solution / Losung
+
+plants <- data.frame(
+  species = c("Quercus robur", "Fagus sylvatica", "Pinus sylvestris",
+              "Betula pendula", "Acer pseudoplatanus"),
+  height = c(25, 30, 20, 18, 22),
+  native = c(TRUE, TRUE, TRUE, TRUE, TRUE)
+)
+
+# 1. View first rows
+head(plants)
+
+# 2. Check structure
+str(plants)
+
+# 3. How many rows?
+nrow(plants)  # 5
+
+# 4. Column names
+names(plants)  # "species" "height" "native"
+
+# 5. Access the height column
+plants$height  # 25 30 20 18 22
+
+# 6. Mean height
+mean(plants$height)  # 23
+
+# 7. Tallest tree
+max(plants$height)  # 30
+```
+
+</details>
+
+---
+
+## <span class="en">Exercise 3: Unique Species</span><span class="de">Ubung 3: Einzigartige Arten</span>
+
+<div class="en">
+
+**Task:** Practice with `unique()` - the key function for accumulation curves!
+
+</div>
+
+<div class="de">
+
+**Aufgabe:** Ube mit `unique()` - die Schlusselfunktion fur Akkumulationskurven!
+
+</div>
+
+```{r}
+# Exercise 3: Unique Species
+# Ubung 3: Einzigartige Arten
+
+# Species found in different plots
+# Arten in verschiedenen Plots gefunden
+plot1 <- c("Oak", "Beech", "Pine")
+plot2 <- c("Beech", "Maple", "Oak")
+plot3 <- c("Pine", "Birch", "Oak")
+
+# 1. Combine all species / Alle Arten kombinieren
+all_species <- c(____, ____, ____)
+
+# 2. How many total observations? / Wie viele Beobachtungen?
+length(____)
+
+# 3. How many UNIQUE species? / Wie viele EINZIGARTIGE Arten?
+unique_species <- ____(____)
+length(____)
+
+# 4. What are the unique species?
+# 4. Welche sind die einzigartigen Arten?
+print(____)
+
+# 5. Cumulative count: After plot 1
+# 5. Kumulativ: Nach Plot 1
+after_plot1 <- length(unique(____))
+
+# 6. After plots 1 and 2
+# 6. Nach Plot 1 und 2
+after_plot2 <- length(unique(c(____, ____)))
+
+# 7. After all plots
+# 7. Nach allen Plots
+after_plot3 <- length(unique(c(____, ____, ____)))
+
+print(c(after_plot1, after_plot2, after_plot3))
+```
+
+<details>
+<summary><span class="en">Show Solution</span><span class="de">Losung anzeigen</span></summary>
+
+```{r}
+# Solution / Losung
+
+plot1 <- c("Oak", "Beech", "Pine")
+plot2 <- c("Beech", "Maple", "Oak")
+plot3 <- c("Pine", "Birch", "Oak")
+
+# 1. Combine all species
+all_species <- c(plot1, plot2, plot3)
+
+# 2. How many total observations?
+length(all_species)  # 9
+
+# 3. How many UNIQUE species?
+unique_species <- unique(all_species)
+length(unique_species)  # 5
+
+# 4. What are the unique species?
+print(unique_species)  # "Oak" "Beech" "Pine" "Maple" "Birch"
+
+# 5. Cumulative count: After plot 1
+after_plot1 <- length(unique(plot1))  # 3
+
+# 6. After plots 1 and 2
+after_plot2 <- length(unique(c(plot1, plot2)))  # 4
+
+# 7. After all plots
+after_plot3 <- length(unique(c(plot1, plot2, plot3)))  # 5
+
+print(c(after_plot1, after_plot2, after_plot3))  # 3 4 5
+```
+
+</details>
+
+---
+
+# <span class="en">Day 2: Loops and Filtering</span><span class="de">Tag 2: Schleifen und Filtern</span>
+
+## <span class="en">Exercise 4: For Loops</span><span class="de">Ubung 4: For-Schleifen</span>
+
+<div class="en">
+
+**Task:** Practice writing for loops - essential for building accumulation curves!
+
+</div>
+
+<div class="de">
+
+**Aufgabe:** Ube das Schreiben von for-Schleifen - essentiell fur Akkumulationskurven!
+
+</div>
+
+```{r}
+# Exercise 4: For Loops
+# Ubung 4: For-Schleifen
+
+# 1. Print numbers 1 to 5
+# 1. Drucke Zahlen 1 bis 5
+for (i in ____) {
+  print(____)
+}
+
+# 2. Calculate sum of 1 to 100
+# 2. Berechne Summe von 1 bis 100
+total <- 0
+for (i in 1:100) {
+  total <- total + ____
+}
+print(total)  # Should be 5050
+
+# 3. Build a vector of squares
+# 3. Baue einen Vektor mit Quadratzahlen
+squares <- c()
+for (i in 1:10) {
+  squares[i] <- ____
+}
+print(squares)
+
+# 4. Iterate over species names
+# 4. Iteriere uber Artnamen
+species <- c("Oak", "Beech", "Pine", "Maple")
+for (sp in ____) {
+  print(paste("Found:", ____))
+}
+
+# 5. Count items matching a condition
+# 5. Zahle Elemente die eine Bedingung erfullen
+values <- c(3, 7, 2, 9, 4, 6, 8, 1)
+count_above_5 <- 0
+for (v in values) {
+  if (v ____ 5) {
+    count_above_5 <- count_above_5 + ____
+  }
+}
+print(count_above_5)  # Should be 4
+```
+
+<details>
+<summary><span class="en">Show Solution</span><span class="de">Losung anzeigen</span></summary>
+
+```{r}
+# Solution / Losung
+
+# 1. Print numbers 1 to 5
+for (i in 1:5) {
+  print(i)
+}
+
+# 2. Calculate sum of 1 to 100
+total <- 0
+for (i in 1:100) {
+  total <- total + i
+}
+print(total)  # 5050
+
+# 3. Build a vector of squares
+squares <- c()
+for (i in 1:10) {
+  squares[i] <- i^2
+}
+print(squares)  # 1 4 9 16 25 36 49 64 81 100
+
+# 4. Iterate over species names
+species <- c("Oak", "Beech", "Pine", "Maple")
+for (sp in species) {
+  print(paste("Found:", sp))
+}
+
+# 5. Count items matching a condition
+values <- c(3, 7, 2, 9, 4, 6, 8, 1)
+count_above_5 <- 0
+for (v in values) {
+  if (v > 5) {
+    count_above_5 <- count_above_5 + 1
+  }
+}
+print(count_above_5)  # 4
+```
+
+</details>
+
+---
+
+## <span class="en">Exercise 5: Filtering Data</span><span class="de">Ubung 5: Daten filtern</span>
+
+<div class="en">
+
+**Task:** Filter data by conditions - crucial for separating native and alien species!
+
+</div>
+
+<div class="de">
+
+**Aufgabe:** Filtere Daten nach Bedingungen - wichtig um heimische und Alien-Arten zu trennen!
+
+</div>
+
+```{r}
+# Exercise 5: Filtering Data
+# Ubung 5: Daten filtern
+
+# Create example data / Beispieldaten erstellen
+flora <- data.frame(
+  species = c("Fagus sylvatica", "Impatiens glandulifera",
+              "Quercus robur", "Solidago canadensis",
+              "Pinus sylvestris", "Reynoutria japonica"),
+  status = c("native", "alien", "native", "alien", "native", "alien"),
+  n_plots = c(450, 120, 380, 95, 200, 45),
+  cover = c(45, 15, 35, 20, 30, 25)
+)
+
+# 1. Filter only native species
+# 1. Nur heimische Arten filtern
+native_only <- flora[flora$status == ____, ]
+print(native_only)
+
+# 2. Filter only alien species
+# 2. Nur Alien-Arten filtern
+alien_only <- flora[flora$____ == "alien", ]
+print(alien_only)
+
+# 3. Species with more than 100 plots
+# 3. Arten mit mehr als 100 Plots
+common <- flora[flora$n_plots ____ 100, ]
+print(common)
+
+# 4. Native AND common (>200 plots)
+# 4. Heimisch UND haufig (>200 Plots)
+native_common <- flora[flora$status == "native" ____ flora$n_plots > 200, ]
+print(native_common)
+
+# 5. Using subset() function
+# 5. Mit subset() Funktion
+rare_aliens <- subset(flora, status == ____ & n_plots ____ 100)
+print(rare_aliens)
+
+# 6. Count species per status
+# 6. Zahle Arten pro Status
+n_native <- nrow(flora[flora$status == ____, ])
+n_alien <- nrow(flora[flora$status == ____, ])
+print(paste("Native:", n_native, "Alien:", n_alien))
+```
+
+<details>
+<summary><span class="en">Show Solution</span><span class="de">Losung anzeigen</span></summary>
+
+```{r}
+# Solution / Losung
+
+flora <- data.frame(
+  species = c("Fagus sylvatica", "Impatiens glandulifera",
+              "Quercus robur", "Solidago canadensis",
+              "Pinus sylvestris", "Reynoutria japonica"),
+  status = c("native", "alien", "native", "alien", "native", "alien"),
+  n_plots = c(450, 120, 380, 95, 200, 45),
+  cover = c(45, 15, 35, 20, 30, 25)
+)
+
+# 1. Filter only native species
+native_only <- flora[flora$status == "native", ]
+
+# 2. Filter only alien species
+alien_only <- flora[flora$status == "alien", ]
+
+# 3. Species with more than 100 plots
+common <- flora[flora$n_plots > 100, ]
+
+# 4. Native AND common (>200 plots)
+native_common <- flora[flora$status == "native" & flora$n_plots > 200, ]
+
+# 5. Using subset() function
+rare_aliens <- subset(flora, status == "alien" & n_plots < 100)
+
+# 6. Count species per status
+n_native <- nrow(flora[flora$status == "native", ])  # 3
+n_alien <- nrow(flora[flora$status == "alien", ])    # 3
+print(paste("Native:", n_native, "Alien:", n_alien))
+```
+
+</details>
+
+---
+
+## <span class="en">Exercise 6: Distance Calculation</span><span class="de">Ubung 6: Distanzberechnung</span>
+
+<div class="en">
+
+**Task:** Calculate Euclidean distance - needed for the nearest neighbour algorithm!
+
+</div>
+
+<div class="de">
+
+**Aufgabe:** Berechne euklidische Distanz - benotigt fur den Nearest-Neighbour-Algorithmus!
+
+</div>
+
+```{r}
+# Exercise 6: Distance Calculation
+# Ubung 6: Distanzberechnung
+
+# Formula: d = sqrt((x2-x1)^2 + (y2-y1)^2)
+# Formel: d = sqrt((x2-x1)^2 + (y2-y1)^2)
+
+# 1. Distance between two points
+# 1. Distanz zwischen zwei Punkten
+point_a <- c(x = 0, y = 0)
+point_b <- c(x = 3, y = 4)
+
+distance <- sqrt((point_b["x"] - point_a["x"])^____ +
+                 (point_b["y"] - point_a["y"])^____)
+print(distance)  # Should be 5
+
+# 2. Which plot is nearest?
+# 2. Welcher Plot ist am nachsten?
+current <- c(x = 100, y = 100)
+
+candidates <- data.frame(
+  plot_id = c("A", "B", "C", "D"),
+  x = c(110, 95, 150, 102),
+  y = c(105, 90, 120, 98)
+)
+
+# Calculate distance to each candidate
+# Distanz zu jedem Kandidaten berechnen
+candidates$distance <- sqrt(
+  (candidates$x - current["x"])^2 +
+  (candidates$y - current["y"])^2
+)
+
+print(candidates)
+
+# 3. Find the nearest plot
+# 3. Finde den nachsten Plot
+nearest_idx <- which.____(candidates$distance)
+nearest_plot <- candidates$plot_id[____]
+print(paste("Nearest plot:", nearest_plot))
+
+# 4. Find the nearest plot (complete)
+# 4. Finde den nachsten Plot (komplett)
+nearest <- candidates[which.min(candidates$____), ]
+print(nearest)
+```
+
+<details>
+<summary><span class="en">Show Solution</span><span class="de">Losung anzeigen</span></summary>
+
+```{r}
+# Solution / Losung
+
+# 1. Distance between two points
+point_a <- c(x = 0, y = 0)
+point_b <- c(x = 3, y = 4)
+
+distance <- sqrt((point_b["x"] - point_a["x"])^2 +
+                 (point_b["y"] - point_a["y"])^2)
+print(distance)  # 5
+
+# 2. Which plot is nearest?
+current <- c(x = 100, y = 100)
+
+candidates <- data.frame(
+  plot_id = c("A", "B", "C", "D"),
+  x = c(110, 95, 150, 102),
+  y = c(105, 90, 120, 98)
+)
+
+candidates$distance <- sqrt(
+  (candidates$x - current["x"])^2 +
+  (candidates$y - current["y"])^2
+)
+
+print(candidates)
+#   plot_id   x   y  distance
+# 1       A 110 105 11.180340
+# 2       B  95  90 11.180340
+# 3       C 150 120 53.851648
+# 4       D 102  98  2.828427
+
+# 3. Find the nearest plot
+nearest_idx <- which.min(candidates$distance)
+nearest_plot <- candidates$plot_id[nearest_idx]
+print(paste("Nearest plot:", nearest_plot))  # "D"
+
+# 4. Find the nearest plot (complete row)
+nearest <- candidates[which.min(candidates$distance), ]
+print(nearest)  # D at (102, 98) with distance 2.83
+```
+
+</details>
+
+---
+
+## <span class="en">Exercise 7: Cumulative Sums</span><span class="de">Ubung 7: Kumulative Summen</span>
+
+<div class="en">
+
+**Task:** Practice cumulative calculations - the core of accumulation curves!
+
+</div>
+
+<div class="de">
+
+**Aufgabe:** Ube kumulative Berechnungen - der Kern von Akkumulationskurven!
+
+</div>
+
+```{r}
+# Exercise 7: Cumulative Sums
+# Ubung 7: Kumulative Summen
+
+# New species found per plot
+# Neue Arten pro Plot gefunden
+new_species <- c(15, 8, 5, 3, 2, 2, 1, 1, 0, 1)
+
+# 1. Using cumsum() - the easy way!
+# 1. Mit cumsum() - der einfache Weg!
+cumulative <- ____(new_species)
+print(cumulative)
+
+# 2. Manual loop - understand how it works
+# 2. Manuelle Schleife - verstehe wie es funktioniert
+cumulative_manual <- numeric(length(new_species))
+running_total <- 0
+
+for (i in 1:length(new_species)) {
+  running_total <- running_total + new_species[____]
+  cumulative_manual[i] <- ____
+}
+print(cumulative_manual)
+
+# 3. At which plot did we reach 30 species?
+# 3. Bei welchem Plot haben wir 30 Arten erreicht?
+plot_at_30 <- which(cumulative >= ____)[1]
+print(paste("Reached 30 species at plot:", plot_at_30))
+
+# 4. Total species after 5 plots?
+# 4. Gesamtarten nach 5 Plots?
+species_after_5 <- cumulative[____]
+print(paste("Species after 5 plots:", species_after_5))
+
+# 5. Species discovered in last 5 plots?
+# 5. Arten entdeckt in den letzten 5 Plots?
+last_5_new <- sum(new_species[____:____])
+print(paste("New species in last 5 plots:", last_5_new))
+```
+
+<details>
+<summary><span class="en">Show Solution</span><span class="de">Losung anzeigen</span></summary>
+
+```{r}
+# Solution / Losung
+
+new_species <- c(15, 8, 5, 3, 2, 2, 1, 1, 0, 1)
+
+# 1. Using cumsum()
+cumulative <- cumsum(new_species)
+print(cumulative)  # 15 23 28 31 33 35 36 37 37 38
+
+# 2. Manual loop
+cumulative_manual <- numeric(length(new_species))
+running_total <- 0
+
+for (i in 1:length(new_species)) {
+  running_total <- running_total + new_species[i]
+  cumulative_manual[i] <- running_total
+}
+print(cumulative_manual)  # Same as above
+
+# 3. At which plot did we reach 30 species?
+plot_at_30 <- which(cumulative >= 30)[1]
+print(paste("Reached 30 species at plot:", plot_at_30))  # 4
+
+# 4. Total species after 5 plots?
+species_after_5 <- cumulative[5]
+print(paste("Species after 5 plots:", species_after_5))  # 33
+
+# 5. Species discovered in last 5 plots?
+last_5_new <- sum(new_species[6:10])
+print(paste("New species in last 5 plots:", last_5_new))  # 5
+```
+
+</details>
+
+---
+
+## <span class="en">Exercise 8: Building an Accumulation Curve</span><span class="de">Ubung 8: Eine Akkumulationskurve bauen</span>
+
+<div class="en">
+
+**Task:** Combine everything to build a complete accumulation curve!
+
+</div>
+
+<div class="de">
+
+**Aufgabe:** Kombiniere alles um eine komplette Akkumulationskurve zu bauen!
+
+</div>
+
+```{r}
+# Exercise 8: Building an Accumulation Curve
+# Ubung 8: Eine Akkumulationskurve bauen
+
+# Species lists for 5 plots
+# Artenlisten fur 5 Plots
+plot_species <- list(
+  c("Oak", "Beech", "Pine"),
+  c("Beech", "Maple", "Birch", "Pine"),
+  c("Oak", "Linden", "Beech"),
+  c("Spruce", "Pine", "Oak"),
+  c("Maple", "Ash", "Beech", "Elm")
+)
+
+# Initialize tracking variables
+# Initialisiere Tracking-Variablen
+found_species <- c()
+cumulative_count <- numeric(5)
+
+# Loop through each plot
+# Schleife durch jeden Plot
+for (i in 1:5) {
+  # Get species in current plot
+  # Arten im aktuellen Plot
+  current_species <- plot_species[[____]]
+
+  # Find NEW species (not seen before)
+  # Finde NEUE Arten (noch nicht gesehen)
+  new_species <- setdiff(____, ____)
+
+  # Add to found species
+  # Zu gefundenen Arten hinzufugen
+  found_species <- c(found_species, ____)
+
+  # Record cumulative count
+  # Kumulative Anzahl speichern
+  cumulative_count[i] <- length(____)
+
+  # Print progress (optional)
+  cat("Plot", i, "- New:", length(new_species),
+      "- Total:", cumulative_count[i], "\n")
+}
+
+# Final result
+# Endergebnis
+print(cumulative_count)
+print(paste("Total unique species:", length(found_species)))
+```
+
+<details>
+<summary><span class="en">Show Solution</span><span class="de">Losung anzeigen</span></summary>
+
+```{r}
+# Solution / Losung
+
+plot_species <- list(
+  c("Oak", "Beech", "Pine"),
+  c("Beech", "Maple", "Birch", "Pine"),
+  c("Oak", "Linden", "Beech"),
+  c("Spruce", "Pine", "Oak"),
+  c("Maple", "Ash", "Beech", "Elm")
+)
+
+found_species <- c()
+cumulative_count <- numeric(5)
+
+for (i in 1:5) {
+  current_species <- plot_species[[i]]
+  new_species <- setdiff(current_species, found_species)
+  found_species <- c(found_species, new_species)
+  cumulative_count[i] <- length(found_species)
+
+  cat("Plot", i, "- New:", length(new_species),
+      "- Total:", cumulative_count[i], "\n")
+}
+
+# Output:
+# Plot 1 - New: 3 - Total: 3
+# Plot 2 - New: 2 - Total: 5  (Maple, Birch are new)
+# Plot 3 - New: 1 - Total: 6  (Linden is new)
+# Plot 4 - New: 1 - Total: 7  (Spruce is new)
+# Plot 5 - New: 2 - Total: 9  (Ash, Elm are new)
+
+print(cumulative_count)  # 3 5 6 7 9
+print(paste("Total unique species:", length(found_species)))  # 9
+```
+
+</details>
+
+---
+
+# <span class="en">Day 2: Functions and Plotting</span><span class="de">Tag 2: Funktionen und Plotting</span>
+
+## <span class="en">Exercise 9: Writing Functions</span><span class="de">Ubung 9: Funktionen schreiben</span>
+
+<div class="en">
+
+**Task:** Create reusable functions for your analysis!
+
+</div>
+
+<div class="de">
+
+**Aufgabe:** Erstelle wiederverwendbare Funktionen fur deine Analyse!
+
+</div>
+
+```{r}
+# Exercise 9: Writing Functions
+# Ubung 9: Funktionen schreiben
+
+# 1. Simple function: Calculate area of rectangle
+# 1. Einfache Funktion: Flache eines Rechtecks
+rectangle_area <- function(length, width) {
+  area <- ____ * ____
+  return(____)
+}
+
+# Test it / Teste sie
+rectangle_area(5, 10)  # Should be 50
+
+# 2. Function with default argument
+# 2. Funktion mit Default-Argument
+greet <- function(name, language = "en") {
+  if (language == "en") {
+    return(paste("Hello", ____))
+  } else if (language == "de") {
+    return(paste("Hallo", ____))
+  }
+}
+
+greet("Anna")              # "Hello Anna"
+greet("Anna", "de")        # "Hallo Anna"
+
+# 3. Function returning multiple values
+# 3. Funktion die mehrere Werte zuruckgibt
+summarize_vector <- function(x) {
+  return(list(
+    mean = ____(x),
+    min = ____(x),
+    max = ____(x),
+    n = ____(x)
+  ))
+}
+
+result <- summarize_vector(c(10, 20, 30, 40, 50))
+print(result$mean)  # 30
+
+# 4. Function for species richness
+# 4. Funktion fur Artenreichtum
+count_unique <- function(species_vector) {
+  unique_species <- ____(____)
+  return(length(____))
+}
+
+count_unique(c("Oak", "Beech", "Oak", "Pine"))  # Should be 3
+```
+
+<details>
+<summary><span class="en">Show Solution</span><span class="de">Losung anzeigen</span></summary>
+
+```{r}
+# Solution / Losung
+
+# 1. Simple function
+rectangle_area <- function(length, width) {
+  area <- length * width
+  return(area)
+}
+rectangle_area(5, 10)  # 50
+
+# 2. Function with default argument
+greet <- function(name, language = "en") {
+  if (language == "en") {
+    return(paste("Hello", name))
+  } else if (language == "de") {
+    return(paste("Hallo", name))
+  }
+}
+greet("Anna")        # "Hello Anna"
+greet("Anna", "de")  # "Hallo Anna"
+
+# 3. Function returning multiple values
+summarize_vector <- function(x) {
+  return(list(
+    mean = mean(x),
+    min = min(x),
+    max = max(x),
+    n = length(x)
+  ))
+}
+result <- summarize_vector(c(10, 20, 30, 40, 50))
+print(result$mean)  # 30
+
+# 4. Function for species richness
+count_unique <- function(species_vector) {
+  unique_species <- unique(species_vector)
+  return(length(unique_species))
+}
+count_unique(c("Oak", "Beech", "Oak", "Pine"))  # 3
+```
+
+</details>
+
+---
+
+## <span class="en">Exercise 10: Plotting with ggplot2</span><span class="de">Ubung 10: Plotten mit ggplot2</span>
+
+<div class="en">
+
+**Task:** Create publication-ready plots of accumulation curves!
+
+</div>
+
+<div class="de">
+
+**Aufgabe:** Erstelle publikationsreife Plots von Akkumulationskurven!
+
+</div>
+
+```{r}
+# Exercise 10: Plotting with ggplot2
+# Ubung 10: Plotten mit ggplot2
+
+library(ggplot2)
+
+# Create example data / Beispieldaten erstellen
+curve_data <- data.frame(
+  plots = 1:20,
+  species = cumsum(c(15, 8, 5, 4, 3, 3, 2, 2, 2, 1,
+                     1, 1, 1, 1, 0, 1, 0, 0, 1, 0))
+)
+
+# 1. Basic line plot
+# 1. Einfacher Linienplot
+ggplot(curve_data, aes(x = ____, y = ____)) +
+  geom_line()
+
+# 2. Add points and styling
+# 2. Punkte und Styling hinzufugen
+ggplot(curve_data, aes(x = plots, y = species)) +
+  geom_line(color = "____", linewidth = ____) +
+  geom_point(color = "____", size = ____)
+
+# 3. Add labels and theme
+# 3. Labels und Theme hinzufugen
+ggplot(curve_data, aes(x = plots, y = species)) +
+  geom_line(color = "darkgreen", linewidth = 1.5) +
+  labs(
+    title = "____",
+    x = "____",
+    y = "____"
+  ) +
+  theme_minimal()
+
+# 4. Two groups comparison
+# 4. Zwei Gruppen vergleichen
+comparison_data <- data.frame(
+  plots = rep(1:20, 2),
+  species = c(
+    cumsum(c(20, 10, 6, 4, 3, 2, 2, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0)),
+    cumsum(c(8, 5, 3, 2, 2, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0))
+  ),
+  status = rep(c("Native", "Alien"), each = 20)
+)
+
+ggplot(comparison_data, aes(x = plots, y = species, color = ____)) +
+  geom_line(linewidth = 1.5) +
+  scale_color_manual(values = c("Native" = "____", "Alien" = "____")) +
+  labs(
+    title = "Species Accumulation: Native vs. Alien",
+    x = "Number of Plots",
+    y = "Cumulative Species",
+    color = "Status"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "____")
+```
+
+<details>
+<summary><span class="en">Show Solution</span><span class="de">Losung anzeigen</span></summary>
+
+```{r}
+# Solution / Losung
+
+library(ggplot2)
+
+curve_data <- data.frame(
+  plots = 1:20,
+  species = cumsum(c(15, 8, 5, 4, 3, 3, 2, 2, 2, 1,
+                     1, 1, 1, 1, 0, 1, 0, 0, 1, 0))
+)
+
+# 1. Basic line plot
+ggplot(curve_data, aes(x = plots, y = species)) +
+  geom_line()
+
+# 2. Add points and styling
+ggplot(curve_data, aes(x = plots, y = species)) +
+  geom_line(color = "darkgreen", linewidth = 1.5) +
+  geom_point(color = "darkgreen", size = 2)
+
+# 3. Add labels and theme
+ggplot(curve_data, aes(x = plots, y = species)) +
+  geom_line(color = "darkgreen", linewidth = 1.5) +
+  labs(
+    title = "Species Accumulation Curve",
+    x = "Number of Plots Sampled",
+    y = "Cumulative Species Count"
+  ) +
+  theme_minimal()
+
+# 4. Two groups comparison
+comparison_data <- data.frame(
+  plots = rep(1:20, 2),
+  species = c(
+    cumsum(c(20, 10, 6, 4, 3, 2, 2, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0)),
+    cumsum(c(8, 5, 3, 2, 2, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0))
+  ),
+  status = rep(c("Native", "Alien"), each = 20)
+)
+
+ggplot(comparison_data, aes(x = plots, y = species, color = status)) +
+  geom_line(linewidth = 1.5) +
+  scale_color_manual(values = c("Native" = "darkgreen", "Alien" = "red")) +
+  labs(
+    title = "Species Accumulation: Native vs. Alien",
+    x = "Number of Plots",
+    y = "Cumulative Species",
+    color = "Status"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+```
+
+</details>
+
+---
+
+## <span class="en">Exercise 11: Confidence Intervals</span><span class="de">Ubung 11: Konfidenzintervalle</span>
+
+<div class="en">
+
+**Task:** Add confidence bands to show uncertainty!
+
+</div>
+
+<div class="de">
+
+**Aufgabe:** Fuge Konfidenzbander hinzu um Unsicherheit zu zeigen!
+
+</div>
+
+```{r}
+# Exercise 11: Confidence Intervals
+# Ubung 11: Konfidenzintervalle
+
+library(ggplot2)
+
+# Data with confidence intervals
+# Daten mit Konfidenzintervallen
+ci_data <- data.frame(
+  plots = 1:30,
+  mean_species = cumsum(c(25, rpois(29, 4))),
+  ci_lower = NA,
+  ci_upper = NA
+)
+# Add some uncertainty
+ci_data$ci_lower <- ci_data$mean_species - runif(30, 2, 8)
+ci_data$ci_upper <- ci_data$mean_species + runif(30, 2, 8)
+
+# Plot with ribbon for CI
+# Plot mit Ribbon fur CI
+ggplot(ci_data, aes(x = ____)) +
+  geom_ribbon(
+    aes(ymin = ____, ymax = ____),
+    fill = "darkgreen",
+    alpha = ____
+  ) +
+  geom_line(
+    aes(y = ____),
+    color = "darkgreen",
+    linewidth = ____
+  ) +
+  labs(
+    title = "Accumulation Curve with 95% CI",
+    subtitle = "Shaded area shows uncertainty",
+    x = "Plots Sampled",
+    y = "Species Count"
+  ) +
+  theme_minimal()
+```
+
+<details>
+<summary><span class="en">Show Solution</span><span class="de">Losung anzeigen</span></summary>
+
+```{r}
+# Solution / Losung
+
+library(ggplot2)
+
+set.seed(42)
+ci_data <- data.frame(
+  plots = 1:30,
+  mean_species = cumsum(c(25, rpois(29, 4)))
+)
+ci_data$ci_lower <- ci_data$mean_species - runif(30, 2, 8)
+ci_data$ci_upper <- ci_data$mean_species + runif(30, 2, 8)
+
+ggplot(ci_data, aes(x = plots)) +
+  geom_ribbon(
+    aes(ymin = ci_lower, ymax = ci_upper),
+    fill = "darkgreen",
+    alpha = 0.3
+  ) +
+  geom_line(
+    aes(y = mean_species),
+    color = "darkgreen",
+    linewidth = 1.5
+  ) +
+  labs(
+    title = "Accumulation Curve with 95% CI",
+    subtitle = "Shaded area shows uncertainty",
+    x = "Plots Sampled",
+    y = "Species Count"
+  ) +
+  theme_minimal()
+```
+
+</details>
+
+---
+
+# <span class="en">Complete Accumulation Function</span><span class="de">Komplette Akkumulationsfunktion</span>
+
+<div class="en">
+
+**Reference:** Complete function for building accumulation curves with nearest neighbour algorithm.
+
+</div>
+
+<div class="de">
+
+**Referenz:** Komplette Funktion fur Akkumulationskurven mit Nearest-Neighbour-Algorithmus.
+
+</div>
+
+```{r}
+# Complete Accumulation Curve Function
+# Komplette Akkumulationskurven-Funktion
+
+library(tidyverse)
+
+calculate_accumulation <- function(data, n_runs = 100) {
+  # Extract unique plot coordinates
+  plot_coords <- data %>%
+    select(plot_id, x, y) %>%
+    distinct()
+
+  n_plots <- nrow(plot_coords)
+  all_curves <- data.frame()
+
+  # Multiple runs with different starting points
+  for (run in 1:n_runs) {
+    # Random starting point
+    start_idx <- sample(1:n_plots, 1)
+
+    # Tracking variables
+    visited <- rep(FALSE, n_plots)
+    found_species <- c()
+    accumulation <- numeric(n_plots)
+
+    current_idx <- start_idx
+    visited[current_idx] <- TRUE
+
+    # Visit all plots
+    for (i in 1:n_plots) {
+      current_id <- plot_coords$plot_id[current_idx]
+
+      # Species in current plot
+      plot_species <- data %>%
+        filter(plot_id == current_id) %>%
+        pull(species) %>%
+        unique()
+
+      # Add new species
+      new_species <- setdiff(plot_species, found_species)
+      found_species <- c(found_species, new_species)
+      accumulation[i] <- length(found_species)
+
+      # Find nearest unvisited plot
+      if (i < n_plots) {
+        unvisited_idx <- which(!visited)
+        current_pos <- plot_coords[current_idx, c("x", "y")]
+
+        distances <- sqrt(
+          (plot_coords$x[unvisited_idx] - current_pos$x)^2 +
+          (plot_coords$y[unvisited_idx] - current_pos$y)^2
+        )
+
+        nearest <- unvisited_idx[which.min(distances)]
+        current_idx <- nearest
+        visited[current_idx] <- TRUE
+      }
+    }
+
+    # Store this run
+    run_data <- data.frame(
+      plots = 1:n_plots,
+      species = accumulation,
+      run = run
+    )
+    all_curves <- rbind(all_curves, run_data)
+  }
+
+  # Calculate summary statistics
+  summary <- all_curves %>%
+    group_by(plots) %>%
+    summarise(
+      mean_species = mean(species),
+      ci_lower = quantile(species, 0.025),
+      ci_upper = quantile(species, 0.975),
+      .groups = "drop"
+    )
+
+  return(list(
+    summary = summary,
+    all_runs = all_curves
+  ))
+}
+
+# Usage example / Anwendungsbeispiel:
+# result <- calculate_accumulation(my_data, n_runs = 100)
+#
+# ggplot(result$summary, aes(x = plots)) +
+#   geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper),
+#               fill = "darkgreen", alpha = 0.3) +
+#   geom_line(aes(y = mean_species),
+#             color = "darkgreen", linewidth = 1.5) +
+#   theme_minimal()
+```
+
+---
+
+<div class="en">
+
+## Quick Reference
+
+| Function | Purpose |
+|----------|---------|
+| `c()` | Combine values into vector |
+| `length()` | Count elements |
+| `unique()` | Get unique values |
+| `setdiff(a, b)` | Elements in a but not in b |
+| `cumsum()` | Cumulative sum |
+| `sqrt()` | Square root |
+| `which.min()` | Index of minimum |
+| `subset()` | Filter data |
+| `ggplot()` | Create plot |
+| `geom_line()` | Add line |
+| `geom_ribbon()` | Add confidence band |
+
+</div>
+
+<div class="de">
+
+## Schnellreferenz
+
+| Funktion | Zweck |
+|----------|-------|
+| `c()` | Werte zu Vektor kombinieren |
+| `length()` | Elemente zahlen |
+| `unique()` | Einzigartige Werte |
+| `setdiff(a, b)` | Elemente in a aber nicht in b |
+| `cumsum()` | Kumulative Summe |
+| `sqrt()` | Quadratwurzel |
+| `which.min()` | Index des Minimums |
+| `subset()` | Daten filtern |
+| `ggplot()` | Plot erstellen |
+| `geom_line()` | Linie hinzufugen |
+| `geom_ribbon()` | Konfidenzband hinzufugen |
+
+</div>

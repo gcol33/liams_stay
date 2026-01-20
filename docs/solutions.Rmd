@@ -196,7 +196,8 @@ body.lang-de #TOC .de { display: inline; }
 }
 ```
 
-```{js, echo=FALSE}
+```{=html}
+<script>
 document.addEventListener('DOMContentLoaded', function() {
   // Language toggle
   var toggle = document.createElement('div');
@@ -246,10 +247,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 2000);
       });
     });
-    block.style.position = 'relative';
     block.appendChild(btn);
   });
 });
+</script>
 ```
 
 <div class="solution-notice">

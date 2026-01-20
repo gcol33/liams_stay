@@ -199,60 +199,61 @@ body.lang-de #TOC .de { display: inline; }
 }
 ```
 
-```{js, echo=FALSE}
+```{=html}
+<script>
 document.addEventListener('DOMContentLoaded', function() {
- // Language toggle
- var toggle = document.createElement('div');
- toggle.className = 'lang-toggle';
- toggle.innerHTML = '<button id="btn-en" class="active">EN</button><button id="btn-de">DE</button>';
- document.body.appendChild(toggle);
+  // Language toggle
+  var toggle = document.createElement('div');
+  toggle.className = 'lang-toggle';
+  toggle.innerHTML = '<button id="btn-en" class="active">EN</button><button id="btn-de">DE</button>';
+  document.body.appendChild(toggle);
 
- var savedLang = localStorage.getItem('workshop-lang');
- var browserLang = navigator.language.substring(0, 2);
- var defaultLang = savedLang || (browserLang === 'de' ? 'de' : 'en');
+  var savedLang = localStorage.getItem('workshop-lang');
+  var browserLang = navigator.language.substring(0, 2);
+  var defaultLang = savedLang || (browserLang === 'de' ? 'de' : 'en');
 
- if (defaultLang === 'de') {
-   setLanguage('de');
- }
+  if (defaultLang === 'de') {
+    setLanguage('de');
+  }
 
- document.getElementById('btn-en').addEventListener('click', function() {
-   setLanguage('en');
- });
+  document.getElementById('btn-en').addEventListener('click', function() {
+    setLanguage('en');
+  });
 
- document.getElementById('btn-de').addEventListener('click', function() {
-   setLanguage('de');
- });
+  document.getElementById('btn-de').addEventListener('click', function() {
+    setLanguage('de');
+  });
 
- function setLanguage(lang) {
-   document.body.classList.remove('lang-en', 'lang-de');
-   document.body.classList.add('lang-' + lang);
-   document.getElementById('btn-en').classList.toggle('active', lang === 'en');
-   document.getElementById('btn-de').classList.toggle('active', lang === 'de');
-   localStorage.setItem('workshop-lang', lang);
- }
+  function setLanguage(lang) {
+    document.body.classList.remove('lang-en', 'lang-de');
+    document.body.classList.add('lang-' + lang);
+    document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+    document.getElementById('btn-de').classList.toggle('active', lang === 'de');
+    localStorage.setItem('workshop-lang', lang);
+  }
 
- // Copy button for code blocks
- var codeBlocks = document.querySelectorAll('pre');
- codeBlocks.forEach(function(block) {
-   var btn = document.createElement('button');
-   btn.className = 'copy-btn';
-   btn.textContent = 'Copy';
-   btn.addEventListener('click', function() {
-     var code = block.querySelector('code');
-     var text = code ? code.textContent : block.textContent;
-     navigator.clipboard.writeText(text).then(function() {
-       btn.textContent = 'Copied!';
-       btn.classList.add('copied');
-       setTimeout(function() {
-         btn.textContent = 'Copy';
-         btn.classList.remove('copied');
-       }, 2000);
-     });
-   });
-   block.style.position = 'relative';
-   block.appendChild(btn);
- });
+  // Copy button for code blocks
+  var codeBlocks = document.querySelectorAll('pre');
+  codeBlocks.forEach(function(block) {
+    var btn = document.createElement('button');
+    btn.className = 'copy-btn';
+    btn.textContent = 'Copy';
+    btn.addEventListener('click', function() {
+      var code = block.querySelector('code');
+      var text = code ? code.textContent : block.textContent;
+      navigator.clipboard.writeText(text).then(function() {
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(function() {
+          btn.textContent = 'Copy';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    });
+    block.appendChild(btn);
+  });
 });
+</script>
 ```
 
 ---

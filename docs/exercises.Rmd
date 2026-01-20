@@ -275,7 +275,7 @@ $(document).ready(function() {
 
 ---
 
-# <span class="en">Day 1: R Basics</span><span class="de">Tag 1: R Grundlagen</span>
+# <span class="en">Part 1: R Basics</span><span class="de">Teil 1: R Grundlagen</span>
 
 ## <span class="en">Exercise 1: Variables and Vectors</span><span class="de">Ubung 1: Variablen und Vektoren</span>
 
@@ -432,7 +432,7 @@ print(c(after_plot1, after_plot2, after_plot3))
 
 ---
 
-# <span class="en">Day 2: Loops and Filtering</span><span class="de">Tag 2: Schleifen und Filtern</span>
+# <span class="en">Part 2: Loops and Filtering</span><span class="de">Teil 2: Schleifen und Filtern</span>
 
 ## <span class="en">Exercise 4: For Loops</span><span class="de">Ubung 4: For-Schleifen</span>
 
@@ -732,7 +732,7 @@ print(paste("Total unique species:", length(found_species)))
 
 ---
 
-# <span class="en">Day 2: Functions and Plotting</span><span class="de">Tag 2: Funktionen und Plotting</span>
+# <span class="en">Part 3: Functions and Plotting</span><span class="de">Teil 3: Funktionen und Plotting</span>
 
 ## <span class="en">Exercise 9: Writing Functions</span><span class="de">Ubung 9: Funktionen schreiben</span>
 

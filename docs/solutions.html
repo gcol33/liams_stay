@@ -9,11 +9,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Fill in the blanks!Fulle die Lucken aus!" />
+<meta name="author" content="Complete code with answersVollstandiger Code mit Antworten" />
 
 <meta name="date" content="2026-01-20" />
 
-<title>Code ExercisesCode-Ubungen</title>
+<title>SolutionsLosungen</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -1497,152 +1497,115 @@ border-radius: 0px;
 
 
 
-<h1 class="title toc-ignore"><span class="en">Code Exercises</span><span class="de">Code-Ubungen</span></h1>
+<h1 class="title toc-ignore"><span class="en">Solutions</span><span class="de">Losungen</span></h1>
 <h3 class="subtitle"><span class="en">Species Accumulation Curves
 Workshop</span><span class="de">Artenakkumulationskurven
 Workshop</span></h3>
-<h4 class="author"><span class="en">Fill in the blanks!</span><span class="de">Fulle die Lucken aus!</span></h4>
+<h4 class="author"><span class="en">Complete code with
+answers</span><span class="de">Vollstandiger Code mit
+Antworten</span></h4>
 <h4 class="date">2026-01-20</h4>
 
 </div>
 
 
+<div class="solution-notice">
+<p><span class="en">SOLUTIONS - For instructors only!</span> <span class="de">LOSUNGEN - Nur fur Lehrende!</span></p>
+</div>
 <hr />
 <div id="day-1-r-basicstag-1-r-grundlagen" class="section level1">
 <h1><span class="en">Day 1: R Basics</span><span class="de">Tag 1: R
 Grundlagen</span></h1>
 <div id="exercise-1-variables-and-vectorsubung-1-variablen-und-vektoren" class="section level2">
 <h2><span class="en">Exercise 1: Variables and Vectors</span><span class="de">Ubung 1: Variablen und Vektoren</span></h2>
-<div class="en">
-<p><strong>Task:</strong> Create variables and vectors, then perform
-basic operations.</p>
-</div>
-<div class="de">
-<p><strong>Aufgabe:</strong> Erstelle Variablen und Vektoren, dann fuhre
-grundlegende Operationen aus.</p>
-</div>
-<pre class="r"><code># Exercise 1: Variables and Vectors
-# Ubung 1: Variablen und Vektoren
+<pre class="r"><code># Solution / Losung
 
 # 1. Create a variable with your favorite number
-my_number &lt;- ____
+my_number &lt;- 42
 
 # 2. Create a vector with 5 numbers
-my_vector &lt;- c(____, ____, ____, ____, ____)
+my_vector &lt;- c(10, 20, 30, 40, 50)
 
 # 3. Calculate the sum of the vector
-total &lt;- ____(my_vector)
-print(total)
+total &lt;- sum(my_vector)
+print(total)  # 150
 
 # 4. Calculate the mean
-average &lt;- ____(my_vector)
-print(average)
+average &lt;- mean(my_vector)
+print(average)  # 30
 
 # 5. Create a vector of species names
-species &lt;- c(&quot;____&quot;, &quot;____&quot;, &quot;____&quot;)
+species &lt;- c(&quot;Oak&quot;, &quot;Beech&quot;, &quot;Pine&quot;)
 
 # 6. How many species?
-n_species &lt;- ____(species)
-print(n_species)</code></pre>
-<div class="hint">
-<p><span class="en">Functions needed: <code>sum()</code>,
-<code>mean()</code>, <code>length()</code></span> <span class="de">Benotigte Funktionen: <code>sum()</code>,
-<code>mean()</code>, <code>length()</code></span></p>
-</div>
+n_species &lt;- length(species)
+print(n_species)  # 3</code></pre>
 <hr />
 </div>
 <div id="exercise-2-working-with-dataubung-2-mit-daten-arbeiten" class="section level2">
 <h2><span class="en">Exercise 2: Working with Data</span><span class="de">Ubung 2: Mit Daten arbeiten</span></h2>
-<div class="en">
-<p><strong>Task:</strong> Explore data structure and access columns.</p>
-</div>
-<div class="de">
-<p><strong>Aufgabe:</strong> Datenstruktur erkunden und auf Spalten
-zugreifen.</p>
-</div>
-<pre class="r"><code># Exercise 2: Working with Data
+<pre class="r"><code># Solution / Losung
 
-# Create example data
 plants &lt;- data.frame(
- species = c(&quot;Quercus robur&quot;, &quot;Fagus sylvatica&quot;, &quot;Pinus sylvestris&quot;,
-             &quot;Betula pendula&quot;, &quot;Acer pseudoplatanus&quot;),
- height = c(25, 30, 20, 18, 22),
- native = c(TRUE, TRUE, TRUE, TRUE, TRUE)
+  species = c(&quot;Quercus robur&quot;, &quot;Fagus sylvatica&quot;, &quot;Pinus sylvestris&quot;,
+              &quot;Betula pendula&quot;, &quot;Acer pseudoplatanus&quot;),
+  height = c(25, 30, 20, 18, 22),
+  native = c(TRUE, TRUE, TRUE, TRUE, TRUE)
 )
 
 # 1. View first rows
-____(plants)
+head(plants)
 
 # 2. Check structure
-____(plants)
+str(plants)
 
 # 3. How many rows?
-____(plants)
+nrow(plants)  # 5
 
 # 4. Column names
-____(plants)
+names(plants)  # &quot;species&quot; &quot;height&quot; &quot;native&quot;
 
 # 5. Access the height column
-plants$____
+plants$height  # 25 30 20 18 22
 
 # 6. Mean height
-mean(plants$____)
+mean(plants$height)  # 23
 
 # 7. Tallest tree
-max(plants$____)</code></pre>
-<div class="hint">
-<p><span class="en">Functions needed: <code>head()</code>,
-<code>str()</code>, <code>nrow()</code>, <code>names()</code></span>
-<span class="de">Benotigte Funktionen: <code>head()</code>,
-<code>str()</code>, <code>nrow()</code>, <code>names()</code></span></p>
-</div>
+max(plants$height)  # 30</code></pre>
 <hr />
 </div>
 <div id="exercise-3-unique-speciesubung-3-einzigartige-arten" class="section level2">
 <h2><span class="en">Exercise 3: Unique Species</span><span class="de">Ubung 3: Einzigartige Arten</span></h2>
-<div class="en">
-<p><strong>Task:</strong> Practice with <code>unique()</code> - the key
-function for accumulation curves!</p>
-</div>
-<div class="de">
-<p><strong>Aufgabe:</strong> Ube mit <code>unique()</code> - die
-Schlusselfunktion fur Akkumulationskurven!</p>
-</div>
-<pre class="r"><code># Exercise 3: Unique Species
+<pre class="r"><code># Solution / Losung
 
-# Species found in different plots
 plot1 &lt;- c(&quot;Oak&quot;, &quot;Beech&quot;, &quot;Pine&quot;)
 plot2 &lt;- c(&quot;Beech&quot;, &quot;Maple&quot;, &quot;Oak&quot;)
 plot3 &lt;- c(&quot;Pine&quot;, &quot;Birch&quot;, &quot;Oak&quot;)
 
 # 1. Combine all species
-all_species &lt;- c(____, ____, ____)
+all_species &lt;- c(plot1, plot2, plot3)
 
 # 2. How many total observations?
-length(____)
+length(all_species)  # 9
 
 # 3. How many UNIQUE species?
-unique_species &lt;- ____(____)
-length(____)
+unique_species &lt;- unique(all_species)
+length(unique_species)  # 5
 
 # 4. What are the unique species?
-print(____)
+print(unique_species)  # &quot;Oak&quot; &quot;Beech&quot; &quot;Pine&quot; &quot;Maple&quot; &quot;Birch&quot;
 
 # 5. Cumulative count: After plot 1
-after_plot1 &lt;- length(unique(____))
+after_plot1 &lt;- length(unique(plot1))  # 3
 
 # 6. After plots 1 and 2
-after_plot2 &lt;- length(unique(c(____, ____)))
+after_plot2 &lt;- length(unique(c(plot1, plot2)))  # 4
 
 # 7. After all plots
-after_plot3 &lt;- length(unique(c(____, ____, ____)))
+after_plot3 &lt;- length(unique(c(plot1, plot2, plot3)))  # 5
 
-print(c(after_plot1, after_plot2, after_plot3))</code></pre>
-<div class="hint">
-<p><span class="en">Key function: <code>unique()</code> returns only
-distinct values</span> <span class="de">Schlusselfunktion:
-<code>unique()</code> gibt nur eindeutige Werte zuruck</span></p>
-</div>
+print(c(after_plot1, after_plot2, after_plot3))  # 3 4 5</code></pre>
 <hr />
 </div>
 </div>
@@ -1651,269 +1614,190 @@ distinct values</span> <span class="de">Schlusselfunktion:
 <div id="exercise-4-for-loopsubung-4-for-schleifen" class="section level2">
 <h2><span class="en">Exercise 4: For Loops</span><span class="de">Ubung
 4: For-Schleifen</span></h2>
-<div class="en">
-<p><strong>Task:</strong> Practice writing for loops - essential for
-building accumulation curves!</p>
-</div>
-<div class="de">
-<p><strong>Aufgabe:</strong> Ube das Schreiben von for-Schleifen -
-essentiell fur Akkumulationskurven!</p>
-</div>
-<pre class="r"><code># Exercise 4: For Loops
+<pre class="r"><code># Solution / Losung
 
 # 1. Print numbers 1 to 5
-for (i in ____) {
- print(____)
+for (i in 1:5) {
+  print(i)
 }
 
 # 2. Calculate sum of 1 to 100
 total &lt;- 0
 for (i in 1:100) {
- total &lt;- total + ____
+  total &lt;- total + i
 }
-print(total)  # Should be 5050
+print(total)  # 5050
 
 # 3. Build a vector of squares
 squares &lt;- c()
 for (i in 1:10) {
- squares[i] &lt;- ____
+  squares[i] &lt;- i^2
 }
-print(squares)
+print(squares)  # 1 4 9 16 25 36 49 64 81 100
 
 # 4. Iterate over species names
 species &lt;- c(&quot;Oak&quot;, &quot;Beech&quot;, &quot;Pine&quot;, &quot;Maple&quot;)
-for (sp in ____) {
- print(paste(&quot;Found:&quot;, ____))
+for (sp in species) {
+  print(paste(&quot;Found:&quot;, sp))
 }
 
 # 5. Count items matching a condition
 values &lt;- c(3, 7, 2, 9, 4, 6, 8, 1)
 count_above_5 &lt;- 0
 for (v in values) {
- if (v ____ 5) {
-   count_above_5 &lt;- count_above_5 + ____
- }
+  if (v &gt; 5) {
+    count_above_5 &lt;- count_above_5 + 1
+  }
 }
-print(count_above_5)  # Should be 4</code></pre>
-<div class="hint">
-<p><span class="en">Loop syntax: <code>for (i in 1:n) { ... }</code> or
-<code>for (item in vector) { ... }</code></span> <span class="de">Schleifen-Syntax: <code>for (i in 1:n) { ... }</code> oder
-<code>for (item in vector) { ... }</code></span></p>
-</div>
+print(count_above_5)  # 4</code></pre>
 <hr />
 </div>
 <div id="exercise-5-filtering-dataubung-5-daten-filtern" class="section level2">
 <h2><span class="en">Exercise 5: Filtering Data</span><span class="de">Ubung 5: Daten filtern</span></h2>
-<div class="en">
-<p><strong>Task:</strong> Filter data by conditions - crucial for
-separating native and alien species!</p>
-</div>
-<div class="de">
-<p><strong>Aufgabe:</strong> Filtere Daten nach Bedingungen - wichtig um
-heimische und Alien-Arten zu trennen!</p>
-</div>
-<pre class="r"><code># Exercise 5: Filtering Data
+<pre class="r"><code># Solution / Losung
 
-# Create example data
 flora &lt;- data.frame(
- species = c(&quot;Fagus sylvatica&quot;, &quot;Impatiens glandulifera&quot;,
-             &quot;Quercus robur&quot;, &quot;Solidago canadensis&quot;,
-             &quot;Pinus sylvestris&quot;, &quot;Reynoutria japonica&quot;),
- status = c(&quot;native&quot;, &quot;alien&quot;, &quot;native&quot;, &quot;alien&quot;, &quot;native&quot;, &quot;alien&quot;),
- n_plots = c(450, 120, 380, 95, 200, 45),
- cover = c(45, 15, 35, 20, 30, 25)
+  species = c(&quot;Fagus sylvatica&quot;, &quot;Impatiens glandulifera&quot;,
+              &quot;Quercus robur&quot;, &quot;Solidago canadensis&quot;,
+              &quot;Pinus sylvestris&quot;, &quot;Reynoutria japonica&quot;),
+  status = c(&quot;native&quot;, &quot;alien&quot;, &quot;native&quot;, &quot;alien&quot;, &quot;native&quot;, &quot;alien&quot;),
+  n_plots = c(450, 120, 380, 95, 200, 45),
+  cover = c(45, 15, 35, 20, 30, 25)
 )
 
 # 1. Filter only native species
-native_only &lt;- flora[flora$status == ____, ]
-print(native_only)
+native_only &lt;- flora[flora$status == &quot;native&quot;, ]
 
 # 2. Filter only alien species
-alien_only &lt;- flora[flora$____ == &quot;alien&quot;, ]
-print(alien_only)
+alien_only &lt;- flora[flora$status == &quot;alien&quot;, ]
 
 # 3. Species with more than 100 plots
-common &lt;- flora[flora$n_plots ____ 100, ]
-print(common)
+common &lt;- flora[flora$n_plots &gt; 100, ]
 
 # 4. Native AND common (&gt;200 plots)
-native_common &lt;- flora[flora$status == &quot;native&quot; ____ flora$n_plots &gt; 200, ]
-print(native_common)
+native_common &lt;- flora[flora$status == &quot;native&quot; &amp; flora$n_plots &gt; 200, ]
 
 # 5. Using subset() function
-rare_aliens &lt;- subset(flora, status == ____ &amp; n_plots ____ 100)
-print(rare_aliens)
+rare_aliens &lt;- subset(flora, status == &quot;alien&quot; &amp; n_plots &lt; 100)
 
 # 6. Count species per status
-n_native &lt;- nrow(flora[flora$status == ____, ])
-n_alien &lt;- nrow(flora[flora$status == ____, ])
+n_native &lt;- nrow(flora[flora$status == &quot;native&quot;, ])  # 3
+n_alien &lt;- nrow(flora[flora$status == &quot;alien&quot;, ])    # 3
 print(paste(&quot;Native:&quot;, n_native, &quot;Alien:&quot;, n_alien))</code></pre>
-<div class="hint">
-<p><span class="en">Operators: <code>==</code> (equals),
-<code>&gt;</code> (greater), <code>&amp;</code> (AND), <code>|</code>
-(OR)</span> <span class="de">Operatoren: <code>==</code> (gleich),
-<code>&gt;</code> (grosser), <code>&amp;</code> (UND), <code>|</code>
-(ODER)</span></p>
-</div>
 <hr />
 </div>
 <div id="exercise-6-distance-calculationubung-6-distanzberechnung" class="section level2">
 <h2><span class="en">Exercise 6: Distance Calculation</span><span class="de">Ubung 6: Distanzberechnung</span></h2>
-<div class="en">
-<p><strong>Task:</strong> Calculate Euclidean distance - needed for the
-nearest neighbour algorithm!</p>
-<p><strong>Formula:</strong> <span class="math inline">\(d =
-\sqrt{(x_2-x_1)^2 + (y_2-y_1)^2}\)</span></p>
-</div>
-<div class="de">
-<p><strong>Aufgabe:</strong> Berechne euklidische Distanz - benotigt fur
-den Nearest-Neighbour-Algorithmus!</p>
-<p><strong>Formel:</strong> <span class="math inline">\(d =
-\sqrt{(x_2-x_1)^2 + (y_2-y_1)^2}\)</span></p>
-</div>
-<pre class="r"><code># Exercise 6: Distance Calculation
+<pre class="r"><code># Solution / Losung
 
 # 1. Distance between two points
 point_a &lt;- c(x = 0, y = 0)
 point_b &lt;- c(x = 3, y = 4)
 
-distance &lt;- sqrt((point_b[&quot;x&quot;] - point_a[&quot;x&quot;])^____ +
-                (point_b[&quot;y&quot;] - point_a[&quot;y&quot;])^____)
-print(distance)  # Should be 5
+distance &lt;- sqrt((point_b[&quot;x&quot;] - point_a[&quot;x&quot;])^2 +
+                 (point_b[&quot;y&quot;] - point_a[&quot;y&quot;])^2)
+print(distance)  # 5
 
 # 2. Which plot is nearest?
 current &lt;- c(x = 100, y = 100)
 
 candidates &lt;- data.frame(
- plot_id = c(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;),
- x = c(110, 95, 150, 102),
- y = c(105, 90, 120, 98)
+  plot_id = c(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;),
+  x = c(110, 95, 150, 102),
+  y = c(105, 90, 120, 98)
 )
 
-# Calculate distance to each candidate
 candidates$distance &lt;- sqrt(
- (candidates$x - current[&quot;x&quot;])^2 +
- (candidates$y - current[&quot;y&quot;])^2
+  (candidates$x - current[&quot;x&quot;])^2 +
+  (candidates$y - current[&quot;y&quot;])^2
 )
 
 print(candidates)
+#   plot_id   x   y  distance
+# 1       A 110 105 11.180340
+# 2       B  95  90 11.180340
+# 3       C 150 120 53.851648
+# 4       D 102  98  2.828427
 
 # 3. Find the nearest plot
-nearest_idx &lt;- which.____(candidates$distance)
-nearest_plot &lt;- candidates$plot_id[____]
-print(paste(&quot;Nearest plot:&quot;, nearest_plot))
+nearest_idx &lt;- which.min(candidates$distance)
+nearest_plot &lt;- candidates$plot_id[nearest_idx]
+print(paste(&quot;Nearest plot:&quot;, nearest_plot))  # &quot;D&quot;
 
 # 4. Get the full row of nearest plot
-nearest &lt;- candidates[which.min(candidates$____), ]
-print(nearest)</code></pre>
-<div class="hint">
-<p><span class="en"><code>which.min()</code> returns the index of the
-minimum value</span> <span class="de"><code>which.min()</code> gibt den
-Index des Minimums zuruck</span></p>
-</div>
+nearest &lt;- candidates[which.min(candidates$distance), ]
+print(nearest)  # D at (102, 98) with distance 2.83</code></pre>
 <hr />
 </div>
 <div id="exercise-7-cumulative-sumsubung-7-kumulative-summen" class="section level2">
 <h2><span class="en">Exercise 7: Cumulative Sums</span><span class="de">Ubung 7: Kumulative Summen</span></h2>
-<div class="en">
-<p><strong>Task:</strong> Practice cumulative calculations - the core of
-accumulation curves!</p>
-</div>
-<div class="de">
-<p><strong>Aufgabe:</strong> Ube kumulative Berechnungen - der Kern von
-Akkumulationskurven!</p>
-</div>
-<pre class="r"><code># Exercise 7: Cumulative Sums
+<pre class="r"><code># Solution / Losung
 
-# New species found per plot
 new_species &lt;- c(15, 8, 5, 3, 2, 2, 1, 1, 0, 1)
 
-# 1. Using cumsum() - the easy way!
-cumulative &lt;- ____(new_species)
-print(cumulative)
+# 1. Using cumsum()
+cumulative &lt;- cumsum(new_species)
+print(cumulative)  # 15 23 28 31 33 35 36 37 37 38
 
-# 2. Manual loop - understand how it works
+# 2. Manual loop
 cumulative_manual &lt;- numeric(length(new_species))
 running_total &lt;- 0
 
 for (i in 1:length(new_species)) {
- running_total &lt;- running_total + new_species[____]
- cumulative_manual[i] &lt;- ____
+  running_total &lt;- running_total + new_species[i]
+  cumulative_manual[i] &lt;- running_total
 }
-print(cumulative_manual)
+print(cumulative_manual)  # Same as above
 
 # 3. At which plot did we reach 30 species?
-plot_at_30 &lt;- which(cumulative &gt;= ____)[1]
-print(paste(&quot;Reached 30 species at plot:&quot;, plot_at_30))
+plot_at_30 &lt;- which(cumulative &gt;= 30)[1]
+print(paste(&quot;Reached 30 species at plot:&quot;, plot_at_30))  # 4
 
 # 4. Total species after 5 plots?
-species_after_5 &lt;- cumulative[____]
-print(paste(&quot;Species after 5 plots:&quot;, species_after_5))
+species_after_5 &lt;- cumulative[5]
+print(paste(&quot;Species after 5 plots:&quot;, species_after_5))  # 33
 
 # 5. Species discovered in last 5 plots?
-last_5_new &lt;- sum(new_species[____:____])
-print(paste(&quot;New species in last 5 plots:&quot;, last_5_new))</code></pre>
-<div class="hint">
-<p><span class="en"><code>cumsum()</code> calculates running totals:
-cumsum(c(1,2,3)) = c(1,3,6)</span> <span class="de"><code>cumsum()</code> berechnet laufende Summen:
-cumsum(c(1,2,3)) = c(1,3,6)</span></p>
-</div>
+last_5_new &lt;- sum(new_species[6:10])
+print(paste(&quot;New species in last 5 plots:&quot;, last_5_new))  # 5</code></pre>
 <hr />
 </div>
 <div id="exercise-8-building-an-accumulation-curveubung-8-eine-akkumulationskurve-bauen" class="section level2">
 <h2><span class="en">Exercise 8: Building an Accumulation
 Curve</span><span class="de">Ubung 8: Eine Akkumulationskurve
 bauen</span></h2>
-<div class="en">
-<p><strong>Task:</strong> Combine everything to build a complete
-accumulation curve!</p>
-</div>
-<div class="de">
-<p><strong>Aufgabe:</strong> Kombiniere alles um eine komplette
-Akkumulationskurve zu bauen!</p>
-</div>
-<pre class="r"><code># Exercise 8: Building an Accumulation Curve
+<pre class="r"><code># Solution / Losung
 
-# Species lists for 5 plots
 plot_species &lt;- list(
- c(&quot;Oak&quot;, &quot;Beech&quot;, &quot;Pine&quot;),
- c(&quot;Beech&quot;, &quot;Maple&quot;, &quot;Birch&quot;, &quot;Pine&quot;),
- c(&quot;Oak&quot;, &quot;Linden&quot;, &quot;Beech&quot;),
- c(&quot;Spruce&quot;, &quot;Pine&quot;, &quot;Oak&quot;),
- c(&quot;Maple&quot;, &quot;Ash&quot;, &quot;Beech&quot;, &quot;Elm&quot;)
+  c(&quot;Oak&quot;, &quot;Beech&quot;, &quot;Pine&quot;),
+  c(&quot;Beech&quot;, &quot;Maple&quot;, &quot;Birch&quot;, &quot;Pine&quot;),
+  c(&quot;Oak&quot;, &quot;Linden&quot;, &quot;Beech&quot;),
+  c(&quot;Spruce&quot;, &quot;Pine&quot;, &quot;Oak&quot;),
+  c(&quot;Maple&quot;, &quot;Ash&quot;, &quot;Beech&quot;, &quot;Elm&quot;)
 )
 
-# Initialize tracking variables
 found_species &lt;- c()
 cumulative_count &lt;- numeric(5)
 
-# Loop through each plot
 for (i in 1:5) {
- # Get species in current plot
- current_species &lt;- plot_species[[____]]
+  current_species &lt;- plot_species[[i]]
+  new_species &lt;- setdiff(current_species, found_species)
+  found_species &lt;- c(found_species, new_species)
+  cumulative_count[i] &lt;- length(found_species)
 
- # Find NEW species (not seen before)
- new_species &lt;- setdiff(____, ____)
-
- # Add to found species
- found_species &lt;- c(found_species, ____)
-
- # Record cumulative count
- cumulative_count[i] &lt;- length(____)
-
- # Print progress
- cat(&quot;Plot&quot;, i, &quot;- New:&quot;, length(new_species),
-     &quot;- Total:&quot;, cumulative_count[i], &quot;\n&quot;)
+  cat(&quot;Plot&quot;, i, &quot;- New:&quot;, length(new_species),
+      &quot;- Total:&quot;, cumulative_count[i], &quot;\n&quot;)
 }
 
-# Final result
-print(cumulative_count)
-print(paste(&quot;Total unique species:&quot;, length(found_species)))</code></pre>
-<div class="hint">
-<p><span class="en"><code>setdiff(a, b)</code> returns elements in a
-that are NOT in b</span> <span class="de"><code>setdiff(a, b)</code>
-gibt Elemente in a zuruck, die NICHT in b sind</span></p>
-</div>
+# Output:
+# Plot 1 - New: 3 - Total: 3
+# Plot 2 - New: 2 - Total: 5  (Maple, Birch are new)
+# Plot 3 - New: 1 - Total: 6  (Linden is new)
+# Plot 4 - New: 1 - Total: 7  (Spruce is new)
+# Plot 5 - New: 2 - Total: 9  (Ash, Elm are new)
+
+print(cumulative_count)  # 3 5 6 7 9
+print(paste(&quot;Total unique species:&quot;, length(found_species)))  # 9</code></pre>
 <hr />
 </div>
 </div>
@@ -1921,297 +1805,237 @@ gibt Elemente in a zuruck, die NICHT in b sind</span></p>
 <h1><span class="en">Day 2: Functions and Plotting</span><span class="de">Tag 2: Funktionen und Plotting</span></h1>
 <div id="exercise-9-writing-functionsubung-9-funktionen-schreiben" class="section level2">
 <h2><span class="en">Exercise 9: Writing Functions</span><span class="de">Ubung 9: Funktionen schreiben</span></h2>
-<div class="en">
-<p><strong>Task:</strong> Create reusable functions for your
-analysis!</p>
-</div>
-<div class="de">
-<p><strong>Aufgabe:</strong> Erstelle wiederverwendbare Funktionen fur
-deine Analyse!</p>
-</div>
-<pre class="r"><code># Exercise 9: Writing Functions
+<pre class="r"><code># Solution / Losung
 
-# 1. Simple function: Calculate area of rectangle
+# 1. Simple function
 rectangle_area &lt;- function(length, width) {
- area &lt;- ____ * ____
- return(____)
+  area &lt;- length * width
+  return(area)
 }
-
-# Test it
-rectangle_area(5, 10)  # Should be 50
+rectangle_area(5, 10)  # 50
 
 # 2. Function with default argument
 greet &lt;- function(name, language = &quot;en&quot;) {
- if (language == &quot;en&quot;) {
-   return(paste(&quot;Hello&quot;, ____))
- } else if (language == &quot;de&quot;) {
-   return(paste(&quot;Hallo&quot;, ____))
- }
+  if (language == &quot;en&quot;) {
+    return(paste(&quot;Hello&quot;, name))
+  } else if (language == &quot;de&quot;) {
+    return(paste(&quot;Hallo&quot;, name))
+  }
 }
-
-greet(&quot;Anna&quot;)              # &quot;Hello Anna&quot;
-greet(&quot;Anna&quot;, &quot;de&quot;)        # &quot;Hallo Anna&quot;
+greet(&quot;Anna&quot;)        # &quot;Hello Anna&quot;
+greet(&quot;Anna&quot;, &quot;de&quot;)  # &quot;Hallo Anna&quot;
 
 # 3. Function returning multiple values
 summarize_vector &lt;- function(x) {
- return(list(
-   mean = ____(x),
-   min = ____(x),
-   max = ____(x),
-   n = ____(x)
- ))
+  return(list(
+    mean = mean(x),
+    min = min(x),
+    max = max(x),
+    n = length(x)
+  ))
 }
-
 result &lt;- summarize_vector(c(10, 20, 30, 40, 50))
 print(result$mean)  # 30
 
 # 4. Function for species richness
 count_unique &lt;- function(species_vector) {
- unique_species &lt;- ____(____)
- return(length(____))
+  unique_species &lt;- unique(species_vector)
+  return(length(unique_species))
 }
-
-count_unique(c(&quot;Oak&quot;, &quot;Beech&quot;, &quot;Oak&quot;, &quot;Pine&quot;))  # Should be 3</code></pre>
-<div class="hint">
-<p><span class="en">Function syntax:
-<code>function_name &lt;- function(arg1, arg2) { ... return(result) }</code></span>
-<span class="de">Funktions-Syntax:
-<code>function_name &lt;- function(arg1, arg2) { ... return(result) }</code></span></p>
-</div>
+count_unique(c(&quot;Oak&quot;, &quot;Beech&quot;, &quot;Oak&quot;, &quot;Pine&quot;))  # 3</code></pre>
 <hr />
 </div>
 <div id="exercise-10-plotting-with-ggplot2ubung-10-plotten-mit-ggplot2" class="section level2">
 <h2><span class="en">Exercise 10: Plotting with ggplot2</span><span class="de">Ubung 10: Plotten mit ggplot2</span></h2>
-<div class="en">
-<p><strong>Task:</strong> Create publication-ready plots of accumulation
-curves!</p>
-</div>
-<div class="de">
-<p><strong>Aufgabe:</strong> Erstelle publikationsreife Plots von
-Akkumulationskurven!</p>
-</div>
-<pre class="r"><code># Exercise 10: Plotting with ggplot2
+<pre class="r"><code># Solution / Losung
 
 library(ggplot2)
 
-# Create example data
 curve_data &lt;- data.frame(
- plots = 1:20,
- species = cumsum(c(15, 8, 5, 4, 3, 3, 2, 2, 2, 1,
-                    1, 1, 1, 1, 0, 1, 0, 0, 1, 0))
+  plots = 1:20,
+  species = cumsum(c(15, 8, 5, 4, 3, 3, 2, 2, 2, 1,
+                     1, 1, 1, 1, 0, 1, 0, 0, 1, 0))
 )
 
 # 1. Basic line plot
-ggplot(curve_data, aes(x = ____, y = ____)) +
- geom_line()
+ggplot(curve_data, aes(x = plots, y = species)) +
+  geom_line()
 
 # 2. Add points and styling
 ggplot(curve_data, aes(x = plots, y = species)) +
- geom_line(color = &quot;____&quot;, linewidth = ____) +
- geom_point(color = &quot;____&quot;, size = ____)
+  geom_line(color = &quot;darkgreen&quot;, linewidth = 1.5) +
+  geom_point(color = &quot;darkgreen&quot;, size = 2)
 
 # 3. Add labels and theme
 ggplot(curve_data, aes(x = plots, y = species)) +
- geom_line(color = &quot;darkgreen&quot;, linewidth = 1.5) +
- labs(
-   title = &quot;____&quot;,
-   x = &quot;____&quot;,
-   y = &quot;____&quot;
- ) +
- theme_minimal()
+  geom_line(color = &quot;darkgreen&quot;, linewidth = 1.5) +
+  labs(
+    title = &quot;Species Accumulation Curve&quot;,
+    x = &quot;Number of Plots Sampled&quot;,
+    y = &quot;Cumulative Species Count&quot;
+  ) +
+  theme_minimal()
 
 # 4. Two groups comparison
 comparison_data &lt;- data.frame(
- plots = rep(1:20, 2),
- species = c(
-   cumsum(c(20, 10, 6, 4, 3, 2, 2, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0)),
-   cumsum(c(8, 5, 3, 2, 2, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0))
- ),
- status = rep(c(&quot;Native&quot;, &quot;Alien&quot;), each = 20)
+  plots = rep(1:20, 2),
+  species = c(
+    cumsum(c(20, 10, 6, 4, 3, 2, 2, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0)),
+    cumsum(c(8, 5, 3, 2, 2, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0))
+  ),
+  status = rep(c(&quot;Native&quot;, &quot;Alien&quot;), each = 20)
 )
 
-ggplot(comparison_data, aes(x = plots, y = species, color = ____)) +
- geom_line(linewidth = 1.5) +
- scale_color_manual(values = c(&quot;Native&quot; = &quot;____&quot;, &quot;Alien&quot; = &quot;____&quot;)) +
- labs(
-   title = &quot;Species Accumulation: Native vs. Alien&quot;,
-   x = &quot;Number of Plots&quot;,
-   y = &quot;Cumulative Species&quot;,
-   color = &quot;Status&quot;
- ) +
- theme_minimal() +
- theme(legend.position = &quot;____&quot;)</code></pre>
-<div class="hint">
-<p><span class="en">ggplot structure:
-<code>ggplot(data, aes(x, y)) + geom_*() + labs() + theme_*()</code></span>
-<span class="de">ggplot Struktur:
-<code>ggplot(data, aes(x, y)) + geom_*() + labs() + theme_*()</code></span></p>
-</div>
+ggplot(comparison_data, aes(x = plots, y = species, color = status)) +
+  geom_line(linewidth = 1.5) +
+  scale_color_manual(values = c(&quot;Native&quot; = &quot;darkgreen&quot;, &quot;Alien&quot; = &quot;red&quot;)) +
+  labs(
+    title = &quot;Species Accumulation: Native vs. Alien&quot;,
+    x = &quot;Number of Plots&quot;,
+    y = &quot;Cumulative Species&quot;,
+    color = &quot;Status&quot;
+  ) +
+  theme_minimal() +
+  theme(legend.position = &quot;bottom&quot;)</code></pre>
 <hr />
 </div>
 <div id="exercise-11-confidence-intervalsubung-11-konfidenzintervalle" class="section level2">
 <h2><span class="en">Exercise 11: Confidence Intervals</span><span class="de">Ubung 11: Konfidenzintervalle</span></h2>
-<div class="en">
-<p><strong>Task:</strong> Add confidence bands to show uncertainty!</p>
-</div>
-<div class="de">
-<p><strong>Aufgabe:</strong> Fuge Konfidenzbander hinzu um Unsicherheit
-zu zeigen!</p>
-</div>
-<pre class="r"><code># Exercise 11: Confidence Intervals
+<pre class="r"><code># Solution / Losung
 
 library(ggplot2)
 
-# Data with confidence intervals
 set.seed(42)
 ci_data &lt;- data.frame(
- plots = 1:30,
- mean_species = cumsum(c(25, rpois(29, 4)))
+  plots = 1:30,
+  mean_species = cumsum(c(25, rpois(29, 4)))
 )
 ci_data$ci_lower &lt;- ci_data$mean_species - runif(30, 2, 8)
 ci_data$ci_upper &lt;- ci_data$mean_species + runif(30, 2, 8)
 
-# Plot with ribbon for CI
-ggplot(ci_data, aes(x = ____)) +
- geom_ribbon(
-   aes(ymin = ____, ymax = ____),
-   fill = &quot;darkgreen&quot;,
-   alpha = ____
- ) +
- geom_line(
-   aes(y = ____),
-   color = &quot;darkgreen&quot;,
-   linewidth = ____
- ) +
- labs(
-   title = &quot;Accumulation Curve with 95% CI&quot;,
-   subtitle = &quot;Shaded area shows uncertainty&quot;,
-   x = &quot;Plots Sampled&quot;,
-   y = &quot;Species Count&quot;
- ) +
- theme_minimal()</code></pre>
-<div class="hint">
-<p><span class="en"><code>geom_ribbon()</code> creates shaded bands; use
-<code>alpha</code> for transparency (0-1)</span> <span class="de"><code>geom_ribbon()</code> erstellt schattierte Bander;
-<code>alpha</code> fur Transparenz (0-1)</span></p>
-</div>
+ggplot(ci_data, aes(x = plots)) +
+  geom_ribbon(
+    aes(ymin = ci_lower, ymax = ci_upper),
+    fill = &quot;darkgreen&quot;,
+    alpha = 0.3
+  ) +
+  geom_line(
+    aes(y = mean_species),
+    color = &quot;darkgreen&quot;,
+    linewidth = 1.5
+  ) +
+  labs(
+    title = &quot;Accumulation Curve with 95% CI&quot;,
+    subtitle = &quot;Shaded area shows uncertainty&quot;,
+    x = &quot;Plots Sampled&quot;,
+    y = &quot;Species Count&quot;
+  ) +
+  theme_minimal()</code></pre>
 <hr />
 </div>
 </div>
-<div id="quick-referenceschnellreferenz" class="section level1">
-<h1><span class="en">Quick Reference</span><span class="de">Schnellreferenz</span></h1>
+<div id="complete-accumulation-functionkomplette-akkumulationsfunktion" class="section level1">
+<h1><span class="en">Complete Accumulation Function</span><span class="de">Komplette Akkumulationsfunktion</span></h1>
 <div class="en">
-<table>
-<thead>
-<tr class="header">
-<th>Function</th>
-<th>Purpose</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><code>c()</code></td>
-<td>Combine values into vector</td>
-</tr>
-<tr class="even">
-<td><code>length()</code></td>
-<td>Count elements</td>
-</tr>
-<tr class="odd">
-<td><code>unique()</code></td>
-<td>Get unique values</td>
-</tr>
-<tr class="even">
-<td><code>setdiff(a, b)</code></td>
-<td>Elements in a but not in b</td>
-</tr>
-<tr class="odd">
-<td><code>cumsum()</code></td>
-<td>Cumulative sum</td>
-</tr>
-<tr class="even">
-<td><code>sqrt()</code></td>
-<td>Square root</td>
-</tr>
-<tr class="odd">
-<td><code>which.min()</code></td>
-<td>Index of minimum</td>
-</tr>
-<tr class="even">
-<td><code>subset()</code></td>
-<td>Filter data</td>
-</tr>
-<tr class="odd">
-<td><code>ggplot()</code></td>
-<td>Create plot</td>
-</tr>
-<tr class="even">
-<td><code>geom_line()</code></td>
-<td>Add line</td>
-</tr>
-<tr class="odd">
-<td><code>geom_ribbon()</code></td>
-<td>Add confidence band</td>
-</tr>
-</tbody>
-</table>
+<p><strong>Reference:</strong> Complete function for building
+accumulation curves with nearest neighbour algorithm.</p>
 </div>
 <div class="de">
-<table>
-<thead>
-<tr class="header">
-<th>Funktion</th>
-<th>Zweck</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><code>c()</code></td>
-<td>Werte zu Vektor kombinieren</td>
-</tr>
-<tr class="even">
-<td><code>length()</code></td>
-<td>Elemente zahlen</td>
-</tr>
-<tr class="odd">
-<td><code>unique()</code></td>
-<td>Einzigartige Werte</td>
-</tr>
-<tr class="even">
-<td><code>setdiff(a, b)</code></td>
-<td>Elemente in a aber nicht in b</td>
-</tr>
-<tr class="odd">
-<td><code>cumsum()</code></td>
-<td>Kumulative Summe</td>
-</tr>
-<tr class="even">
-<td><code>sqrt()</code></td>
-<td>Quadratwurzel</td>
-</tr>
-<tr class="odd">
-<td><code>which.min()</code></td>
-<td>Index des Minimums</td>
-</tr>
-<tr class="even">
-<td><code>subset()</code></td>
-<td>Daten filtern</td>
-</tr>
-<tr class="odd">
-<td><code>ggplot()</code></td>
-<td>Plot erstellen</td>
-</tr>
-<tr class="even">
-<td><code>geom_line()</code></td>
-<td>Linie hinzufugen</td>
-</tr>
-<tr class="odd">
-<td><code>geom_ribbon()</code></td>
-<td>Konfidenzband hinzufugen</td>
-</tr>
-</tbody>
-</table>
+<p><strong>Referenz:</strong> Komplette Funktion fur Akkumulationskurven
+mit Nearest-Neighbour-Algorithmus.</p>
 </div>
+<pre class="r"><code># Complete Accumulation Curve Function
+# Komplette Akkumulationskurven-Funktion
+
+library(tidyverse)
+
+calculate_accumulation &lt;- function(data, n_runs = 100) {
+  # Extract unique plot coordinates
+  plot_coords &lt;- data %&gt;%
+    select(plot_id, x, y) %&gt;%
+    distinct()
+
+  n_plots &lt;- nrow(plot_coords)
+  all_curves &lt;- data.frame()
+
+  # Multiple runs with different starting points
+  for (run in 1:n_runs) {
+    # Random starting point
+    start_idx &lt;- sample(1:n_plots, 1)
+
+    # Tracking variables
+    visited &lt;- rep(FALSE, n_plots)
+    found_species &lt;- c()
+    accumulation &lt;- numeric(n_plots)
+
+    current_idx &lt;- start_idx
+    visited[current_idx] &lt;- TRUE
+
+    # Visit all plots
+    for (i in 1:n_plots) {
+      current_id &lt;- plot_coords$plot_id[current_idx]
+
+      # Species in current plot
+      plot_species &lt;- data %&gt;%
+        filter(plot_id == current_id) %&gt;%
+        pull(species) %&gt;%
+        unique()
+
+      # Add new species
+      new_species &lt;- setdiff(plot_species, found_species)
+      found_species &lt;- c(found_species, new_species)
+      accumulation[i] &lt;- length(found_species)
+
+      # Find nearest unvisited plot
+      if (i &lt; n_plots) {
+        unvisited_idx &lt;- which(!visited)
+        current_pos &lt;- plot_coords[current_idx, c(&quot;x&quot;, &quot;y&quot;)]
+
+        distances &lt;- sqrt(
+          (plot_coords$x[unvisited_idx] - current_pos$x)^2 +
+          (plot_coords$y[unvisited_idx] - current_pos$y)^2
+        )
+
+        nearest &lt;- unvisited_idx[which.min(distances)]
+        current_idx &lt;- nearest
+        visited[current_idx] &lt;- TRUE
+      }
+    }
+
+    # Store this run
+    run_data &lt;- data.frame(
+      plots = 1:n_plots,
+      species = accumulation,
+      run = run
+    )
+    all_curves &lt;- rbind(all_curves, run_data)
+  }
+
+  # Calculate summary statistics
+  summary &lt;- all_curves %&gt;%
+    group_by(plots) %&gt;%
+    summarise(
+      mean_species = mean(species),
+      ci_lower = quantile(species, 0.025),
+      ci_upper = quantile(species, 0.975),
+      .groups = &quot;drop&quot;
+    )
+
+  return(list(
+    summary = summary,
+    all_runs = all_curves
+  ))
+}
+
+# Usage example:
+# result &lt;- calculate_accumulation(my_data, n_runs = 100)
+#
+# ggplot(result$summary, aes(x = plots)) +
+#   geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper),
+#               fill = &quot;darkgreen&quot;, alpha = 0.3) +
+#   geom_line(aes(y = mean_species),
+#             color = &quot;darkgreen&quot;, linewidth = 1.5) +
+#   theme_minimal()</code></pre>
 </div>
 
 

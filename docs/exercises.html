@@ -1540,24 +1540,35 @@ $(document).ready(function() {
       var code = pre.find('code');
       var text = code.length ? code.text() : pre.text();
 
-      navigator.clipboard.writeText(text).then(function() {
+      function showSuccess() {
         btn.text('Copied!').addClass('copied');
         setTimeout(function() {
           btn.text('Copy').removeClass('copied');
         }, 2000);
-      }).catch(function() {
-        // Fallback for older browsers
+      }
+
+      function fallbackCopy() {
         var textarea = document.createElement('textarea');
         textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
         document.body.appendChild(textarea);
         textarea.select();
-        document.execCommand('copy');
+        try {
+          document.execCommand('copy');
+          showSuccess();
+        } catch(e) {
+          btn.text('Failed');
+        }
         document.body.removeChild(textarea);
-        btn.text('Copied!').addClass('copied');
-        setTimeout(function() {
-          btn.text('Copy').removeClass('copied');
-        }, 2000);
-      });
+      }
+
+      // Use clipboard API if available and in secure context, else fallback
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(showSuccess).catch(fallbackCopy);
+      } else {
+        fallbackCopy();
+      }
     });
 
     pre.css('position', 'relative').append(btn);

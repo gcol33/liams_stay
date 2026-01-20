@@ -15,7 +15,8 @@ output:
 knitr::opts_chunk$set(echo = TRUE, eval = FALSE, message = FALSE, warning = FALSE)
 ```
 
-```{css, echo=FALSE}
+```{=html}
+<style>
 /* ========== PLAYFUL WORKSHOP THEME ========== */
 
 body {
@@ -53,7 +54,7 @@ pre {
  padding-top: 35px;
  border-radius: 8px;
  overflow-x: auto;
- position: relative;
+ position: relative !important;
 }
 
 code {
@@ -70,10 +71,10 @@ pre code {
 
 /* Copy button styling */
 .copy-btn {
- position: absolute;
- top: 5px;
- right: 5px;
- padding: 4px 10px;
+ position: absolute !important;
+ top: 8px !important;
+ right: 8px !important;
+ padding: 4px 12px;
  font-size: 12px;
  background: #4CAF50;
  color: white;
@@ -82,6 +83,7 @@ pre code {
  cursor: pointer;
  opacity: 0;
  transition: opacity 0.2s, background 0.2s;
+ z-index: 100;
 }
 
 pre:hover .copy-btn {
@@ -197,6 +199,7 @@ body.lang-de #TOC .de { display: inline; }
 @media print {
  .tocify, .lang-toggle, .copy-btn { display: none; }
 }
+</style>
 ```
 
 ```{=html}

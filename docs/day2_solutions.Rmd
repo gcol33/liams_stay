@@ -114,9 +114,9 @@ nrow(species)
 # Berechnet Euklidische Distanz. VEKTORISIERT: x2,y2 können Vektoren sein!
 
 calc_distance <- function(x1, y1, x2, y2) {
-  sqrt((x2 - x1)^2 + (y2 - y1)^2)
   # Pythagorean theorem: sqrt(dx² + dy²). Works with vectors!
   # Satz des Pythagoras: sqrt(dx² + dy²). Funktioniert mit Vektoren!
+  sqrt((x2 - x1)^2 + (y2 - y1)^2)
 }
 
 
@@ -125,29 +125,45 @@ calc_distance <- function(x1, y1, x2, y2) {
 # Nearest-Neighbour-Walk: gehe immer zum nächsten unbesuchten Plot
 
 nn_walk <- function(header_data, start_idx = NULL) {
-  n <- nrow(header_data)                                    # how many plots total / wie viele Plots insgesamt
-  if (is.null(start_idx)) start_idx <- sample(1:n, 1)       # if no start given, pick random / wenn kein Start, wähle zufällig
+  # How many plots total? / Wie viele Plots insgesamt?
+  n <- nrow(header_data)
 
-  visited <- rep(FALSE, n)      # track which plots we've visited / verfolge welche Plots besucht
-  visit_order <- numeric(n)     # store the order we visit them / speichere Reihenfolge
-  current <- start_idx          # start at this plot / starte bei diesem Plot
+  # If no start given, pick random / Wenn kein Start, wähle zufällig
+  if (is.null(start_idx)) start_idx <- sample(1:n, 1)
 
-  for (i in 1:n) {                                          # loop through all plots / Schleife durch alle Plots
-    visited[current] <- TRUE                                # mark current as visited / markiere aktuellen als besucht
-    visit_order[i] <- header_data$PlotObservationID[current] # save the plot ID / speichere Plot-ID
+  # Track which plots we've visited / Verfolge welche Plots besucht
+  visited <- rep(FALSE, n)
+  # Store the order we visit them / Speichere Reihenfolge
+  visit_order <- numeric(n)
+  # Start at this plot / Starte bei diesem Plot
+  current <- start_idx
 
-    if (i < n) {                                            # if not done yet / falls noch nicht fertig
-      distances <- calc_distance(                           # calculate distance from current to ALL others
-        header_data$Longitude[current],                     # current plot's longitude / Längengrad aktueller Plot
-        header_data$Latitude[current],                      # current plot's latitude / Breitengrad aktueller Plot
-        header_data$Longitude,                              # ALL longitudes (vector!) / ALLE Längengrade (Vektor!)
-        header_data$Latitude                                # ALL latitudes (vector!) / ALLE Breitengrade (Vektor!)
+  # Loop through all plots / Schleife durch alle Plots
+  for (i in 1:n) {
+    # Mark current as visited / Markiere aktuellen als besucht
+    visited[current] <- TRUE
+    # Save the plot ID / Speichere Plot-ID
+    visit_order[i] <- header_data$PlotObservationID[current]
+
+    # If not done yet / Falls noch nicht fertig
+    if (i < n) {
+      # Calculate distance from current to ALL others (vectorized!)
+      # Berechne Distanz von aktuellem zu ALLEN anderen (vektorisiert!)
+      distances <- calc_distance(
+        header_data$Longitude[current],
+        header_data$Latitude[current],
+        header_data$Longitude,
+        header_data$Latitude
       )
-      distances[visited] <- Inf                             # Inf trick: visited can't be minimum / Inf-Trick: besuchte nie Minimum
-      current <- which.min(distances)                       # go to closest unvisited / gehe zum nächsten unbesuchten
+      # Inf trick: visited plots can never be "minimum"
+      # Inf-Trick: besuchte Plots können nie "Minimum" sein
+      distances[visited] <- Inf
+      # Go to closest unvisited / Gehe zum nächsten unbesuchten
+      current <- which.min(distances)
     }
   }
-  return(visit_order)                                       # return the order of plot IDs / gib Reihenfolge der Plot-IDs zurück
+  # Return the order of plot IDs / Gib Reihenfolge der Plot-IDs zurück
+  return(visit_order)
 }
 
 
@@ -156,24 +172,38 @@ nn_walk <- function(header_data, start_idx = NULL) {
 # Zähle kumulative Arten während wir jeden Plot der Reihe nach besuchen
 
 build_accumulation <- function(species_data, plot_order, status_filter = NULL) {
-  if (!is.null(status_filter)) {                            # if filter provided (e.g., "nat") / falls Filter angegeben
-    species_data <- species_data %>% filter(STATUS == status_filter)  # keep only matching species / behalte nur passende
+  # If filter provided (e.g., "nat"), keep only matching species
+  # Falls Filter angegeben, behalte nur passende Arten
+  if (!is.null(status_filter)) {
+    species_data <- species_data %>% filter(STATUS == status_filter)
   }
 
-  found <- c()                                # empty vector to collect all species found / leerer Vektor für gefundene Arten
-  accum <- numeric(length(plot_order))        # pre-allocate result vector / Ergebnisvektor vorbelegen
+  # Empty vector to collect all species found / Leerer Vektor für gefundene Arten
+  found <- c()
+  # Pre-allocate result vector / Ergebnisvektor vorbelegen
+  accum <- numeric(length(plot_order))
 
-  for (i in seq_along(plot_order)) {          # for each plot in our walking order / für jeden Plot in unserer Laufreihenfolge
-    plot_spp <- species_data %>%              # get species in this plot:
-      filter(PlotObservationID == plot_order[i]) %>%  # filter to current plot / filtere auf aktuellen Plot
-      pull(WFO_TAXON) %>%                     # extract species names / extrahiere Artnamen
-      unique()                                # remove duplicates within plot / entferne Duplikate im Plot
+  # For each plot in our walking order / Für jeden Plot in unserer Laufreihenfolge
+  for (i in seq_along(plot_order)) {
+    # Get unique species in this plot / Hole einzigartige Arten in diesem Plot
+    plot_spp <- species_data %>%
+      # Filter to current plot / Filtere auf aktuellen Plot
+      filter(PlotObservationID == plot_order[i]) %>%
+      # Extract species names / Extrahiere Artnamen
+      pull(WFO_TAXON) %>%
+      # Remove duplicates within plot / Entferne Duplikate im Plot
+      unique()
 
-    new_spp <- setdiff(plot_spp, found)       # setdiff: what's NEW? (in plot but not yet found) / was ist NEU?
-    found <- c(found, new_spp)                # add new species to our collection / füge neue Arten zur Sammlung
-    accum[i] <- length(found)                 # count total species so far / zähle Gesamtarten bisher
+    # setdiff: what's NEW? (in plot but not yet found)
+    # setdiff: was ist NEU? (im Plot aber noch nicht gefunden)
+    new_spp <- setdiff(plot_spp, found)
+    # Add new species to our collection / Füge neue Arten zur Sammlung
+    found <- c(found, new_spp)
+    # Count total species so far / Zähle Gesamtarten bisher
+    accum[i] <- length(found)
   }
-  return(accum)                               # return the accumulation curve / gib Akkumulationskurve zurück
+  # Return the accumulation curve / Gib Akkumulationskurve zurück
+  return(accum)
 }
 
 
@@ -182,8 +212,10 @@ build_accumulation <- function(species_data, plot_order, status_filter = NULL) {
 # Finde wann wir X% der Gesamtarten erreichen (Standard 80%)
 
 find_saturation <- function(curve, threshold = 0.8) {
-  target <- max(curve) * threshold            # calculate target: 80% of final count / berechne Ziel: 80% der Endzahl
-  which(curve >= target)[1]                   # which()[1] = first position where TRUE / erste Position wo TRUE
+  # Calculate target: 80% of final count / Berechne Ziel: 80% der Endzahl
+  target <- max(curve) * threshold
+  # which()[1] = first position where TRUE / Erste Position wo TRUE
+  which(curve >= target)[1]
 }
 
 cat("All functions loaded!\n")

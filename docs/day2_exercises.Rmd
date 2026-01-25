@@ -413,15 +413,75 @@ cat("Unique species:", length(unique(species$WFO_TAXON)), "\n")
 
 ### <span class="en">1b: Define helper functions</span><span class="de">1b: Hilfsfunktionen definieren</span>
 
+<div class="en">
+
+**Code Philosophy:** These functions follow key programming principles:
+
+1. **Single responsibility** - Each function does ONE thing well
+2. **Reusability** - Functions are generic, not hardcoded to specific data
+3. **Vectorization** - Use R's strength: operate on whole vectors at once
+4. **Sensible defaults** - Optional parameters have reasonable default values
+
+</div>
+
+<div class="de">
+
+**Code-Philosophie:** Diese Funktionen folgen wichtigen Programmierprinzipien:
+
+1. **Einzelverantwortung** - Jede Funktion macht EINE Sache gut
+2. **Wiederverwendbarkeit** - Funktionen sind generisch, nicht auf bestimmte Daten festgelegt
+3. **Vektorisierung** - Nutze Rs Stärke: operiere auf ganzen Vektoren gleichzeitig
+4. **Sinnvolle Standardwerte** - Optionale Parameter haben vernünftige Standardwerte
+
+</div>
+
 ```{r}
-# Distance function - calculates distance between two points
-# Distanzfunktion - berechnet Abstand zwischen zwei Punkten
+# ============================================================
+# FUNCTION 1: calc_distance
+# ============================================================
+# WHY THIS DESIGN:
+# - Takes individual coordinates, not data frames
+#   -> More flexible: works with any x,y data
+# - Uses Euclidean distance (Pythagorean theorem)
+#   -> Simple, fast, good enough for nearby points
+# - VECTORIZED: x2,y2 can be vectors!
+#   -> Calculate distance to ALL points at once
+#
+# WARUM DIESES DESIGN:
+# - Nimmt einzelne Koordinaten, keine Data Frames
+#   -> Flexibler: funktioniert mit beliebigen x,y Daten
+# - Nutzt Euklidische Distanz (Satz des Pythagoras)
+#   -> Einfach, schnell, gut genug für nahe Punkte
+# - VEKTORISIERT: x2,y2 können Vektoren sein!
+#   -> Berechne Distanz zu ALLEN Punkten auf einmal
+# ============================================================
 calc_distance <- function(x1, y1, x2, y2) {
   sqrt((x2 - x1)^2 + (y2 - y1)^2)
 }
 
-# Nearest-neighbour walk - visits plots by always going to closest unvisited
-# Nearest-Neighbour-Walk - besucht Plots indem immer zum nächsten unbesuchten gegangen wird
+# ============================================================
+# FUNCTION 2: nn_walk (Nearest-Neighbour Walk)
+# ============================================================
+# WHY THIS DESIGN:
+# - start_idx = NULL means "pick random start"
+#   -> Default is random, but user can control it
+# - Returns PlotObservationID, not row indices
+#   -> More useful: can directly filter species data
+# - Uses "visited" boolean vector + Inf trick
+#   -> Elegant way to exclude already-visited plots
+# - WHY A LOOP? This is a "greedy algorithm" - each step
+#   depends on previous steps. Can't vectorize!
+#
+# WARUM DIESES DESIGN:
+# - start_idx = NULL bedeutet "wähle zufälligen Start"
+#   -> Standard ist zufällig, aber Nutzer kann kontrollieren
+# - Gibt PlotObservationID zurück, nicht Zeilenindizes
+#   -> Nützlicher: kann direkt Artdaten filtern
+# - Nutzt "visited" Boolean-Vektor + Inf-Trick
+#   -> Elegante Art, bereits besuchte Plots auszuschließen
+# - WARUM EINE SCHLEIFE? Dies ist ein "Greedy-Algorithmus" -
+#   jeder Schritt hängt von vorherigen ab. Nicht vektorisierbar!
+# ============================================================
 nn_walk <- function(header_data, start_idx = NULL) {
   n <- nrow(header_data)
   if (is.null(start_idx)) start_idx <- sample(1:n, 1)
@@ -435,10 +495,14 @@ nn_walk <- function(header_data, start_idx = NULL) {
     visit_order[i] <- header_data$PlotObservationID[current]
 
     if (i < n) {
+      # VECTORIZED: calculate distance to ALL plots at once
+      # VEKTORISIERT: berechne Distanz zu ALLEN Plots auf einmal
       distances <- calc_distance(
         header_data$Longitude[current], header_data$Latitude[current],
         header_data$Longitude, header_data$Latitude
       )
+      # Inf trick: visited plots can never be "minimum"
+      # Inf-Trick: besuchte Plots können nie "Minimum" sein
       distances[visited] <- Inf
       current <- which.min(distances)
     }
@@ -446,8 +510,29 @@ nn_walk <- function(header_data, start_idx = NULL) {
   return(visit_order)
 }
 
-# Build accumulation curve for given plot order
-# Baue Akkumulationskurve für gegebene Plot-Reihenfolge
+# ============================================================
+# FUNCTION 3: build_accumulation
+# ============================================================
+# WHY THIS DESIGN:
+# - status_filter is OPTIONAL (NULL = use all species)
+#   -> Same function works for native, alien, or all
+# - Uses setdiff() to find NEW species
+#   -> Set operations are fast and clear
+# - Returns vector same length as plot_order
+#   -> Easy to plot: x = 1:n, y = accumulation
+# - WHY A LOOP? Accumulation is inherently sequential:
+#   "how many species after plot 1, then 2, then 3..."
+#
+# WARUM DIESES DESIGN:
+# - status_filter ist OPTIONAL (NULL = alle Arten)
+#   -> Gleiche Funktion für heimisch, alien, oder alle
+# - Nutzt setdiff() um NEUE Arten zu finden
+#   -> Mengenoperationen sind schnell und klar
+# - Gibt Vektor gleicher Länge wie plot_order zurück
+#   -> Einfach zu plotten: x = 1:n, y = Akkumulation
+# - WARUM EINE SCHLEIFE? Akkumulation ist sequentiell:
+#   "wie viele Arten nach Plot 1, dann 2, dann 3..."
+# ============================================================
 build_accumulation <- function(species_data, plot_order, status_filter = NULL) {
   if (!is.null(status_filter)) {
     species_data <- species_data %>% filter(STATUS == status_filter)
@@ -457,11 +542,15 @@ build_accumulation <- function(species_data, plot_order, status_filter = NULL) {
   accum <- numeric(length(plot_order))
 
   for (i in seq_along(plot_order)) {
+    # Get unique species in this plot
+    # Hole einzigartige Arten in diesem Plot
     plot_spp <- species_data %>%
       filter(PlotObservationID == plot_order[i]) %>%
       pull(WFO_TAXON) %>%
       unique()
 
+    # setdiff: "what's in plot_spp but NOT in found?"
+    # setdiff: "was ist in plot_spp aber NICHT in found?"
     new_spp <- setdiff(plot_spp, found)
     found <- c(found, new_spp)
     accum[i] <- length(found)
@@ -469,8 +558,25 @@ build_accumulation <- function(species_data, plot_order, status_filter = NULL) {
   return(accum)
 }
 
-# Find saturation point (when we reach X% of total species)
-# Finde Sättigungspunkt (wenn wir X% der Gesamtarten erreichen)
+# ============================================================
+# FUNCTION 4: find_saturation
+# ============================================================
+# WHY THIS DESIGN:
+# - threshold has DEFAULT (0.8 = 80%)
+#   -> Common choice, but user can change
+# - Returns the FIRST plot where we reach threshold
+#   -> which()[1] finds first TRUE in logical vector
+# - Works on the curve output from build_accumulation
+#   -> Functions chain together nicely
+#
+# WARUM DIESES DESIGN:
+# - threshold hat STANDARD (0.8 = 80%)
+#   -> Häufige Wahl, aber Nutzer kann ändern
+# - Gibt den ERSTEN Plot zurück wo wir Schwelle erreichen
+#   -> which()[1] findet erstes TRUE im logischen Vektor
+# - Funktioniert auf der Kurve von build_accumulation
+#   -> Funktionen verketten sich schön
+# ============================================================
 find_saturation <- function(curve, threshold = 0.8) {
   target <- max(curve) * threshold
   which(curve >= target)[1]

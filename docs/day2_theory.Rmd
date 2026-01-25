@@ -315,6 +315,149 @@ ggplot(scenario_data, aes(x = x, y = y)) +
 
 ---
 
+## <span class="en">Hotspot Maps: Austria Example</span><span class="de">Hotspot-Karten: Österreich-Beispiel</span>
+
+<div class="en">
+
+What might hotspot maps look like for Austria? Here's a hypothetical example showing how alien and native species might be distributed differently across the landscape.
+
+</div>
+
+<div class="de">
+
+Wie könnten Hotspot-Karten für Österreich aussehen? Hier ist ein hypothetisches Beispiel, das zeigt, wie Alien- und heimische Arten unterschiedlich über die Landschaft verteilt sein könnten.
+
+</div>
+
+```{r austria-hotspots, fig.height=8}
+# Simplified Austria outline (approximate polygon)
+austria <- data.frame(
+  x = c(9.5, 10, 11, 12, 13, 14, 15, 16, 17, 17, 16.5, 16, 15, 14, 13, 12, 11, 10, 9.5),
+  y = c(47, 47.5, 47.8, 47.5, 47.8, 48.5, 48.8, 48.5, 48, 47.5, 47, 46.8, 46.5, 46.8, 47, 47.2, 47, 47, 47)
+)
+
+# Point-in-polygon test
+point_in_polygon <- function(px, py, poly_x, poly_y) {
+  n <- length(poly_x)
+  inside <- FALSE
+  j <- n
+  for (i in 1:n) {
+    if (((poly_y[i] > py) != (poly_y[j] > py)) &&
+        (px < (poly_x[j] - poly_x[i]) * (py - poly_y[i]) / (poly_y[j] - poly_y[i]) + poly_x[i])) {
+      inside <- !inside
+    }
+    j <- i
+  }
+  inside
+}
+
+# Create grid
+grid_x <- seq(9.5, 17, by = 0.5)
+grid_y <- seq(46.3, 49, by = 0.3)
+grid <- expand.grid(x = grid_x, y = grid_y)
+grid$inside <- mapply(point_in_polygon, grid$x, grid$y,
+                      MoreArgs = list(poly_x = austria$x, poly_y = austria$y))
+
+# Simulate alien hotspots (clustered around Vienna and Linz - major cities)
+set.seed(2024)
+grid$alien_richness <- ifelse(grid$inside,
+  # Higher near Vienna (16.4, 48.2) and Linz (14.3, 48.3)
+  pmax(0,
+    25 * exp(-((grid$x - 16.4)^2 + (grid$y - 48.2)^2) / 2) +  # Vienna
+    15 * exp(-((grid$x - 14.3)^2 + (grid$y - 48.3)^2) / 3) +  # Linz
+    8 * exp(-((grid$x - 13)^2 + (grid$y - 47.8)^2) / 4) +     # Salzburg
+    rnorm(nrow(grid), 3, 2)
+  ),
+  NA
+)
+grid$alien_richness[grid$alien_richness < 0] <- 0
+
+# Simulate native hotspots (clustered in Alps and natural areas)
+grid$native_richness <- ifelse(grid$inside,
+  pmax(0,
+    40 * exp(-((grid$x - 11)^2 + (grid$y - 47)^2) / 3) +      # Tyrol Alps
+    35 * exp(-((grid$x - 13.5)^2 + (grid$y - 47.2)^2) / 4) +  # Hohe Tauern
+    30 * exp(-((grid$x - 15)^2 + (grid$y - 46.8)^2) / 3) +    # Carinthia
+    rnorm(nrow(grid), 15, 5)
+  ),
+  NA
+)
+grid$native_richness[grid$native_richness < 0] <- 0
+
+grid_inside <- grid[grid$inside, ]
+
+# Alien hotspot map
+p1 <- ggplot() +
+  # Austria outline
+  geom_polygon(data = austria, aes(x, y), fill = "white", color = "#666666", linewidth = 1) +
+  # Grid cells colored by alien richness
+  geom_tile(data = grid_inside, aes(x = x, y = y, fill = alien_richness),
+            width = 0.5, height = 0.3, alpha = 0.8) +
+  # Austria outline on top
+  geom_polygon(data = austria, aes(x, y), fill = NA, color = "#333333", linewidth = 1.2) +
+  # Grid lines
+  geom_vline(xintercept = grid_x, color = "gray50", linewidth = 0.2, alpha = 0.5) +
+  geom_hline(yintercept = grid_y, color = "gray50", linewidth = 0.2, alpha = 0.5) +
+  # City labels
+  annotate("point", x = 16.4, y = 48.2, size = 3, color = "black") +
+  annotate("text", x = 16.4, y = 48.5, label = "Vienna", size = 3, fontface = "bold") +
+  annotate("point", x = 14.3, y = 48.3, size = 2, color = "black") +
+  annotate("text", x = 14.3, y = 48.55, label = "Linz", size = 2.5) +
+  scale_fill_gradient(low = "white", high = "#D32F2F", na.value = "transparent",
+                      name = "Alien\nSpecies") +
+  labs(title = "Alien Species Hotspots",
+       subtitle = "Clustered around major cities (introduction points)",
+       x = "Longitude", y = "Latitude") +
+  theme_minimal(base_size = 12) +
+  coord_fixed(ratio = 1.4, xlim = c(9.3, 17.2), ylim = c(46.2, 49.2)) +
+  theme(legend.position = "right")
+
+# Native hotspot map
+p2 <- ggplot() +
+  geom_polygon(data = austria, aes(x, y), fill = "white", color = "#666666", linewidth = 1) +
+  geom_tile(data = grid_inside, aes(x = x, y = y, fill = native_richness),
+            width = 0.5, height = 0.3, alpha = 0.8) +
+  geom_polygon(data = austria, aes(x, y), fill = NA, color = "#333333", linewidth = 1.2) +
+  geom_vline(xintercept = grid_x, color = "gray50", linewidth = 0.2, alpha = 0.5) +
+  geom_hline(yintercept = grid_y, color = "gray50", linewidth = 0.2, alpha = 0.5) +
+  # Mountain region labels
+  annotate("text", x = 11, y = 46.7, label = "Tyrol", size = 3, fontface = "italic") +
+  annotate("text", x = 13.5, y = 46.9, label = "Hohe Tauern", size = 2.5, fontface = "italic") +
+  scale_fill_gradient(low = "white", high = "#2E7D32", na.value = "transparent",
+                      name = "Native\nSpecies") +
+  labs(title = "Native Species Hotspots",
+       subtitle = "Clustered in alpine and natural areas",
+       x = "Longitude", y = "Latitude") +
+  theme_minimal(base_size = 12) +
+  coord_fixed(ratio = 1.4, xlim = c(9.3, 17.2), ylim = c(46.2, 49.2)) +
+  theme(legend.position = "right")
+
+# Stack plots
+gridExtra::grid.arrange(p1, p2, ncol = 1)
+```
+
+<div class="en">
+
+**Key observations (hypothetical):**
+
+- **Alien species** concentrate around **Vienna, Linz, Salzburg** - major cities with ports, railways, and gardens where species are introduced
+- **Native species** concentrate in **alpine regions** - natural habitats with high endemic diversity
+- The **patterns are almost opposite** - this is what accumulation curves can reveal!
+
+</div>
+
+<div class="de">
+
+**Wichtige Beobachtungen (hypothetisch):**
+
+- **Alien-Arten** konzentrieren sich um **Wien, Linz, Salzburg** - Großstädte mit Häfen, Eisenbahnen und Gärten, wo Arten eingeführt werden
+- **Heimische Arten** konzentrieren sich in **alpinen Regionen** - natürliche Lebensräume mit hoher endemischer Vielfalt
+- Die **Muster sind fast gegensätzlich** - das können Akkumulationskurven aufdecken!
+
+</div>
+
+---
+
 # <span class="en">The Spatial Algorithm</span><span class="de">Der räumliche Algorithmus</span>
 
 ## <span class="en">Why Does Order Matter?</span><span class="de">Warum ist die Reihenfolge wichtig?</span>

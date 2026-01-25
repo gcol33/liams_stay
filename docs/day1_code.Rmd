@@ -492,9 +492,9 @@ table(species$STATUS)
 native <- species[species$STATUS == "native", ]
 nrow(native)
 
-# Filter alien species only
-alien <- species[species$STATUS == "alien", ]
-nrow(alien)
+# Filter neophyte species only
+neo <- species[species$STATUS == "neo", ]
+nrow(neo)
 ```
 
 ```{r unique-by-status}
@@ -502,25 +502,25 @@ nrow(alien)
 n_native <- length(unique(native$WFO_TAXON))
 n_native
 
-# How many UNIQUE alien species?
-n_alien <- length(unique(alien$WFO_TAXON))
-n_alien
+# How many UNIQUE neophyte species?
+n_neo <- length(unique(neo$WFO_TAXON))
+n_neo
 
 # Ratio
-cat("Ratio of native to alien:", round(n_native / n_alien, 1), ": 1\n")
+cat("Ratio of native to neo:", round(n_native / n_neo, 1), ": 1\n")
 ```
 
 ```{r plot-status, fig.height=4}
 # Visualize the difference
 status_counts <- data.frame(
-  Status = c("Native", "Alien"),
-  Count = c(n_native, n_alien)
+  Status = c("Native", "Neo"),
+  Count = c(n_native, n_neo)
 )
 
 ggplot(status_counts, aes(x = Status, y = Count, fill = Status)) +
   geom_col(width = 0.6) +
   geom_text(aes(label = Count), vjust = -0.5, size = 5) +
-  scale_fill_manual(values = c("Alien" = "#FF9800", "Native" = "#4CAF50")) +
+  scale_fill_manual(values = c("Neo" = "#FF9800", "Native" = "#4CAF50")) +
   labs(title = "Unique Species by Status in Austrian Data",
        y = "Number of Unique Species") +
   theme_minimal(base_size = 14) +
@@ -529,7 +529,7 @@ ggplot(status_counts, aes(x = Status, y = Count, fill = Status)) +
 
 <div class="en">
 
-There are about `r round(n_native / n_alien, 0)` times more native species than alien species in our dataset.
+There are about `r round(n_native / n_neo, 0)` times more native species than neophyte species in our dataset.
 
 **Tomorrow:** We'll build separate accumulation curves for each group and compare their shapes!
 
@@ -537,7 +537,7 @@ There are about `r round(n_native / n_alien, 0)` times more native species than 
 
 <div class="de">
 
-Es gibt etwa `r round(n_native / n_alien, 0)` mal mehr heimische als Alien-Arten in unserem Datensatz.
+Es gibt etwa `r round(n_native / n_neo, 0)` mal mehr heimische als Neophyten-Arten in unserem Datensatz.
 
 **Morgen:** Wir werden separate Akkumulationskurven für jede Gruppe bauen und ihre Formen vergleichen!
 

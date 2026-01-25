@@ -491,15 +491,15 @@ ggplot(summary_curve, aes(x = step, y = mean_species)) +
 
 <div class="exercise-box">
 
-```{r separate-native-alien}
+```{r separate-native-neo}
 # Split data by status
 native_data <- data_sample[data_sample$STATUS == "native", ]
-alien_data <- data_sample[data_sample$STATUS == "alien", ]
+neo_data <- data_sample[data_sample$STATUS == "neo", ]
 
 cat("Native observations:", nrow(native_data), "\n")
-cat("Alien observations:", nrow(alien_data), "\n")
+cat("Neo observations:", nrow(neo_data), "\n")
 cat("Native species:", length(unique(native_data$WFO_TAXON)), "\n")
-cat("Alien species:", length(unique(alien_data$WFO_TAXON)), "\n")
+cat("Neo species:", length(unique(neo_data$WFO_TAXON)), "\n")
 ```
 
 </div>
@@ -510,7 +510,7 @@ cat("Alien species:", length(unique(alien_data$WFO_TAXON)), "\n")
 
 <div class="exercise-box">
 
-```{r build-native-alien-curves}
+```{r build-native-neo-curves}
 # Function to build multiple curves and return summary
 build_curves_summary <- function(data, n_seeds = 5) {
   sample_plots <- unique(data$PlotObservationID)
@@ -547,12 +547,12 @@ build_curves_summary <- function(data, n_seeds = 5) {
 native_summary <- build_curves_summary(native_data, n_seeds = 5)
 if (!is.null(native_summary)) native_summary$status <- "Native"
 
-# Build curves for alien species
-alien_summary <- build_curves_summary(alien_data, n_seeds = 5)
-if (!is.null(alien_summary)) alien_summary$status <- "Alien"
+# Build curves for neophyte species
+neo_summary <- build_curves_summary(neo_data, n_seeds = 5)
+if (!is.null(neo_summary)) neo_summary$status <- "Neo"
 
 # Combine (filter out NULL results)
-comparison <- rbind(native_summary, alien_summary)
+comparison <- rbind(native_summary, neo_summary)
 comparison <- comparison[!is.na(comparison$status), ]
 ```
 
@@ -562,9 +562,9 @@ ggplot(comparison, aes(x = step, y = mean_species, color = status, fill = status
                   ymax = mean_species + sd_species),
               alpha = 0.2, color = NA) +
   geom_line(linewidth = 1.5) +
-  scale_color_manual(values = c("Alien" = "#FF9800", "Native" = "#4CAF50")) +
-  scale_fill_manual(values = c("Alien" = "#FF9800", "Native" = "#4CAF50")) +
-  labs(title = "Species Accumulation: Native vs. Alien",
+  scale_color_manual(values = c("Neo" = "#FF9800", "Native" = "#4CAF50")) +
+  scale_fill_manual(values = c("Neo" = "#FF9800", "Native" = "#4CAF50")) +
+  labs(title = "Species Accumulation: Native vs. Neo",
        subtitle = "Shaded area shows standard deviation across seeds",
        x = "Plots Visited (spatial order)",
        y = "Cumulative Species",
@@ -592,8 +592,8 @@ comparison_norm <- comparison %>%
 
 ggplot(comparison_norm, aes(x = step, y = pct_complete, color = status)) +
   geom_line(linewidth = 1.5) +
-  scale_color_manual(values = c("Alien" = "#FF9800", "Native" = "#4CAF50")) +
-  labs(title = "Normalized Accumulation: Native vs. Alien",
+  scale_color_manual(values = c("Neo" = "#FF9800", "Native" = "#4CAF50")) +
+  labs(title = "Normalized Accumulation: Native vs. Neo",
        subtitle = "Both curves scaled to percentage of total species found",
        x = "Plots Visited",
        y = "% of Total Species Found",

@@ -1,7 +1,7 @@
 ---
-title: '<span class="en">Species Accumulation Curves</span><span class="de">Artenakkumulationskurven</span>'
-subtitle: '<span class="en">How do we count species we can''t see?</span><span class="de">Wie zählt man Arten, die man nicht sieht?</span>'
-author: '<span class="en">Ecology Practicum - Day 1</span><span class="de">Ökologie-Praktikum - Tag 1</span>'
+title: '<span class="en">Species Accumulation Curves - Day 1</span><span class="de">Artenakkumulationskurven - Tag 1</span>'
+subtitle: '<span class="en">Foundations: Theory & R Basics</span><span class="de">Grundlagen: Theorie & R-Einführung</span>'
+author: '<span class="en">Ecology Workshop</span><span class="de">Ökologie-Workshop</span>'
 date: "`r Sys.Date()`"
 output:
   html_document:
@@ -12,13 +12,13 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, fig.width = 9, fig.height = 5)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.width = 9, fig.height = 5)
 library(tidyverse)
 library(knitr)
 ```
 
 ```{css, echo=FALSE}
-/* ========== PLAYFUL WORKSHOP THEME ========== */
+/* ========== WORKSHOP THEME ========== */
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -26,171 +26,60 @@ body {
   background-color: #fafffe;
 }
 
-/* Headings with green theme */
-h1 {
-  color: #2E7D32 !important;
-  border-bottom: 3px solid #4CAF50;
-  padding-bottom: 10px;
+h1 { color: #2E7D32 !important; border-bottom: 3px solid #4CAF50; padding-bottom: 10px; }
+h2 { color: #388E3C !important; margin-top: 2em; }
+h3 { color: #43A047 !important; }
+
+table { border-collapse: collapse; margin: 1em 0; width: 100%; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+th { background-color: #4CAF50 !important; color: white !important; padding: 12px; text-align: left; }
+td { padding: 10px 12px; border-bottom: 1px solid #ddd; }
+tr:nth-child(even) { background-color: #f9f9f9; }
+tr:hover { background-color: #E8F5E9; }
+
+pre { background-color: #f5f5f5 !important; border-left: 4px solid #4CAF50 !important; padding: 15px; border-radius: 8px; }
+code { background-color: #E8F5E9; padding: 2px 6px; border-radius: 4px; color: #2E7D32; }
+
+blockquote { border-left: 4px solid #FF9800; background-color: #FFF8E1; padding: 15px 20px; margin: 1em 0; border-radius: 0 8px 8px 0; }
+
+hr { border: none; height: 3px; background: linear-gradient(to right, #4CAF50, #81C784, #C8E6C9, #81C784, #4CAF50); margin: 2em 0; border-radius: 2px; }
+
+.tocify { border: none !important; border-radius: 12px !important; background-color: #f1f8e9 !important; }
+.tocify-item.active { background-color: #4CAF50 !important; color: white !important; }
+
+/* Exercise boxes */
+.exercise-box {
+  background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+  border-left: 5px solid #1976D2;
+  padding: 20px;
+  margin: 1.5em 0;
+  border-radius: 0 12px 12px 0;
 }
 
-h2 {
-  color: #388E3C !important;
-  margin-top: 2em;
-}
-
-h3 {
-  color: #43A047 !important;
-}
-
-/* Tables - green headers, hover effects */
-table {
-  border-collapse: collapse;
-  margin: 1em 0;
-  width: 100%;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-th {
-  background-color: #4CAF50 !important;
-  color: white !important;
-  padding: 12px;
-  text-align: left;
-}
-
-td {
-  padding: 10px 12px;
-  border-bottom: 1px solid #ddd;
-}
-
-tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-tr:hover {
-  background-color: #E8F5E9;
-}
-
-/* Code blocks */
-pre {
-  background-color: #f5f5f5 !important;
-  border-left: 4px solid #4CAF50 !important;
-  padding: 15px;
-  border-radius: 8px;
-  overflow-x: auto;
-}
-
-code {
-  background-color: #E8F5E9;
-  padding: 2px 6px;
-  border-radius: 4px;
-  color: #2E7D32;
-}
-
-/* Blockquotes - orange accent */
-blockquote {
-  border-left: 4px solid #FF9800;
-  background-color: #FFF8E1;
-  padding: 15px 20px;
-  margin: 1em 0;
-  border-radius: 0 8px 8px 0;
-}
-
-/* Key insights in blue */
-p > strong:first-child {
-  color: #1565C0;
-}
-
-/* Figures */
-.figure img, img {
-  max-width: 100%;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-/* Horizontal rules - gradient */
-hr {
-  border: none;
-  height: 3px;
-  background: linear-gradient(to right, #4CAF50, #81C784, #C8E6C9, #81C784, #4CAF50);
-  margin: 2em 0;
-  border-radius: 2px;
-}
-
-/* TOC styling */
-.tocify {
-  border: none !important;
-  border-radius: 12px !important;
-  background-color: #f1f8e9 !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.tocify-item {
-  padding: 8px 15px;
-}
-
-.tocify-item.active, .tocify-item.active:hover {
-  background-color: #4CAF50 !important;
-  color: white !important;
-}
-
-/* Discussion questions - orange highlight */
-h2 > span:only-child {
-  display: block;
-}
-
-/* Lists */
-ul, ol {
-  margin: 1em 0;
-}
-
-li {
-  margin: 0.5em 0;
+.exercise-box h4 {
+  color: #1565C0 !important;
+  margin-top: 0;
 }
 
 /* ========== LANGUAGE TOGGLE ========== */
-
 .lang-toggle {
-  position: fixed;
-  top: 10px;
-  right: 20px;
-  z-index: 9999;
+  position: fixed; top: 10px; right: 20px; z-index: 9999;
   background: linear-gradient(135deg, #2E7D32, #4CAF50);
-  padding: 8px 12px;
-  border-radius: 25px;
+  padding: 8px 12px; border-radius: 25px;
   box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3);
 }
-
 .lang-toggle button {
-  background: transparent;
-  border: none;
-  color: #fff;
-  padding: 6px 14px;
-  cursor: pointer;
-  font-weight: bold;
-  border-radius: 20px;
-  transition: all 0.3s;
-  font-size: 14px;
+  background: transparent; border: none; color: #fff;
+  padding: 6px 14px; cursor: pointer; font-weight: bold;
+  border-radius: 20px; transition: all 0.3s; font-size: 14px;
 }
+.lang-toggle button.active { background: white; color: #2E7D32; }
+.lang-toggle button:hover:not(.active) { background: rgba(255,255,255,0.2); }
 
-.lang-toggle button.active {
-  background: white;
-  color: #2E7D32;
-}
-
-.lang-toggle button:hover:not(.active) {
-  background: rgba(255,255,255,0.2);
-}
-
-/* Hide inactive language by default */
 .de { display: none; }
 .en { display: inline; }
-
 body.lang-de .de { display: inline; }
 body.lang-de .en { display: none; }
 
-/* For block elements */
 div.de, p.de, li.de, h1.de, h2.de, h3.de, h4.de, section.de { display: none; }
 div.en, p.en, li.en, h1.en, h2.en, h3.en, h4.en, section.en { display: block; }
 
@@ -202,45 +91,30 @@ body.lang-de div.en, body.lang-de p.en, body.lang-de li.en,
 body.lang-de h1.en, body.lang-de h2.en, body.lang-de h3.en,
 body.lang-de h4.en, body.lang-de section.en { display: none; }
 
-/* Table of contents language fix */
 body.lang-de #TOC .en { display: none; }
 body.lang-de #TOC .de { display: inline; }
 #TOC .de { display: none; }
 #TOC .en { display: inline; }
 
-/* ========== PRINT STYLES ========== */
 @media print {
   .tocify, .lang-toggle { display: none; }
-  body { font-size: 11pt; }
-  h1 { page-break-before: always; }
-  h1:first-of-type { page-break-before: avoid; }
 }
 ```
 
 ```{js, echo=FALSE}
 document.addEventListener('DOMContentLoaded', function() {
-  // Create language toggle
   var toggle = document.createElement('div');
   toggle.className = 'lang-toggle';
   toggle.innerHTML = '<button id="btn-en" class="active">EN</button><button id="btn-de">DE</button>';
   document.body.appendChild(toggle);
 
-  // Check for saved preference or browser language
   var savedLang = localStorage.getItem('workshop-lang');
   var browserLang = navigator.language.substring(0, 2);
   var defaultLang = savedLang || (browserLang === 'de' ? 'de' : 'en');
+  if (defaultLang === 'de') setLanguage('de');
 
-  if (defaultLang === 'de') {
-    setLanguage('de');
-  }
-
-  document.getElementById('btn-en').addEventListener('click', function() {
-    setLanguage('en');
-  });
-
-  document.getElementById('btn-de').addEventListener('click', function() {
-    setLanguage('de');
-  });
+  document.getElementById('btn-en').addEventListener('click', function() { setLanguage('en'); });
+  document.getElementById('btn-de').addEventListener('click', function() { setLanguage('de'); });
 
   function setLanguage(lang) {
     document.body.classList.remove('lang-en', 'lang-de');
@@ -254,9 +128,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
 ---
 
-# <span class="en">Part 1: The Big Question</span><span class="de">Teil 1: Die große Frage</span>
+# <span class="en">Part 1: What is Biodiversity?</span><span class="de">Teil 1: Was ist Biodiversität?</span>
 
-## <span class="en">What is Biodiversity?</span><span class="de">Was ist Biodiversität?</span>
+## <span class="en">Definition</span><span class="de">Definition</span>
 
 <div class="en">
 
@@ -292,399 +166,417 @@ Denk an zwei Wälder...
 
 ## <span class="en">Why Does Biodiversity Matter?</span><span class="de">Warum ist Biodiversität wichtig?</span>
 
-```{r biodiversity-facts, fig.height=3.5}
-# Real statistics from World Economic Forum, Swiss Re, World Bank
+```{r biodiversity-importance, echo=FALSE, fig.height=3.5}
 facts <- data.frame(
-  fact_en = c("Global GDP\ndependent on nature", "Wildlife decline\nsince 1970", "Species facing\nextinction"),
-  fact_de = c("Globales BIP\nabhängig von Natur", "Wildtierrückgang\nseit 1970", "Arten vom\nAussterben bedroht"),
-  value = c(55, 69, 100),
-  label = c("55%", "69%", "1 million")
+  category = c("Economy", "Decline", "Risk"),
+  value = c(44, 69, 25),
+  label_en = c("44 trillion USD\nGDP depends on nature", "69% wildlife\ndecline since 1970", "25% of species\nthreatened"),
+  label_de = c("44 Billionen USD\nBIP hängt von Natur ab", "69% Wildtier-\nrückgang seit 1970", "25% der Arten\nbedroht")
 )
 
-p_facts <- ggplot(facts, aes(x = reorder(fact_en, -value), y = value, fill = fact_en)) +
-  geom_col(show.legend = FALSE, width = 0.7) +
-  geom_text(aes(label = label), vjust = -0.5, size = 6, fontface = "bold") +
+ggplot(facts, aes(x = category, y = value, fill = category)) +
+  geom_col(width = 0.6) +
+  geom_text(aes(label = label_en), vjust = -0.3, size = 4, lineheight = 0.9) +
   scale_fill_manual(values = c("#4CAF50", "#FF9800", "#F44336")) +
-  labs(title = "Biodiversity by the Numbers",
-       subtitle = "Sources: World Economic Forum, Swiss Re, World Bank",
-       x = "", y = "") +
+  labs(title = "Why Biodiversity Matters", y = "", x = "") +
   theme_minimal(base_size = 14) +
-  theme(axis.text.y = element_blank(),
-        axis.ticks = element_blank(),
+  theme(legend.position = "none",
+        axis.text.y = element_blank(),
         panel.grid = element_blank()) +
-  ylim(0, 120)
-
-p_facts_de <- ggplot(facts, aes(x = reorder(fact_de, -value), y = value, fill = fact_de)) +
-  geom_col(show.legend = FALSE, width = 0.7) +
-  geom_text(aes(label = label), vjust = -0.5, size = 6, fontface = "bold") +
-  scale_fill_manual(values = c("#4CAF50", "#FF9800", "#F44336")) +
-  labs(title = "Biodiversität in Zahlen",
-       subtitle = "Quellen: World Economic Forum, Swiss Re, World Bank",
-       x = "", y = "") +
-  theme_minimal(base_size = 14) +
-  theme(axis.text.y = element_blank(),
-        axis.ticks = element_blank(),
-        panel.grid = element_blank()) +
-  ylim(0, 120)
+  ylim(0, 100)
 ```
 
 <div class="en">
 
-```{r, fig.height=3.5}
-p_facts
-```
-
-- **55% of global GDP** ($44 trillion) depends on healthy ecosystems
-- **69% decline** in wildlife populations since 1970
-- **1 million species** face extinction in coming decades
-- Ecosystem services worth **$150+ trillion/year** (1.5x global GDP)
+- **Ecosystem services**: Clean air, water filtration, pollination
+- **Medicine**: 70% of cancer drugs come from natural sources
+- **Food security**: Genetic diversity protects crops from disease
 
 </div>
 
 <div class="de">
 
-```{r, fig.height=3.5}
-p_facts_de
-```
-
-- **55% des globalen BIP** ($44 Billionen) hängt von gesunden Ökosystemen ab
-- **69% Rückgang** der Wildtierpopulationen seit 1970
-- **1 Million Arten** vom Aussterben bedroht
-- Ökosystemleistungen wert **$150+ Billionen/Jahr** (1,5x globales BIP)
+- **Ökosystemleistungen**: Saubere Luft, Wasserfilterung, Bestäubung
+- **Medizin**: 70% der Krebsmedikamente stammen aus natürlichen Quellen
+- **Ernährungssicherheit**: Genetische Vielfalt schützt Pflanzen vor Krankheiten
 
 </div>
 
 ---
+
+## <span class="en">R Exercise: Working with Species Data</span><span class="de">R-Übung: Mit Artendaten arbeiten</span>
+
+<div class="exercise-box">
+
+<div class="en">
+
+#### Your First R Code
+
+Let's represent our two forests as **vectors** in R:
+
+</div>
+
+<div class="de">
+
+#### Dein erster R-Code
+
+Stellen wir unsere zwei Wälder als **Vektoren** in R dar:
+
+</div>
+
+```{r forest-vectors}
+# Forest A: 5 oaks
+forest_a <- c("Oak", "Oak", "Oak", "Oak", "Oak")
+
+# Forest B: 5 different species
+forest_b <- c("Oak", "Beech", "Maple", "Pine", "Birch")
+
+# How many trees?
+length(forest_a)
+length(forest_b)
+```
+
+```{r unique-species}
+# How many UNIQUE species?
+unique(forest_a)
+length(unique(forest_a))
+
+unique(forest_b)
+length(unique(forest_b))
+```
+
+<div class="en">
+
+**Key functions:**
+
+- `c()` - combine values into a vector
+- `length()` - count elements
+- `unique()` - find unique values
+
+</div>
+
+<div class="de">
+
+**Wichtige Funktionen:**
+
+- `c()` - Werte zu einem Vektor kombinieren
+- `length()` - Elemente zählen
+- `unique()` - eindeutige Werte finden
+
+</div>
+
+</div>
+
+---
+
+# <span class="en">Part 2: The Sampling Problem</span><span class="de">Teil 2: Das Stichproben-Problem</span>
 
 ## <span class="en">The Counting Problem</span><span class="de">Das Zählproblem</span>
 
 <div class="en">
 
-**Question:** How many plant species are in Austria?
+**How many plant species are in Austria?**
 
-**Answer:** About **3,500** native plant species
+Can we count them all? Consider:
 
-**But how do we know this?**
+- Austria = 83,879 km²
+- Some species are tiny (mosses, lichens)
+- Some only appear in certain seasons
+- Some are extremely rare
 
-We can't walk across all of Austria and count every plant. That would take... forever.
+**The answer: Sampling!**
+
+We study small areas carefully and use statistics to estimate the total.
 
 </div>
 
 <div class="de">
 
-**Frage:** Wie viele Pflanzenarten gibt es in Österreich?
+**Wie viele Pflanzenarten gibt es in Österreich?**
 
-**Antwort:** Etwa **3.500** heimische Pflanzenarten
+Können wir alle zählen? Bedenke:
 
-**Aber wie wissen wir das?**
+- Österreich = 83.879 km²
+- Manche Arten sind winzig (Moose, Flechten)
+- Manche erscheinen nur zu bestimmten Jahreszeiten
+- Manche sind extrem selten
 
-Wir können nicht durch ganz Österreich wandern und jede Pflanze zählen. Das würde... ewig dauern.
+**Die Lösung: Stichproben!**
+
+Wir untersuchen kleine Flächen sorgfältig und nutzen Statistik zur Schätzung.
 
 </div>
 
 ---
 
-## <span class="en">The Sampling Solution</span><span class="de">Die Lösung: Stichproben</span>
+## <span class="en">Vegetation Plots</span><span class="de">Vegetationsplots</span>
 
-```{r sampling-illustration, fig.height=4}
-set.seed(42)
-austria <- data.frame(
-  x = c(9.5, 10, 11, 12, 13, 14, 15, 16, 17, 17, 16, 15, 14, 13, 12, 11, 10, 9.5),
-  y = c(47, 47.5, 47.8, 47.5, 47.8, 48.5, 48.8, 48.5, 48, 47.5, 47, 46.8, 46.5, 46.8, 47, 47.2, 47, 47)
-)
+<div class="en">
 
-samples <- data.frame(
-  x = runif(25, 10, 16.5),
-  y = runif(25, 46.5, 48.5)
-)
+A **vegetation plot** is a small area (typically 1-100 m²) where ecologists record every plant species.
 
-ggplot() +
-  geom_polygon(data = austria, aes(x, y), fill = "lightgreen", color = "darkgreen", alpha = 0.5) +
-  geom_point(data = samples, aes(x, y), size = 4, color = "red", shape = 15) +
-  annotate("text", x = 13, y = 49, label = "Austria / Österreich", size = 6, fontface = "bold") +
-  theme_void() +
-  coord_fixed()
+| What we record | Example |
+|----------------|---------|
+| Location (coordinates) | 47.0707° N, 15.4395° E |
+| Date | 2023-06-15 |
+| All species present | Festuca rubra, Trifolium repens, ... |
+| Cover (%) per species | 25%, 10%, ... |
+
+</div>
+
+<div class="de">
+
+Ein **Vegetationsplot** ist eine kleine Fläche (typisch 1-100 m²), auf der Ökologen jede Pflanzenart notieren.
+
+| Was wir aufnehmen | Beispiel |
+|-------------------|----------|
+| Standort (Koordinaten) | 47.0707° N, 15.4395° E |
+| Datum | 2023-06-15 |
+| Alle vorhandenen Arten | Festuca rubra, Trifolium repens, ... |
+| Deckung (%) pro Art | 25%, 10%, ... |
+
+</div>
+
+---
+
+## <span class="en">R Exercise: Loading Real Data</span><span class="de">R-Übung: Echte Daten laden</span>
+
+<div class="exercise-box">
+
+<div class="en">
+
+#### Exploring Austrian Vegetation Data
+
+Let's load real data from the European Vegetation Archive (EVA):
+
+</div>
+
+<div class="de">
+
+#### Österreichische Vegetationsdaten erkunden
+
+Laden wir echte Daten aus dem European Vegetation Archive (EVA):
+
+</div>
+
+```{r load-data}
+# Load the data
+species <- read.csv("../data/austria_species.csv")
+plots <- read.csv("../data/austria_header.csv")
+
+# How big is our dataset?
+nrow(species)  # Number of species observations
+nrow(plots)    # Number of plots
+```
+
+```{r explore-data}
+# Look at the first few rows
+head(species)
+```
+
+```{r data-structure}
+# What columns do we have?
+names(species)
+names(plots)
+```
+
+```{r summary-stats}
+# How many unique species?
+length(unique(species$WFO_TAXON))
+
+# How many unique plots?
+length(unique(species$PlotObservationID))
 ```
 
 <div class="en">
 
-**Key insight:** We study small plots carefully, then use patterns to understand the whole.
+**Key functions:**
 
-Red squares = vegetation plots (samples)
-
-</div>
-
-<div class="de">
-
-**Kernidee:** Wir untersuchen kleine Flächen sorgfältig und nutzen Muster, um das Ganze zu verstehen.
-
-Rote Quadrate = Vegetationsplots (Stichproben)
-
-</div>
-
----
-
-## <span class="en">Discussion Question 1</span><span class="de">Diskussionsfrage 1</span>
-
-<div class="en">
-
-Imagine you want to know how many different types of candy exist in a candy store.
-
-You have **5 minutes** and can look in **10 jars** (out of 100 total jars).
-
-**Which strategy is better?**
-
-A) Look at the 10 jars closest to the door
-
-B) Look at 10 jars spread throughout the store
-
-**Why does this matter for ecology?**
+- `read.csv()` - load data from a file
+- `head()` - see first rows
+- `names()` - column names
+- `nrow()` - number of rows
 
 </div>
 
 <div class="de">
 
-Stell dir vor, du willst wissen, wie viele verschiedene Süßigkeiten es in einem Süßwarenladen gibt.
+**Wichtige Funktionen:**
 
-Du hast **5 Minuten** und kannst in **10 Gläser** schauen (von insgesamt 100).
+- `read.csv()` - Daten aus Datei laden
+- `head()` - erste Zeilen anzeigen
+- `names()` - Spaltennamen
+- `nrow()` - Anzahl der Zeilen
 
-**Welche Strategie ist besser?**
-
-A) Die 10 Gläser direkt neben der Tür
-
-B) 10 Gläser verteilt im ganzen Laden
-
-**Warum ist das für Ökologie wichtig?**
+</div>
 
 </div>
 
 ---
 
-# <span class="en">Part 2: Species Accumulation Curves</span><span class="de">Teil 2: Artenakkumulationskurven</span>
+# <span class="en">Part 3: Species Accumulation Curves</span><span class="de">Teil 3: Artenakkumulationskurven</span>
 
 ## <span class="en">The Core Idea</span><span class="de">Die Kernidee</span>
 
 <div class="en">
 
-As we sample more and more plots, we discover more species.
+As we sample more plots, we find more species - but at a **decreasing rate**.
 
-But here's the interesting part: **the rate of discovery slows down**.
+**Why?**
+
+- First plots: Mostly **common** species (easy to find)
+- Later plots: Mostly **rare** species (hard to find)
+- Eventually: Very few new species per plot
 
 </div>
 
 <div class="de">
 
-Je mehr wir stichproben, desto mehr Arten entdecken wir.
+Je mehr Plots wir untersuchen, desto mehr Arten finden wir - aber mit **abnehmender Rate**.
 
-Aber: **Die Entdeckungsrate verlangsamt sich.**
+**Warum?**
+
+- Erste Plots: Hauptsächlich **häufige** Arten (leicht zu finden)
+- Spätere Plots: Hauptsächlich **seltene** Arten (schwer zu finden)
+- Schließlich: Sehr wenige neue Arten pro Plot
 
 </div>
 
-```{r basic-curve, fig.height=4.5}
+```{r accumulation-concept, echo=FALSE, fig.height=4}
+set.seed(42)
 n_plots <- 50
 species_pool <- 80
 
-set.seed(123)
-accumulation <- data.frame(
-  plots = 1:n_plots,
-  species = cumsum(c(15, rep(0, n_plots-1)))
-)
-
-current_species <- 15
-for(i in 2:n_plots) {
-  prob_new <- (species_pool - current_species) / species_pool
-  new_species <- rbinom(1, 8, prob_new)
-  current_species <- current_species + new_species
-  accumulation$species[i] <- current_species
+# Simulate accumulation
+accumulation <- data.frame(plots = 1:n_plots, species = 0)
+current <- 15
+for(i in 1:n_plots) {
+  prob_new <- (species_pool - current) / species_pool
+  current <- current + rbinom(1, 6, prob_new)
+  accumulation$species[i] <- min(current, species_pool - 2)
 }
 
 ggplot(accumulation, aes(x = plots, y = species)) +
-  geom_line(color = "darkgreen", linewidth = 2) +
-  geom_point(color = "darkgreen", size = 2) +
-  geom_hline(yintercept = species_pool, linetype = "dashed", color = "red", linewidth = 1) +
-  annotate("text", x = 45, y = species_pool + 3, label = "True total? / Wahre Gesamt?",
-           color = "red", size = 4, fontface = "italic") +
-  labs(title = "Species Accumulation Curve / Artenakkumulationskurve",
-       x = "Plots Sampled / Untersuchte Plots",
-       y = "Total Species / Gesamtartenzahl") +
-  theme_minimal(base_size = 14) +
-  scale_x_continuous(breaks = seq(0, 50, 10)) +
-  scale_y_continuous(breaks = seq(0, 100, 20))
+  geom_line(color = "#2E7D32", linewidth = 2) +
+  geom_point(color = "#2E7D32", size = 2, alpha = 0.7) +
+  annotate("text", x = 10, y = 60, label = "Steep: Many new species!",
+           color = "#1565C0", size = 5, hjust = 0) +
+  annotate("text", x = 35, y = 75, label = "Flat: Few new species",
+           color = "#F57C00", size = 5, hjust = 0) +
+  labs(title = "Species Accumulation Curve",
+       x = "Number of Plots Sampled",
+       y = "Cumulative Species Count") +
+  theme_minimal(base_size = 14)
 ```
 
 ---
 
-## <span class="en">Why Does the Curve Flatten?</span><span class="de">Warum flacht die Kurve ab?</span>
+## <span class="en">Building a Curve Step by Step</span><span class="de">Eine Kurve Schritt für Schritt bauen</span>
 
 <div class="en">
 
-Think of it like a **card game**:
+Imagine sampling 5 plots:
 
-| Draw # | What happens |
-|--------|--------------|
-| 1st card | Definitely new! |
-| 10th card | Probably still new |
-| 30th card | Maybe seen it before |
-| 50th card | Very likely a repeat |
+| Plot | New Species Found | Cumulative Total |
+|------|-------------------|------------------|
+| 1 | 12 | 12 |
+| 2 | 8 | 20 |
+| 3 | 5 | 25 |
+| 4 | 3 | 28 |
+| 5 | 2 | 30 |
 
-**The more species you've already found, the harder it is to find new ones.**
+Notice: Each plot adds fewer new species!
 
 </div>
 
 <div class="de">
 
-Denk an ein **Kartenspiel**:
+Stell dir vor, wir untersuchen 5 Plots:
 
-| Karte # | Was passiert |
-|---------|--------------|
-| 1. Karte | Definitiv neu! |
-| 10. Karte | Wahrscheinlich noch neu |
-| 30. Karte | Vielleicht schon gesehen |
-| 50. Karte | Sehr wahrscheinlich ein Duplikat |
+| Plot | Neue Arten gefunden | Kumulierte Summe |
+|------|---------------------|------------------|
+| 1 | 12 | 12 |
+| 2 | 8 | 20 |
+| 3 | 5 | 25 |
+| 4 | 3 | 28 |
+| 5 | 2 | 30 |
 
-**Je mehr Arten du schon gefunden hast, desto schwieriger wird es, neue zu finden.**
+Beachte: Jeder Plot fügt weniger neue Arten hinzu!
 
 </div>
 
 ---
 
-## <span class="en">Let's Build One Together</span><span class="de">Lasst uns eine Kurve bauen</span>
+## <span class="en">R Exercise: Building Your First Curve</span><span class="de">R-Übung: Deine erste Kurve bauen</span>
+
+<div class="exercise-box">
 
 <div class="en">
 
-Imagine we're sampling a meadow. Each "plot" reveals some species:
-
-```{r build-curve-table-en}
-build_example <- data.frame(
-  Plot = 1:8,
-  `Species Found` = c("Daisy, Clover, Grass",
-                      "Buttercup, Dandelion, Grass",
-                      "Daisy, Thistle, Clover",
-                      "Grass, Plantain, Daisy",
-                      "Clover, Buttercup, Yarrow",
-                      "Daisy, Grass, Clover",
-                      "Dandelion, Plantain, Grass",
-                      "Clover, Daisy, Sorrel"),
-  `New Species` = c(3, 2, 1, 1, 1, 0, 0, 1),
-  `Cumulative Total` = c(3, 5, 6, 7, 8, 8, 8, 9)
-)
-
-kable(build_example, align = "clcc")
-```
-
-**Notice:** By plot 6-7, we're not finding anything new!
+#### Using cumsum() to Build Accumulation Curves
 
 </div>
 
 <div class="de">
 
-Stell dir vor, wir untersuchen eine Wiese. Jeder "Plot" zeigt einige Arten:
-
-```{r build-curve-table-de}
-build_example_de <- data.frame(
-  Plot = 1:8,
-  `Gefundene Arten` = c("Gänseblümchen, Klee, Gras",
-                        "Butterblume, Löwenzahn, Gras",
-                        "Gänseblümchen, Distel, Klee",
-                        "Gras, Spitzwegerich, Gänseblümchen",
-                        "Klee, Butterblume, Schafgarbe",
-                        "Gänseblümchen, Gras, Klee",
-                        "Löwenzahn, Spitzwegerich, Gras",
-                        "Klee, Gänseblümchen, Sauerampfer"),
-  `Neue Arten` = c(3, 2, 1, 1, 1, 0, 0, 1),
-  `Kumulativ` = c(3, 5, 6, 7, 8, 8, 8, 9)
-)
-
-kable(build_example_de, align = "clcc")
-```
-
-**Beachte:** Bei Plot 6-7 finden wir nichts Neues mehr!
+#### Mit cumsum() Akkumulationskurven bauen
 
 </div>
 
----
+```{r manual-curve}
+# New species found in each plot
+new_species <- c(12, 8, 5, 3, 2, 2, 1, 1, 1, 0)
 
-## <span class="en">Visualizing Our Example</span><span class="de">Unsere Beispielkurve</span>
-
-```{r example-curve, fig.height=4}
-example_data <- data.frame(
-  plot = 1:8,
-  cumulative = c(3, 5, 6, 7, 8, 8, 8, 9)
-)
-
-ggplot(example_data, aes(x = plot, y = cumulative)) +
-  geom_line(color = "forestgreen", linewidth = 2) +
-  geom_point(color = "forestgreen", size = 4) +
-  geom_segment(aes(x = plot, xend = plot, y = lag(cumulative, default = 0), yend = cumulative),
-               color = "orange", linewidth = 1, alpha = 0.7) +
-  labs(title = "Meadow Accumulation Curve / Wiesen-Akkumulationskurve",
-       x = "Plot Number / Plotnummer",
-       y = "Total Species / Gesamtartenzahl") +
-  theme_minimal(base_size = 14) +
-  scale_x_continuous(breaks = 1:8) +
-  scale_y_continuous(breaks = 0:10)
+# Calculate cumulative sum
+cumulative <- cumsum(new_species)
+cumulative
 ```
 
----
+```{r plot-manual-curve, fig.height=4}
+# Create a data frame for plotting
+curve_data <- data.frame(
+  plot = 1:10,
+  new = new_species,
+  total = cumulative
+)
 
-## <span class="en">Discussion Question 2</span><span class="de">Diskussionsfrage 2</span>
+# Plot the curve
+ggplot(curve_data, aes(x = plot, y = total)) +
+  geom_line(color = "#2E7D32", linewidth = 1.5) +
+  geom_point(color = "#2E7D32", size = 3) +
+  labs(title = "My First Accumulation Curve",
+       x = "Plot Number",
+       y = "Cumulative Species") +
+  theme_minimal(base_size = 14)
+```
 
 <div class="en">
 
-Look at these two curves:
+**Key function:**
+
+- `cumsum()` - cumulative sum: each element is the sum of all previous elements
+
+Try it: What is `cumsum(c(1, 2, 3, 4, 5))`?
 
 </div>
 
 <div class="de">
 
-Schau dir diese zwei Kurven an:
+**Wichtige Funktion:**
+
+- `cumsum()` - kumulative Summe: jedes Element ist die Summe aller vorherigen
+
+Probiere: Was ist `cumsum(c(1, 2, 3, 4, 5))`?
 
 </div>
-
-```{r two-curves, fig.height=4}
-curves <- data.frame(
-  plots = rep(1:30, 2),
-  species = c(
-    cumsum(c(20, 10, 5, 3, 2, rep(1, 5), rep(0, 20))),
-    cumsum(c(10, 8, 7, 6, 5, 4, 4, 3, 3, 3, rep(2, 10), rep(1, 10)))
-  ),
-  curve = rep(c("Forest A / Wald A", "Forest B / Wald B"), each = 30)
-)
-
-ggplot(curves, aes(x = plots, y = species, color = curve)) +
-  geom_line(linewidth = 2) +
-  scale_color_manual(values = c("Forest A / Wald A" = "darkgreen", "Forest B / Wald B" = "steelblue")) +
-  labs(title = "Two Different Forests / Zwei verschiedene Wälder",
-       x = "Number of Plots / Anzahl Plots",
-       y = "Total Species / Gesamtartenzahl",
-       color = "") +
-  theme_minimal(base_size = 14) +
-  theme(legend.position = "bottom")
-```
-
-<div class="en">
-
-**Questions:**
-
-1. Which forest probably has more total species?
-2. Which forest has species spread more evenly?
-3. In which forest would you need to sample MORE plots to find everything?
-
-</div>
-
-<div class="de">
-
-**Fragen:**
-
-1. Welcher Wald hat wahrscheinlich mehr Arten insgesamt?
-2. In welchem Wald sind die Arten gleichmäßiger verteilt?
-3. In welchem Wald müsstest du MEHR Plots untersuchen, um alles zu finden?
 
 </div>
 
 ---
 
-## <span class="en">The Asymptote: Predicting the Unknowable</span><span class="de">Die Asymptote: Das Unbekannte vorhersagen</span>
+# <span class="en">Part 4: The Asymptote</span><span class="de">Teil 4: Die Asymptote</span>
+
+## <span class="en">Predicting the Unknowable</span><span class="de">Das Unbekannte vorhersagen</span>
 
 <div class="en">
 
@@ -692,115 +584,148 @@ The **asymptote** is the line the curve approaches but never quite reaches.
 
 It represents: **the estimated total number of species**
 
+Even without sampling everything, we can estimate how much we're missing!
+
 </div>
 
 <div class="de">
 
-Die **Asymptote** ist die Linie, der sich die Kurve annähert, aber nie erreicht.
+Die **Asymptote** ist die Linie, der sich die Kurve nähert, aber nie ganz erreicht.
 
 Sie repräsentiert: **die geschätzte Gesamtartenzahl**
 
-</div>
-
-```{r asymptote-demo, fig.height=4}
-ggplot(accumulation, aes(x = plots, y = species)) +
-  geom_line(color = "darkgreen", linewidth = 2) +
-  geom_hline(yintercept = 78, linetype = "dashed", color = "red", linewidth = 1.5) +
-  annotate("rect", xmin = 40, xmax = 50, ymin = 72, ymax = 84,
-           fill = "yellow", alpha = 0.3) +
-  annotate("text", x = 45, y = 88, label = "~78 species / Arten",
-           color = "red", size = 5, fontface = "bold") +
-  labs(title = "Using the Curve to Estimate / Die Kurve zur Schätzung nutzen",
-       x = "Plots Sampled / Untersuchte Plots",
-       y = "Species Found / Gefundene Arten") +
-  theme_minimal(base_size = 14)
-```
-
-<div class="en">
-
-**Key insight:** Even without sampling EVERYTHING, we can estimate how much we're missing!
+Selbst ohne alles zu untersuchen, können wir schätzen, wie viel wir verpassen!
 
 </div>
 
-<div class="de">
-
-**Kernidee:** Selbst ohne ALLES zu untersuchen, können wir schätzen, wie viel wir verpassen!
-
-</div>
-
----
-
-# <span class="en">Part 3: Vegetation Plots & Real Data</span><span class="de">Teil 3: Vegetationsplots & echte Daten</span>
-
-## <span class="en">What is a Vegetation Plot?</span><span class="de">Was ist ein Vegetationsplot?</span>
-
-<div class="en">
-
-A **vegetation plot** is a small area (usually 1-100 m²) where ecologists record every plant species present.
-
-</div>
-
-<div class="de">
-
-Ein **Vegetationsplot** ist eine kleine Fläche (meist 1-100 m²), auf der alle Pflanzenarten erfasst werden.
-
-</div>
-
-```{r plot-illustration, fig.height=4}
-plot_area <- data.frame(
-  x = c(0, 10, 10, 0, 0),
-  y = c(0, 0, 10, 10, 0)
-)
-
+```{r asymptote-demo, echo=FALSE, fig.height=4}
 set.seed(42)
-plants <- data.frame(
-  x = runif(25, 0.5, 9.5),
-  y = runif(25, 0.5, 9.5),
-  species = sample(c("Grass/Gras", "Clover/Klee", "Daisy/Gänsebl.", "Moss/Moos", "Fern/Farn"), 25,
-                   replace = TRUE, prob = c(0.4, 0.2, 0.2, 0.1, 0.1))
-)
+n_plots <- 50
+species_pool <- 80
 
-ggplot() +
-  geom_path(data = plot_area, aes(x, y), linewidth = 2) +
-  geom_point(data = plants, aes(x, y, color = species, shape = species), size = 4) +
-  annotate("segment", x = 0, xend = 10, y = -0.5, yend = -0.5,
-           arrow = arrow(ends = "both", length = unit(0.2, "cm"))) +
-  annotate("text", x = 5, y = -1.2, label = "10 meters / Meter", size = 4) +
-  scale_color_brewer(palette = "Set1") +
-  labs(title = "10m × 10m Vegetation Plot",
-       color = "Species / Art", shape = "Species / Art") +
-  theme_void(base_size = 14) +
-  theme(legend.position = "right") +
-  coord_fixed()
+accumulation <- data.frame(plots = 1:n_plots, species = 0)
+current <- 15
+for(i in 1:n_plots) {
+  prob_new <- (species_pool - current) / species_pool
+  current <- current + rbinom(1, 6, prob_new)
+  accumulation$species[i] <- min(current, species_pool - 3)
+}
+
+final_species <- max(accumulation$species)
+
+ggplot(accumulation, aes(x = plots, y = species)) +
+  geom_line(color = "#2E7D32", linewidth = 2) +
+  geom_hline(yintercept = species_pool, linetype = "dashed", color = "#D32F2F", linewidth = 1.5) +
+  annotate("rect", xmin = 40, xmax = 50, ymin = species_pool - 6, ymax = species_pool + 4,
+           fill = "#FFEB3B", alpha = 0.3) +
+  annotate("text", x = 45, y = species_pool + 8,
+           label = paste0("Asymptote: ~", species_pool, " species"),
+           color = "#D32F2F", size = 5, fontface = "bold") +
+  annotate("text", x = 25, y = 50,
+           label = paste0("Found: ", final_species, " species\nStill missing a few!"),
+           size = 4, color = "#2E7D32") +
+  labs(title = "The Asymptote: Estimating Total Species",
+       x = "Plots Sampled",
+       y = "Species Found") +
+  theme_minimal(base_size = 14) +
+  ylim(0, species_pool + 15)
 ```
 
 ---
 
-## <span class="en">What Gets Recorded?</span><span class="de">Was wird erfasst?</span>
+## <span class="en">R Exercise: Visualizing the Asymptote</span><span class="de">R-Übung: Die Asymptote visualisieren</span>
+
+<div class="exercise-box">
 
 <div class="en">
 
-| Information | Example |
-|------------|---------|
-| **Location** | 47.5°N, 14.2°E (Austrian Alps) |
-| **Date** | June 15, 2023 |
-| **Habitat type** | Alpine meadow |
-| **Altitude** | 1,850 m |
-| **Species list** | Gentiana acaulis, Poa alpina, Trifolium pratense... |
-| **Cover** | How much of the ground each species covers |
+#### Adding an Asymptote Line
 
 </div>
 
 <div class="de">
 
-| Information | Beispiel |
-|-------------|----------|
-| **Standort** | 47.5°N, 14.2°E (Österreichische Alpen) |
-| **Datum** | 15. Juni 2023 |
-| **Habitattyp** | Almwiese |
-| **Höhe** | 1.850 m |
-| **Artenliste** | Gentiana acaulis, Poa alpina, Trifolium pratense... |
-| **Deckung** | Wie viel des Bodens jede Art bedeckt |
+#### Eine Asymptoten-Linie hinzufügen
+
+</div>
+
+```{r asymptote-exercise, fig.height=4}
+# Our data from before
+curve_data <- data.frame(
+  plot = 1:10,
+  total = cumsum(c(12, 8, 5, 3, 2, 2, 1, 1, 1, 0))
+)
+
+# Estimate the asymptote (total species in the area)
+estimated_total <- 40
+
+# Plot with asymptote
+ggplot(curve_data, aes(x = plot, y = total)) +
+  geom_line(color = "#2E7D32", linewidth = 1.5) +
+  geom_point(color = "#2E7D32", size = 3) +
+  geom_hline(yintercept = estimated_total,
+             linetype = "dashed", color = "#D32F2F", linewidth = 1) +
+  annotate("text", x = 8, y = estimated_total + 2,
+           label = paste("Estimated total:", estimated_total),
+           color = "#D32F2F") +
+  labs(title = "Accumulation Curve with Asymptote",
+       x = "Plot Number",
+       y = "Cumulative Species") +
+  theme_minimal(base_size = 14) +
+  ylim(0, 50)
+```
+
+```{r calculate-completeness}
+# How complete is our sampling?
+found <- max(curve_data$total)
+completeness <- (found / estimated_total) * 100
+
+cat("Species found:", found, "\n")
+cat("Estimated total:", estimated_total, "\n")
+cat("Sampling completeness:", round(completeness, 1), "%\n")
+```
+
+<div class="en">
+
+**Key insight:** With 10 plots, we found `r found` of an estimated `r estimated_total` species (`r round(completeness, 1)`% complete).
+
+</div>
+
+<div class="de">
+
+**Wichtige Erkenntnis:** Mit 10 Plots haben wir `r found` von geschätzten `r estimated_total` Arten gefunden (`r round(completeness, 1)`% vollständig).
+
+</div>
+
+</div>
+
+---
+
+# <span class="en">Part 5: Introduction to EVA Data</span><span class="de">Teil 5: Einführung in EVA-Daten</span>
+
+## <span class="en">The European Vegetation Archive</span><span class="de">Das Europäische Vegetationsarchiv</span>
+
+<div class="en">
+
+**EVA** (European Vegetation Archive) is the largest vegetation database in Europe:
+
+- **1.6+ million** plots
+- **82** countries
+- Data from **1900 to today**
+
+For Austria, we have access to ~52,000 plots with location data.
+
+</div>
+
+<div class="de">
+
+**EVA** (European Vegetation Archive) ist die größte Vegetationsdatenbank Europas:
+
+- **1,6+ Millionen** Plots
+- **82** Länder
+- Daten von **1900 bis heute**
+
+Für Österreich haben wir Zugang zu ~52.000 Plots mit Standortdaten.
 
 </div>
 
@@ -810,606 +735,208 @@ ggplot() +
 
 <div class="en">
 
-| Native Species | Alien Species (Neophytes) |
-|---------------|---------------------------|
-| Evolved here over thousands of years | Arrived recently (after 1492) |
-| Part of natural ecosystems | Introduced by humans |
-| Example: Edelweiss | Example: Himalayan Balsam |
+Our dataset distinguishes between:
 
-**Tomorrow's question:** Do alien species spread across habitats differently than natives?
+| Native Species | Alien Species (Neophytes) |
+|----------------|---------------------------|
+| Naturally occurring | Introduced by humans |
+| Part of original ecosystem | Arrived after 1492 |
+| Co-evolved with other species | May outcompete natives |
+
+**Research Question for Day 2:** Do alien species accumulate differently than native species?
 
 </div>
 
 <div class="de">
+
+Unser Datensatz unterscheidet zwischen:
 
 | Heimische Arten | Alien-Arten (Neophyten) |
 |-----------------|-------------------------|
-| Hier seit Jahrtausenden | Kürzlich angekommen (nach 1492) |
-| Teil natürlicher Ökosysteme | Von Menschen eingeführt |
-| Beispiel: Edelweiß | Beispiel: Drüsiges Springkraut |
+| Natürlich vorkommend | Vom Menschen eingeführt |
+| Teil des ursprünglichen Ökosystems | Nach 1492 angekommen |
+| Mit anderen Arten co-evolviert | Können Einheimische verdrängen |
 
-**Morgen:** Verbreiten sich Alien-Arten anders als heimische?
+**Forschungsfrage für Tag 2:** Akkumulieren Alien-Arten anders als heimische Arten?
 
 </div>
 
 ---
 
-## <span class="en">Preview: Tomorrow's Investigation</span><span class="de">Vorschau: Morgen</span>
+## <span class="en">R Exercise: Exploring Native vs. Alien</span><span class="de">R-Übung: Heimisch vs. Alien erkunden</span>
+
+<div class="exercise-box">
 
 <div class="en">
 
-**Research Question:** Do alien plant species accumulate faster or slower than native species as we sample larger areas?
+#### Filtering and Counting by Status
 
 </div>
 
 <div class="de">
 
-**Forschungsfrage:** Akkumulieren Alien-Pflanzenarten schneller oder langsamer als heimische Arten?
+#### Filtern und Zählen nach Status
 
 </div>
 
-```{r preview-graph, fig.height=4}
-preview_data <- data.frame(
-  plots = rep(1:30, 2),
-  species = c(
-    cumsum(c(30, 15, 10, 8, 6, 5, 4, 3, 3, 2, rep(2, 10), rep(1, 10))),
-    cumsum(c(5, 4, 4, 3, 3, 3, 3, 2, 2, 2, rep(2, 10), rep(1, 10)))
-  ),
-  type = rep(c("Native / Heimisch", "Alien"), each = 30)
+```{r native-alien-count}
+# Load the data
+species <- read.csv("../data/austria_species.csv")
+
+# Count by status
+table(species$STATUS)
+```
+
+```{r filter-species}
+# Filter native species only
+native <- species[species$STATUS == "native", ]
+nrow(native)
+
+# Filter alien species only
+alien <- species[species$STATUS == "alien", ]
+nrow(alien)
+```
+
+```{r unique-by-status}
+# How many UNIQUE native species?
+n_native <- length(unique(native$WFO_TAXON))
+n_native
+
+# How many UNIQUE alien species?
+n_alien <- length(unique(alien$WFO_TAXON))
+n_alien
+
+# Ratio
+cat("Ratio of native to alien:", round(n_native / n_alien, 1), ": 1\n")
+```
+
+```{r plot-status, fig.height=4}
+# Visualize the difference
+status_counts <- data.frame(
+  Status = c("Native", "Alien"),
+  Count = c(n_native, n_alien)
 )
 
-ggplot(preview_data, aes(x = plots, y = species, color = type)) +
-  geom_line(linewidth = 2) +
-  scale_color_manual(values = c("Native / Heimisch" = "darkgreen", "Alien" = "red")) +
-  labs(title = "What Might We Find? / Was könnten wir finden?",
-       x = "Plots Sampled / Untersuchte Plots",
-       y = "Species Found / Gefundene Arten",
-       color = "") +
+ggplot(status_counts, aes(x = Status, y = Count, fill = Status)) +
+  geom_col(width = 0.6) +
+  geom_text(aes(label = Count), vjust = -0.5, size = 5) +
+  scale_fill_manual(values = c("Alien" = "#FF9800", "Native" = "#4CAF50")) +
+  labs(title = "Unique Species by Status in Austrian Data",
+       y = "Number of Unique Species") +
   theme_minimal(base_size = 14) +
-  theme(legend.position = "bottom")
+  theme(legend.position = "none")
+```
+
+<div class="en">
+
+**Key finding:** There are about `r round(n_native / n_alien, 0)` times more native species than alien species in our dataset.
+
+**Tomorrow:** We'll build separate accumulation curves for each group and compare their shapes!
+
+</div>
+
+<div class="de">
+
+**Wichtige Erkenntnis:** Es gibt etwa `r round(n_native / n_alien, 0)` mal mehr heimische als Alien-Arten in unserem Datensatz.
+
+**Morgen:** Wir werden separate Akkumulationskurven für jede Gruppe bauen und ihre Formen vergleichen!
+
+</div>
+
+</div>
+
+---
+
+# <span class="en">Summary: Day 1</span><span class="de">Zusammenfassung: Tag 1</span>
+
+## <span class="en">Key Concepts</span><span class="de">Schlüsselkonzepte</span>
+
+<div class="en">
+
+| Concept | What it means |
+|---------|---------------|
+| **Biodiversity** | Variety of species in an area |
+| **Vegetation plot** | Small area where all plants are recorded |
+| **Accumulation curve** | Graph showing species discovery over sampling effort |
+| **Asymptote** | Estimated total species (curve approaches but never reaches) |
+| **Native species** | Naturally occurring in the region |
+| **Alien species** | Introduced by humans (after 1492) |
+
+</div>
+
+<div class="de">
+
+| Konzept | Bedeutung |
+|---------|-----------|
+| **Biodiversität** | Artenvielfalt in einem Gebiet |
+| **Vegetationsplot** | Kleine Fläche, auf der alle Pflanzen erfasst werden |
+| **Akkumulationskurve** | Graph der Artenentdeckung über Stichprobenaufwand |
+| **Asymptote** | Geschätzte Gesamtartenzahl (Kurve nähert sich, erreicht sie aber nie) |
+| **Heimische Arten** | Natürlich in der Region vorkommend |
+| **Alien-Arten** | Vom Menschen eingeführt (nach 1492) |
+
+</div>
+
+---
+
+## <span class="en">R Functions Learned</span><span class="de">Gelernte R-Funktionen</span>
+
+```{r functions-summary, echo=FALSE}
+functions <- data.frame(
+  Function = c("c()", "length()", "unique()", "read.csv()", "head()",
+               "names()", "nrow()", "cumsum()", "table()"),
+  Purpose_EN = c("Combine values into vector", "Count elements", "Find unique values",
+                 "Load CSV file", "View first rows", "Column names",
+                 "Number of rows", "Cumulative sum", "Count by category"),
+  Purpose_DE = c("Werte zu Vektor kombinieren", "Elemente zählen", "Eindeutige Werte finden",
+                 "CSV-Datei laden", "Erste Zeilen anzeigen", "Spaltennamen",
+                 "Zeilenanzahl", "Kumulative Summe", "Nach Kategorie zählen")
+)
+kable(functions)
 ```
 
 ---
 
-# <span class="en">Part 4: Introduction to R</span><span class="de">Teil 4: Einführung in R</span>
-
-## <span class="en">What is R?</span><span class="de">Was ist R?</span>
+## <span class="en">Preview: Day 2</span><span class="de">Vorschau: Tag 2</span>
 
 <div class="en">
 
-**R** is a programming language for statistics and data analysis.
+Tomorrow we will:
 
-Why R?
+1. Learn the **nearest-neighbor algorithm** for building spatial curves
+2. Understand why **plot order matters**
+3. Build curves with **multiple starting points**
+4. Compare **native vs. alien** accumulation patterns
+5. Interpret results and discuss **biological mechanisms**
 
-- **Free** and Open Source
-- **Reproducible** - anyone can follow your analysis
-- **Powerful** - from simple calculations to complex models
-- **Graphics** - professional visualizations
+**Hypothesis to test:** Do alien species accumulate differently than native species?
 
 </div>
 
 <div class="de">
 
-**R** ist eine Programmiersprache für Statistik und Datenanalyse.
+Morgen werden wir:
 
-Warum R?
+1. Den **Nearest-Neighbor-Algorithmus** für räumliche Kurven lernen
+2. Verstehen, warum die **Plot-Reihenfolge wichtig** ist
+3. Kurven mit **mehreren Startpunkten** bauen
+4. **Heimische vs. Alien**-Akkumulationsmuster vergleichen
+5. Ergebnisse interpretieren und **biologische Mechanismen** diskutieren
 
-- **Kostenlos** und Open Source
-- **Reproduzierbar** - jeder kann deine Analyse nachvollziehen
-- **Leistungsstark** - von einfachen Berechnungen bis komplexe Modelle
-- **Grafiken** - professionelle Visualisierungen
+**Zu testende Hypothese:** Akkumulieren Alien-Arten anders als heimische Arten?
 
 </div>
 
 ---
 
-## <span class="en">Getting to Know RStudio</span><span class="de">RStudio kennenlernen</span>
-
 <div class="en">
 
-RStudio is the **development environment** for R. Think of R as the engine, RStudio as the car around it.
-
-### The Four Panels
-
-RStudio has **4 main areas**:
-
-| Area | Function | What you see there |
-|------|----------|-------------------|
-| **Top left** | **Script Editor** | Your code that you can save and reuse |
-| **Bottom left** | **Console** | Where commands run and results appear |
-| **Top right** | **Environment** | All variables and objects you've created |
-| **Bottom right** | **Files / Plots / Help** | File browser, graphics, package help |
-
-### Running Code
-
-**Create a new script:**
-
-1. `File > New File > R Script` or `Ctrl + Shift + N`
-2. Write your code
-3. Save with `Ctrl + S`
-
-**Run code:**
-
-- **Ctrl + Enter** - runs the current line
-- Select multiple lines → `Ctrl + Enter` - runs all selected
-
-**Tip:** Always use scripts, not just the console! Then you can repeat your analysis later.
+**Questions before tomorrow?**
 
 </div>
 
 <div class="de">
 
-RStudio ist die **Entwicklungsumgebung** für R. Denk an R als Motor, RStudio als Auto drumherum.
-
-### Die vier Bereiche
-
-RStudio hat **4 Hauptbereiche**:
-
-| Bereich | Funktion | Was siehst du dort? |
-|---------|----------|---------------------|
-| **Oben links** | **Skript-Editor** | Dein Code, den du speichern und wiederverwenden kannst |
-| **Unten links** | **Konsole** | Hier werden Befehle ausgeführt und Ergebnisse angezeigt |
-| **Oben rechts** | **Environment** | Alle Variablen und Objekte, die du erstellt hast |
-| **Unten rechts** | **Dateien / Plots / Hilfe** | Dateibrowser, Grafiken, Paket-Hilfe |
-
-### Code ausführen
-
-**Neues Skript erstellen:**
-
-1. `File > New File > R Script` oder `Ctrl + Shift + N`
-2. Schreibe deinen Code
-3. Speichern mit `Ctrl + S`
-
-**Code ausführen:**
-
-- **Ctrl + Enter** - führt die aktuelle Zeile aus
-- Markiere mehrere Zeilen → `Ctrl + Enter` - führt alle aus
-
-**Tipp:** Benutze immer Skripte, nicht nur die Konsole! Dann kannst du deine Analyse später wiederholen.
+**Fragen vor morgen?**
 
 </div>
-
----
-
-## <span class="en">Basic Syntax</span><span class="de">Grundlegende Syntax</span>
-
-### <span class="en">Variables</span><span class="de">Variablen</span>
-
-<div class="en">
-
-In R, we store values in **variables**:
-
-```r
-# With <- (preferred in R)
-my_number <- 42
-my_text <- "Hello World"
-
-# Call a variable
-my_number
-```
-
-**Rules for variable names:**
-
-- Start with a letter (not numbers!)
-- Can contain letters, numbers, `_` and `.`
-- **Case-sensitive**: `Number` ≠ `number`
-
-</div>
-
-<div class="de">
-
-In R speichern wir Werte in **Variablen**:
-
-```r
-# Mit <- (bevorzugt in R)
-meine_zahl <- 42
-mein_text <- "Hallo Welt"
-
-# Variable aufrufen
-meine_zahl
-```
-
-**Regeln für Variablennamen:**
-
-- Beginnen mit Buchstaben (nicht Zahlen!)
-- Können Buchstaben, Zahlen, `_` und `.` enthalten
-- **Groß-/Kleinschreibung** ist wichtig: `Zahl` ≠ `zahl`
-
-</div>
-
----
-
-### <span class="en">Vectors</span><span class="de">Vektoren</span>
-
-<div class="en">
-
-A **vector** is a list of values of the same type.
-
-```r
-# Create vector with c() (c = combine)
-numbers <- c(1, 2, 3, 4, 5)
-species <- c("Oak", "Beech", "Pine")
-
-# Create sequences
-one_to_ten <- 1:10
-
-# Length of a vector
-length(numbers)  # 5
-
-# Access elements (R starts at 1!)
-species[1]       # "Oak"
-species[2:3]     # "Beech" "Pine"
-```
-
-**Vectors are fundamental in R!** Almost everything in R is a vector.
-
-</div>
-
-<div class="de">
-
-Ein **Vektor** ist eine Liste von Werten des gleichen Typs.
-
-```r
-# Vektor mit c() erstellen (c = combine)
-zahlen <- c(1, 2, 3, 4, 5)
-arten <- c("Eiche", "Buche", "Kiefer")
-
-# Sequenzen erstellen
-eins_bis_zehn <- 1:10
-
-# Länge eines Vektors
-length(zahlen)  # 5
-
-# Auf Elemente zugreifen (R beginnt bei 1!)
-arten[1]        # "Eiche"
-arten[2:3]      # "Buche" "Kiefer"
-```
-
-**Vektoren sind fundamental in R!** Fast alles in R ist ein Vektor.
-
-</div>
-
----
-
-### <span class="en">Useful Functions</span><span class="de">Nützliche Funktionen</span>
-
-<div class="en">
-
-```r
-values <- c(5, 12, 8, 15, 3, 20, 7)
-
-# Statistics
-mean(values)      # Mean: 10
-sum(values)       # Sum: 70
-min(values)       # Minimum: 3
-max(values)       # Maximum: 20
-
-# Sorting
-sort(values)      # 3, 5, 7, 8, 12, 15, 20
-
-# Unique values
-species <- c("Oak", "Beech", "Oak", "Pine", "Beech")
-unique(species)   # "Oak" "Beech" "Pine"
-length(unique(species))  # 3
-```
-
-</div>
-
-<div class="de">
-
-```r
-werte <- c(5, 12, 8, 15, 3, 20, 7)
-
-# Statistik
-mean(werte)       # Mittelwert: 10
-sum(werte)        # Summe: 70
-min(werte)        # Minimum: 3
-max(werte)        # Maximum: 20
-
-# Sortieren
-sort(werte)       # 3, 5, 7, 8, 12, 15, 20
-
-# Einzigartige Werte
-arten <- c("Eiche", "Buche", "Eiche", "Kiefer", "Buche")
-unique(arten)     # "Eiche" "Buche" "Kiefer"
-length(unique(arten))  # 3
-```
-
-</div>
-
----
-
-## <span class="en">Loading Data</span><span class="de">Daten laden</span>
-
-<div class="en">
-
-Most ecological data comes as **CSV** files.
-
-```r
-# Load a CSV file
-data <- read.csv("plants.csv")
-
-# First 6 rows
-head(data)
-
-# Structure overview
-str(data)
-
-# Summary statistics
-summary(data)
-
-# Dimensions
-nrow(data)        # Number of rows
-ncol(data)        # Number of columns
-
-# Column names
-names(data)
-
-# Access a column
-data$species
-mean(data$height)
-```
-
-</div>
-
-<div class="de">
-
-Die meisten ökologischen Daten kommen als **CSV** Dateien.
-
-```r
-# CSV-Datei laden
-daten <- read.csv("pflanzen.csv")
-
-# Erste 6 Zeilen
-head(daten)
-
-# Strukturübersicht
-str(daten)
-
-# Zusammenfassung
-summary(daten)
-
-# Dimensionen
-nrow(daten)       # Anzahl Zeilen
-ncol(daten)       # Anzahl Spalten
-
-# Spaltennamen
-names(daten)
-
-# Auf Spalte zugreifen
-daten$species
-mean(daten$height)
-```
-
-</div>
-
----
-
-## <span class="en">Common Errors</span><span class="de">Häufige Fehler</span>
-
-<div class="en">
-
-| Error | Problem | Solution |
-|-------|---------|----------|
-| `object 'x' not found` | Variable doesn't exist | Check spelling, case |
-| `could not find function` | Typo in function name | Check spelling |
-| `cannot open file` | File not found | Check path, use `getwd()` |
-| Unexpected `NA` | Missing values | Use `na.rm = TRUE` |
-
-**Getting help:**
-
-```r
-?mean           # Help for function
-example(mean)   # Show examples
-```
-
-</div>
-
-<div class="de">
-
-| Fehler | Problem | Lösung |
-|--------|---------|--------|
-| `object 'x' not found` | Variable existiert nicht | Schreibweise prüfen |
-| `could not find function` | Tippfehler im Funktionsnamen | Schreibweise prüfen |
-| `cannot open file` | Datei nicht gefunden | Pfad prüfen, `getwd()` |
-| Unerwartetes `NA` | Fehlende Werte | `na.rm = TRUE` verwenden |
-
-**Hilfe bekommen:**
-
-```r
-?mean           # Hilfe für Funktion
-example(mean)   # Beispiele zeigen
-```
-
-</div>
-
----
-
-# <span class="en">Part 5: Hands-On Activity</span><span class="de">Teil 5: Praktische Übung</span>
-
-## <span class="en">Your Turn: Build a Curve</span><span class="de">Du bist dran: Baue eine Kurve</span>
-
-<div class="en">
-
-Open the file: `exercise_data.xlsx`
-
-**Task:**
-
-1. Look at column A (Plot) and column B (Species Found)
-2. In column C, calculate the **cumulative species count**
-3. Create a line chart: X = Plot number, Y = Cumulative species
-4. Answer the questions on the worksheet
-
-**Column C formula (in cell C2):**
-
-For the first row: `=B2`
-
-For the second row: `=C1 + B2`
-
-Then drag down! Or use: `=SUM(B$2:B2)` and drag down
-
-</div>
-
-<div class="de">
-
-Öffne die Datei: `exercise_data.xlsx`
-
-**Aufgabe:**
-
-1. Schau dir Spalte A (Plot) und Spalte B (Gefundene Arten) an
-2. Berechne in Spalte C die **kumulative Artenzahl**
-3. Erstelle ein Liniendiagramm: X = Plotnummer, Y = Kumulative Arten
-4. Beantworte die Fragen auf dem Arbeitsblatt
-
-**Formel für Spalte C (in Zelle C2):**
-
-Für die erste Zeile: `=B2`
-
-Für die zweite Zeile: `=C1 + B2`
-
-Dann nach unten ziehen! Oder: `=SUMME(B$2:B2)` und nach unten ziehen
-
-</div>
-
----
-
-## <span class="en">Questions to Answer</span><span class="de">Fragen zum Beantworten</span>
-
-<div class="en">
-
-1. **How many total species did you find after all 15 plots?**
-
-2. **At which plot number did you reach 50% of the total?**
-
-3. **Between plots 1-5, how many new species per plot (on average)?**
-
-4. **Between plots 11-15, how many new species per plot (on average)?**
-
-5. **Draw a prediction:** If you sampled 5 more plots, approximately how many more species would you find?
-
-</div>
-
-<div class="de">
-
-1. **Wie viele Arten hast du nach allen 15 Plots gefunden?**
-
-2. **Bei welchem Plot hast du 50% der Gesamtzahl erreicht?**
-
-3. **Zwischen Plot 1-5, wie viele neue Arten pro Plot (im Durchschnitt)?**
-
-4. **Zwischen Plot 11-15, wie viele neue Arten pro Plot (im Durchschnitt)?**
-
-5. **Mach eine Vorhersage:** Wenn du 5 weitere Plots untersuchen würdest, wie viele neue Arten würdest du ungefähr finden?
-
-</div>
-
----
-
-# <span class="en">Summary: What We Learned Today</span><span class="de">Zusammenfassung: Was wir heute gelernt haben</span>
-
-<div class="en">
-
-## Key Concepts
-
-- **Biodiversity** = variety of species in an area
-- **Sampling** = studying small areas to understand large ones
-- **Species accumulation curves** show how discoveries slow down as we sample more
-- **Asymptote** = estimated total species (what we're approaching)
-- **Vegetation plots** = standardized areas where ecologists record all plants
-- **Native vs. alien** = species that evolved here vs. recently introduced
-
-## Tomorrow's Plan
-
-**Day 2: Hands-on Data Analysis**
-
-- Work with real Austrian vegetation data
-- Build accumulation curves for native vs. alien species
-- Test the hypothesis: Do they accumulate differently?
-- R coding (with guidance)
-
-**Bring:** Curiosity, questions, and your work from today's exercise!
-
-</div>
-
-<div class="de">
-
-## Kernkonzepte
-
-- **Biodiversität** = Artenvielfalt in einem Gebiet
-- **Stichproben** = kleine Gebiete untersuchen, um große zu verstehen
-- **Artenakkumulationskurven** zeigen, wie Entdeckungen langsamer werden
-- **Asymptote** = geschätzte Gesamtartenzahl
-- **Vegetationsplots** = standardisierte Flächen zur Pflanzenerfassung
-- **Heimisch vs. Alien** = hier entwickelt vs. kürzlich eingeführt
-
-## Morgen
-
-**Tag 2: Datenanalyse in R**
-
-- Mit echten österreichischen Vegetationsdaten arbeiten
-- Akkumulationskurven für heimische vs. Alien-Arten bauen
-- Hypothese testen: Akkumulieren sie unterschiedlich?
-- R-Programmierung (mit Anleitung)
-
-**Mitbringen:** Neugier, Fragen, und eure Arbeit von heute!
-
-</div>
-
----
-
-## <span class="en">Final Question</span><span class="de">Abschlussfrage</span>
-
-<div class="en">
-
-Based on what you learned today, make a prediction:
-
-**Will alien species reach their asymptote (flatten out) faster or slower than native species?**
-
-Write down your prediction and your reasoning. We'll test it tomorrow!
-
-</div>
-
-<div class="de">
-
-Basierend auf dem, was du heute gelernt hast, mach eine Vorhersage:
-
-**Werden Alien-Arten ihre Asymptote (abflachen) schneller oder langsamer erreichen als heimische Arten?**
-
-Schreib deine Vorhersage und deine Begründung auf. Morgen testen wir es!
-
-</div>
-
----
-
-# <span class="en">Appendix: Vocabulary Reference</span><span class="de">Anhang: Vokabular</span>
-
-<div class="en">
-
-| Term | Definition |
-|------|------------|
-| **Biodiversity** | The variety of life in an area |
-| **Species accumulation curve** | Graph showing cumulative species vs. sampling effort |
-| **Asymptote** | The value a curve approaches but never reaches |
-| **Vegetation plot** | A defined area where all plant species are recorded |
-| **Native species** | Species that evolved naturally in an area |
-| **Alien/Neophyte** | Species introduced by humans (after 1492 in Europe) |
-| **Sampling** | Studying a subset to understand the whole |
-| **Cumulative** | Running total (adding up as you go) |
-
-</div>
-
-<div class="de">
-
-| Begriff | Definition |
-|---------|------------|
-| **Biodiversität** | Die Vielfalt des Lebens in einem Gebiet |
-| **Artenakkumulationskurve** | Grafik: kumulative Arten vs. Stichprobenaufwand |
-| **Asymptote** | Der Wert, dem sich eine Kurve nähert, aber nie erreicht |
-| **Vegetationsplot** | Ein definiertes Gebiet, in dem alle Pflanzenarten erfasst werden |
-| **Heimische Art** | Art, die sich natürlich in einem Gebiet entwickelt hat |
-| **Alien/Neophyt** | Art, die von Menschen eingeführt wurde (nach 1492 in Europa) |
-| **Stichprobe** | Eine Teilmenge untersuchen, um das Ganze zu verstehen |
-| **Kumulativ** | Laufende Summe (addieren, während man weitermacht) |
-
-</div>
-

@@ -1,0 +1,579 @@
+---
+title: '<span class="en">Day 2: Theory</span><span class="de">Tag 2: Theorie</span>'
+subtitle: '<span class="en">Spatial Algorithms & Research Design</span><span class="de">Räumliche Algorithmen & Forschungsdesign</span>'
+author: '<span class="en">Ecology Workshop</span><span class="de">Ökologie-Workshop</span>'
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: flatly
+    self_contained: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, fig.width = 9, fig.height = 5)
+library(tidyverse)
+library(knitr)
+```
+
+```{css, echo=FALSE}
+/* ========== WORKSHOP THEME ========== */
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.7;
+  background-color: #fafffe;
+}
+
+h1 { color: #2E7D32 !important; border-bottom: 3px solid #4CAF50; padding-bottom: 10px; }
+h2 { color: #388E3C !important; margin-top: 2em; }
+h3 { color: #43A047 !important; }
+
+table { border-collapse: collapse; margin: 1em 0; width: 100%; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+th { background-color: #4CAF50 !important; color: white !important; padding: 12px; text-align: left; }
+td { padding: 10px 12px; border-bottom: 1px solid #ddd; }
+tr:nth-child(even) { background-color: #f9f9f9; }
+tr:hover { background-color: #E8F5E9; }
+
+blockquote { border-left: 4px solid #FF9800; background-color: #FFF8E1; padding: 15px 20px; margin: 1em 0; border-radius: 0 8px 8px 0; }
+
+hr { border: none; height: 3px; background: linear-gradient(to right, #4CAF50, #81C784, #C8E6C9, #81C784, #4CAF50); margin: 2em 0; border-radius: 2px; }
+
+.tocify { border: none !important; border-radius: 12px !important; background-color: #f1f8e9 !important; }
+.tocify-item.active { background-color: #4CAF50 !important; color: white !important; }
+
+/* Hypothesis boxes */
+.hypothesis-box {
+  background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+  border-left: 5px solid #FF9800;
+  padding: 20px;
+  margin: 1.5em 0;
+  border-radius: 0 12px 12px 0;
+}
+
+/* Results boxes */
+.results-box {
+  background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+  border-left: 5px solid #4CAF50;
+  padding: 20px;
+  margin: 1.5em 0;
+  border-radius: 0 12px 12px 0;
+}
+
+/* ========== LANGUAGE TOGGLE ========== */
+.lang-toggle {
+  position: fixed; top: 10px; right: 20px; z-index: 9999;
+  background: linear-gradient(135deg, #2E7D32, #4CAF50);
+  padding: 8px 12px; border-radius: 25px;
+  box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3);
+}
+.lang-toggle button {
+  background: transparent; border: none; color: #fff;
+  padding: 6px 14px; cursor: pointer; font-weight: bold;
+  border-radius: 20px; transition: all 0.3s; font-size: 14px;
+}
+.lang-toggle button.active { background: white; color: #2E7D32; }
+.lang-toggle button:hover:not(.active) { background: rgba(255,255,255,0.2); }
+
+.de { display: none; }
+.en { display: inline; }
+body.lang-de .de { display: inline; }
+body.lang-de .en { display: none; }
+
+div.de, p.de, li.de, h1.de, h2.de, h3.de, h4.de, section.de { display: none; }
+div.en, p.en, li.en, h1.en, h2.en, h3.en, h4.en, section.en { display: block; }
+
+body.lang-de div.de, body.lang-de p.de, body.lang-de li.de,
+body.lang-de h1.de, body.lang-de h2.de, body.lang-de h3.de,
+body.lang-de h4.de, body.lang-de section.de { display: block; }
+
+body.lang-de div.en, body.lang-de p.en, body.lang-de li.en,
+body.lang-de h1.en, body.lang-de h2.en, body.lang-de h3.en,
+body.lang-de h4.en, body.lang-de section.en { display: none; }
+
+body.lang-de #TOC .en { display: none; }
+body.lang-de #TOC .de { display: inline; }
+#TOC .de { display: none; }
+#TOC .en { display: inline; }
+
+@media print {
+  .tocify, .lang-toggle { display: none; }
+}
+```
+
+```{js, echo=FALSE}
+document.addEventListener('DOMContentLoaded', function() {
+  var toggle = document.createElement('div');
+  toggle.className = 'lang-toggle';
+  toggle.innerHTML = '<button id="btn-en" class="active">EN</button><button id="btn-de">DE</button>';
+  document.body.appendChild(toggle);
+
+  var savedLang = localStorage.getItem('workshop-lang');
+  var browserLang = navigator.language.substring(0, 2);
+  var defaultLang = savedLang || (browserLang === 'de' ? 'de' : 'en');
+  if (defaultLang === 'de') setLanguage('de');
+
+  document.getElementById('btn-en').addEventListener('click', function() { setLanguage('en'); });
+  document.getElementById('btn-de').addEventListener('click', function() { setLanguage('de'); });
+
+  function setLanguage(lang) {
+    document.body.classList.remove('lang-en', 'lang-de');
+    document.body.classList.add('lang-' + lang);
+    document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+    document.getElementById('btn-de').classList.toggle('active', lang === 'de');
+    localStorage.setItem('workshop-lang', lang);
+  }
+});
+```
+
+---
+
+# <span class="en">Review & Research Question</span><span class="de">Wiederholung & Forschungsfrage</span>
+
+## <span class="en">Quick Review from Day 1</span><span class="de">Kurze Wiederholung von Tag 1</span>
+
+<div class="en">
+
+Yesterday we learned:
+
+- **Biodiversity** = variety of species in an area
+- **Accumulation curves** show how species discovery slows with sampling effort
+- **Asymptote** = estimated total species (what we're approaching)
+- Austrian data has **native** (natural) and **alien** (introduced) species
+
+</div>
+
+<div class="de">
+
+Gestern haben wir gelernt:
+
+- **Biodiversität** = Artenvielfalt in einem Gebiet
+- **Akkumulationskurven** zeigen, wie die Artenentdeckung mit dem Stichprobenaufwand abnimmt
+- **Asymptote** = geschätzte Gesamtartenzahl (was wir anstreben)
+- Österreichische Daten haben **heimische** (natürliche) und **Alien**- (eingeführte) Arten
+
+</div>
+
+```{r review-curve, fig.height=3.5}
+set.seed(42)
+n <- 50
+curve_data <- data.frame(
+  plots = 1:n,
+  species = cumsum(c(15, pmax(0, round(rnorm(n-1, 3, 2) * (1 - (1:49)/60)))))
+)
+
+ggplot(curve_data, aes(x = plots, y = species)) +
+  geom_line(color = "#2E7D32", linewidth = 2) +
+  labs(title = "Review: Species Accumulation Curve",
+       x = "Plots Sampled", y = "Cumulative Species") +
+  theme_minimal(base_size = 14)
+```
+
+---
+
+## <span class="en">Today's Research Question</span><span class="de">Heutige Forschungsfrage</span>
+
+<div class="hypothesis-box">
+
+<div class="en">
+
+**Do alien species accumulate differently than native species?**
+
+**Hypotheses:**
+
+- **H1:** Alien species accumulate **more slowly** (fewer species overall)
+- **H2:** Alien species are **more evenly distributed** across space
+- **H3:** The curves will have **different shapes**
+
+</div>
+
+<div class="de">
+
+**Akkumulieren Alien-Arten anders als heimische Arten?**
+
+**Hypothesen:**
+
+- **H1:** Alien-Arten akkumulieren **langsamer** (weniger Arten insgesamt)
+- **H2:** Alien-Arten sind **gleichmäßiger verteilt** im Raum
+- **H3:** Die Kurven werden **unterschiedliche Formen** haben
+
+</div>
+
+</div>
+
+---
+
+# <span class="en">The Spatial Algorithm</span><span class="de">Der räumliche Algorithmus</span>
+
+## <span class="en">Why Does Order Matter?</span><span class="de">Warum ist die Reihenfolge wichtig?</span>
+
+<div class="en">
+
+Yesterday we built curves by sampling plots in **random order**.
+
+But in real ecology, we often care about **spatial patterns**:
+
+- Do species cluster geographically?
+- How does diversity change as we move across a landscape?
+
+**Solution:** Sample plots in **spatial order** - always go to the nearest unvisited plot!
+
+</div>
+
+<div class="de">
+
+Gestern haben wir Kurven erstellt, indem wir Plots in **zufälliger Reihenfolge** untersucht haben.
+
+Aber in der realen Ökologie interessieren uns oft **räumliche Muster**:
+
+- Sind Arten geografisch geclustert?
+- Wie verändert sich die Diversität über eine Landschaft?
+
+**Lösung:** Plots in **räumlicher Reihenfolge** untersuchen - immer zum nächsten unbesuchten Plot gehen!
+
+</div>
+
+```{r spatial-concept, fig.height=4}
+set.seed(123)
+n_pts <- 15
+pts <- data.frame(
+  x = runif(n_pts, 0, 10),
+  y = runif(n_pts, 0, 10),
+  order = NA
+)
+
+# Nearest neighbor order starting from point 1
+current <- 1
+pts$order[1] <- 1
+visited <- 1
+
+for(i in 2:n_pts) {
+  unvisited <- setdiff(1:n_pts, visited)
+  distances <- sqrt((pts$x[unvisited] - pts$x[current])^2 +
+                   (pts$y[unvisited] - pts$y[current])^2)
+  nearest <- unvisited[which.min(distances)]
+  pts$order[nearest] <- i
+  visited <- c(visited, nearest)
+  current <- nearest
+}
+
+pts_ordered <- pts[order(pts$order), ]
+
+ggplot(pts, aes(x = x, y = y)) +
+  geom_path(data = pts_ordered, color = "#1976D2", linewidth = 1, alpha = 0.5) +
+  geom_point(size = 5, color = "#2E7D32") +
+  geom_text(aes(label = order), color = "white", size = 3, fontface = "bold") +
+  labs(title = "Nearest-Neighbor Sampling Order",
+       subtitle = "Numbers show visit order: always go to nearest unvisited plot",
+       x = "Longitude", y = "Latitude") +
+  theme_minimal(base_size = 14)
+```
+
+---
+
+## <span class="en">The Nearest-Neighbor Algorithm</span><span class="de">Der Nearest-Neighbor-Algorithmus</span>
+
+<div class="en">
+
+**Step by step:**
+
+1. Pick a **starting plot** (seed)
+2. Mark it as **visited**
+3. Find the **nearest unvisited** plot
+4. Move there, record new species, mark as visited
+5. **Repeat** until all plots are visited
+
+</div>
+
+<div class="de">
+
+**Schritt für Schritt:**
+
+1. Wähle einen **Startplot** (Seed)
+2. Markiere ihn als **besucht**
+3. Finde den **nächsten unbesuchten** Plot
+4. Gehe dorthin, notiere neue Arten, markiere als besucht
+5. **Wiederhole** bis alle Plots besucht sind
+
+</div>
+
+---
+
+## <span class="en">The Distance Formula</span><span class="de">Die Entfernungsformel</span>
+
+<div class="en">
+
+Distance between two points (x1, y1) and (x2, y2):
+
+$$d = \sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2}$$
+
+This is the **Euclidean distance** - the straight-line distance between two points.
+
+</div>
+
+<div class="de">
+
+Entfernung zwischen zwei Punkten (x1, y1) und (x2, y2):
+
+$$d = \sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2}$$
+
+Dies ist die **Euklidische Distanz** - die Luftlinie zwischen zwei Punkten.
+
+</div>
+
+---
+
+# <span class="en">Multiple Starting Points</span><span class="de">Mehrere Startpunkte</span>
+
+## <span class="en">Why Multiple Seeds?</span><span class="de">Warum mehrere Seeds?</span>
+
+<div class="en">
+
+The shape of the curve depends on **where we start**!
+
+- Starting in a species-rich area: fast initial accumulation
+- Starting in a species-poor area: slow initial accumulation
+
+**Solution:** Run the algorithm multiple times with different starting points, then average.
+
+</div>
+
+<div class="de">
+
+Die Form der Kurve hängt davon ab, **wo wir starten**!
+
+- Start in artenreichem Gebiet: schnelle anfängliche Akkumulation
+- Start in artenarmem Gebiet: langsame anfängliche Akkumulation
+
+**Lösung:** Den Algorithmus mehrmals mit verschiedenen Startpunkten ausführen, dann mitteln.
+
+</div>
+
+---
+
+# <span class="en">Comparing Native vs. Alien</span><span class="de">Vergleich Heimisch vs. Alien</span>
+
+## <span class="en">Normalization for Fair Comparison</span><span class="de">Normalisierung für fairen Vergleich</span>
+
+<div class="en">
+
+The raw curves are hard to compare because there are many more native species.
+
+**Solution:** Normalize to percentage of total species found.
+
+This lets us compare the **shape** of accumulation, not just the total numbers.
+
+</div>
+
+<div class="de">
+
+Die Rohkurven sind schwer zu vergleichen, weil es viel mehr heimische Arten gibt.
+
+**Lösung:** Auf Prozent der gefundenen Gesamtarten normalisieren.
+
+So können wir die **Form** der Akkumulation vergleichen, nicht nur die Gesamtzahlen.
+
+</div>
+
+---
+
+# <span class="en">Interpretation & Discussion</span><span class="de">Interpretation & Diskussion</span>
+
+## <span class="en">What Do the Curves Tell Us?</span><span class="de">Was sagen uns die Kurven?</span>
+
+<div class="results-box">
+
+<div class="en">
+
+**Observations from the comparison:**
+
+1. **Total richness:** Native species >> Alien species (as expected)
+
+2. **Curve shape:**
+   - Steeper initial rise = species are clustered
+   - Gradual rise = species are evenly spread
+
+3. **Implications for invasions:**
+   - If aliens accumulate more evenly, they may be better dispersers
+   - Clustered natives may be limited by historical factors
+
+</div>
+
+<div class="de">
+
+**Beobachtungen aus dem Vergleich:**
+
+1. **Gesamtartenreichtum:** Heimische Arten >> Alien-Arten (wie erwartet)
+
+2. **Kurvenform:**
+   - Steilerer anfänglicher Anstieg = Arten sind geclustert
+   - Gradueller Anstieg = Arten sind gleichmäßig verteilt
+
+3. **Implikationen für Invasionen:**
+   - Wenn Aliens gleichmäßiger akkumulieren, sind sie vielleicht bessere Ausbreiter
+   - Geclusterte Einheimische könnten durch historische Faktoren begrenzt sein
+
+</div>
+
+</div>
+
+---
+
+## <span class="en">Discussion Questions</span><span class="de">Diskussionsfragen</span>
+
+<div class="en">
+
+1. **Why might alien species be more evenly distributed?**
+   - Human-mediated dispersal (trade, transport)
+   - Generalist habitat preferences
+   - Recent introduction = no time to cluster
+
+2. **What are the limitations of our analysis?**
+   - Sample size (we only used 100 plots)
+   - Geographic bias in sampling
+   - Detection probability differs by species
+
+3. **What would you do differently with more time?**
+   - Use all 52,000 Austrian plots
+   - Compare different habitat types
+   - Look at temporal changes
+
+</div>
+
+<div class="de">
+
+1. **Warum könnten Alien-Arten gleichmäßiger verteilt sein?**
+   - Vom Menschen vermittelte Ausbreitung (Handel, Transport)
+   - Generalistische Habitatpräferenzen
+   - Kürzliche Einführung = keine Zeit zum Clustern
+
+2. **Was sind die Einschränkungen unserer Analyse?**
+   - Stichprobengröße (wir haben nur 100 Plots verwendet)
+   - Geografische Verzerrung in der Beprobung
+   - Nachweiswahrscheinlichkeit unterscheidet sich zwischen Arten
+
+3. **Was würdest du mit mehr Zeit anders machen?**
+   - Alle 52.000 österreichischen Plots verwenden
+   - Verschiedene Habitattypen vergleichen
+   - Zeitliche Veränderungen betrachten
+
+</div>
+
+---
+
+## <span class="en">Biological Mechanisms</span><span class="de">Biologische Mechanismen</span>
+
+<div class="en">
+
+**Why do accumulation patterns differ?**
+
+| Factor | Effect on Curve Shape |
+|--------|----------------------|
+| **Dispersal ability** | Good dispersers = even distribution = gradual curve |
+| **Habitat specificity** | Specialists = clustered = steep then flat |
+| **Historical range** | Long history = natural clustering patterns |
+| **Human influence** | Transport along roads, rivers = linear patterns |
+
+</div>
+
+<div class="de">
+
+**Warum unterscheiden sich Akkumulationsmuster?**
+
+| Faktor | Effekt auf Kurvenform |
+|--------|----------------------|
+| **Ausbreitungsfähigkeit** | Gute Ausbreiter = gleichmäßige Verteilung = graduelle Kurve |
+| **Habitatspezifität** | Spezialisten = geclustert = steil dann flach |
+| **Historische Verbreitung** | Lange Geschichte = natürliche Clustermuster |
+| **Menschlicher Einfluss** | Transport entlang Straßen, Flüssen = lineare Muster |
+
+</div>
+
+---
+
+# <span class="en">Summary</span><span class="de">Zusammenfassung</span>
+
+## <span class="en">Key Concepts</span><span class="de">Schlüsselkonzepte</span>
+
+<div class="en">
+
+| Concept | What we learned |
+|---------|-----------------|
+| **Spatial order** | The sequence we visit plots affects the curve shape |
+| **Nearest-neighbor** | Algorithm: always go to closest unvisited plot |
+| **Multiple seeds** | Different starting points = different curves = need to average |
+| **Native vs. Alien** | Different accumulation patterns reveal ecological differences |
+
+</div>
+
+<div class="de">
+
+| Konzept | Was wir gelernt haben |
+|---------|----------------------|
+| **Räumliche Reihenfolge** | Die Reihenfolge, in der wir Plots besuchen, beeinflusst die Kurvenform |
+| **Nearest-Neighbor** | Algorithmus: immer zum nächsten unbesuchten Plot gehen |
+| **Mehrere Seeds** | Verschiedene Startpunkte = verschiedene Kurven = Mittelung nötig |
+| **Heimisch vs. Alien** | Unterschiedliche Akkumulationsmuster zeigen ökologische Unterschiede |
+
+</div>
+
+---
+
+## <span class="en">Main Findings</span><span class="de">Hauptergebnisse</span>
+
+<div class="results-box">
+
+<div class="en">
+
+1. **Native species are much more diverse** in Austria than alien species (~6:1 ratio)
+
+2. **Spatial patterns differ** between native and alien species
+
+3. **The starting point matters** - we need multiple seeds to get reliable curves
+
+4. **Normalized curves** allow fair comparison between groups of different sizes
+
+</div>
+
+<div class="de">
+
+1. **Heimische Arten sind viel diverser** in Österreich als Alien-Arten (~6:1 Verhältnis)
+
+2. **Räumliche Muster unterscheiden sich** zwischen heimischen und Alien-Arten
+
+3. **Der Startpunkt ist wichtig** - wir brauchen mehrere Seeds für zuverlässige Kurven
+
+4. **Normalisierte Kurven** ermöglichen fairen Vergleich zwischen unterschiedlich großen Gruppen
+
+</div>
+
+</div>
+
+---
+
+## <span class="en">Take-Home Message</span><span class="de">Fazit</span>
+
+<div class="en">
+
+> Accumulation curves reveal how species are distributed across space. Comparing native and alien species shows us which group is more clustered and helps identify invasion hotspots.
+
+**What's next?**
+
+- Apply these methods to other regions or taxa
+- Investigate temporal changes in accumulation patterns
+- Use curves to guide conservation planning
+
+</div>
+
+<div class="de">
+
+> Akkumulationskurven zeigen, wie Arten im Raum verteilt sind. Der Vergleich von heimischen und Alien-Arten zeigt uns, welche Gruppe stärker geclustert ist, und hilft Invasions-Hotspots zu identifizieren.
+
+**Wie geht es weiter?**
+
+- Diese Methoden auf andere Regionen oder Taxa anwenden
+- Zeitliche Veränderungen in Akkumulationsmustern untersuchen
+- Kurven zur Naturschutzplanung nutzen
+
+</div>

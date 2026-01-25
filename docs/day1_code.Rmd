@@ -1,0 +1,564 @@
+---
+title: '<span class="en">Day 1: Code</span><span class="de">Tag 1: Code</span>'
+subtitle: '<span class="en">R Exercises: Basics & Accumulation Curves</span><span class="de">R-Übungen: Grundlagen & Akkumulationskurven</span>'
+author: '<span class="en">Ecology Workshop</span><span class="de">Ökologie-Workshop</span>'
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: flatly
+    self_contained: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.width = 9, fig.height = 5)
+library(tidyverse)
+library(knitr)
+```
+
+```{css, echo=FALSE}
+/* ========== WORKSHOP THEME ========== */
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.7;
+  background-color: #fafffe;
+}
+
+h1 { color: #2E7D32 !important; border-bottom: 3px solid #4CAF50; padding-bottom: 10px; }
+h2 { color: #388E3C !important; margin-top: 2em; }
+h3 { color: #43A047 !important; }
+
+pre { background-color: #f5f5f5 !important; border-left: 4px solid #4CAF50 !important; padding: 15px; padding-top: 35px; border-radius: 8px; position: relative !important; }
+code { background-color: #E8F5E9; padding: 2px 6px; border-radius: 4px; color: #2E7D32; }
+pre code { background-color: transparent; padding: 0; }
+
+/* Copy button styling */
+.copy-btn {
+  position: absolute !important;
+  top: 8px !important;
+  right: 8px !important;
+  padding: 4px 12px;
+  font-size: 12px;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s, background 0.2s;
+  z-index: 100;
+}
+pre:hover .copy-btn { opacity: 1; }
+.copy-btn:hover { background: #2E7D32; }
+.copy-btn.copied { background: #1976D2; }
+
+blockquote { border-left: 4px solid #FF9800; background-color: #FFF8E1; padding: 15px 20px; margin: 1em 0; border-radius: 0 8px 8px 0; }
+
+hr { border: none; height: 3px; background: linear-gradient(to right, #4CAF50, #81C784, #C8E6C9, #81C784, #4CAF50); margin: 2em 0; border-radius: 2px; }
+
+.tocify { border: none !important; border-radius: 12px !important; background-color: #f1f8e9 !important; }
+.tocify-item.active { background-color: #4CAF50 !important; color: white !important; }
+
+/* Exercise boxes */
+.exercise-box {
+  background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+  border-left: 5px solid #1976D2;
+  padding: 20px;
+  margin: 1.5em 0;
+  border-radius: 0 12px 12px 0;
+}
+
+.exercise-box h4 {
+  color: #1565C0 !important;
+  margin-top: 0;
+}
+
+/* ========== LANGUAGE TOGGLE ========== */
+.lang-toggle {
+  position: fixed; top: 10px; right: 20px; z-index: 9999;
+  background: linear-gradient(135deg, #2E7D32, #4CAF50);
+  padding: 8px 12px; border-radius: 25px;
+  box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3);
+}
+.lang-toggle button {
+  background: transparent; border: none; color: #fff;
+  padding: 6px 14px; cursor: pointer; font-weight: bold;
+  border-radius: 20px; transition: all 0.3s; font-size: 14px;
+}
+.lang-toggle button.active { background: white; color: #2E7D32; }
+.lang-toggle button:hover:not(.active) { background: rgba(255,255,255,0.2); }
+
+.de { display: none; }
+.en { display: inline; }
+body.lang-de .de { display: inline; }
+body.lang-de .en { display: none; }
+
+div.de, p.de, li.de, h1.de, h2.de, h3.de, h4.de, section.de { display: none; }
+div.en, p.en, li.en, h1.en, h2.en, h3.en, h4.en, section.en { display: block; }
+
+body.lang-de div.de, body.lang-de p.de, body.lang-de li.de,
+body.lang-de h1.de, body.lang-de h2.de, body.lang-de h3.de,
+body.lang-de h4.de, body.lang-de section.de { display: block; }
+
+body.lang-de div.en, body.lang-de p.en, body.lang-de li.en,
+body.lang-de h1.en, body.lang-de h2.en, body.lang-de h3.en,
+body.lang-de h4.en, body.lang-de section.en { display: none; }
+
+body.lang-de #TOC .en { display: none; }
+body.lang-de #TOC .de { display: inline; }
+#TOC .de { display: none; }
+#TOC .en { display: inline; }
+
+@media print {
+  .tocify, .lang-toggle, .copy-btn { display: none; }
+}
+```
+
+```{js, echo=FALSE}
+document.addEventListener('DOMContentLoaded', function() {
+  var toggle = document.createElement('div');
+  toggle.className = 'lang-toggle';
+  toggle.innerHTML = '<button id="btn-en" class="active">EN</button><button id="btn-de">DE</button>';
+  document.body.appendChild(toggle);
+
+  var savedLang = localStorage.getItem('workshop-lang');
+  var browserLang = navigator.language.substring(0, 2);
+  var defaultLang = savedLang || (browserLang === 'de' ? 'de' : 'en');
+  if (defaultLang === 'de') setLanguage('de');
+
+  document.getElementById('btn-en').addEventListener('click', function() { setLanguage('en'); });
+  document.getElementById('btn-de').addEventListener('click', function() { setLanguage('de'); });
+
+  // Copy button for code blocks
+  document.querySelectorAll('pre').forEach(function(pre) {
+    var btn = document.createElement('button');
+    btn.className = 'copy-btn';
+    btn.textContent = 'Copy';
+
+    btn.addEventListener('click', function() {
+      var code = pre.querySelector('code');
+      var text = code ? code.textContent : pre.textContent;
+
+      function showSuccess() {
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(function() {
+          btn.textContent = 'Copy';
+          btn.classList.remove('copied');
+        }, 2000);
+      }
+
+      function fallbackCopy() {
+        var textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+          document.execCommand('copy');
+          showSuccess();
+        } catch(e) {
+          btn.textContent = 'Failed';
+        }
+        document.body.removeChild(textarea);
+      }
+
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(showSuccess).catch(fallbackCopy);
+      } else {
+        fallbackCopy();
+      }
+    });
+
+    pre.appendChild(btn);
+  });
+
+  function setLanguage(lang) {
+    document.body.classList.remove('lang-en', 'lang-de');
+    document.body.classList.add('lang-' + lang);
+    document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+    document.getElementById('btn-de').classList.toggle('active', lang === 'de');
+    localStorage.setItem('workshop-lang', lang);
+  }
+});
+```
+
+---
+
+# <span class="en">Exercise 1: Working with Species Data</span><span class="de">Übung 1: Mit Artendaten arbeiten</span>
+
+<div class="exercise-box">
+
+<div class="en">
+
+#### Your First R Code
+
+Let's represent our two forests as **vectors** in R:
+
+</div>
+
+<div class="de">
+
+#### Dein erster R-Code
+
+Stellen wir unsere zwei Wälder als **Vektoren** in R dar:
+
+</div>
+
+```{r forest-vectors}
+# Forest A: 5 oaks
+forest_a <- c("Oak", "Oak", "Oak", "Oak", "Oak")
+
+# Forest B: 5 different species
+forest_b <- c("Oak", "Beech", "Maple", "Pine", "Birch")
+
+# How many trees?
+length(forest_a)
+length(forest_b)
+```
+
+```{r unique-species}
+# How many UNIQUE species?
+unique(forest_a)
+length(unique(forest_a))
+
+unique(forest_b)
+length(unique(forest_b))
+```
+
+<div class="en">
+
+**Key functions:**
+
+- `c()` - combine values into a vector
+- `length()` - count elements
+- `unique()` - find unique values
+
+</div>
+
+<div class="de">
+
+**Wichtige Funktionen:**
+
+- `c()` - Werte zu einem Vektor kombinieren
+- `length()` - Elemente zählen
+- `unique()` - eindeutige Werte finden
+
+</div>
+
+</div>
+
+---
+
+# <span class="en">Exercise 2: Loading Real Data</span><span class="de">Übung 2: Echte Daten laden</span>
+
+<div class="exercise-box">
+
+<div class="en">
+
+#### Exploring Austrian Vegetation Data
+
+Let's load real data from the European Vegetation Archive (EVA):
+
+</div>
+
+<div class="de">
+
+#### Österreichische Vegetationsdaten erkunden
+
+Laden wir echte Daten aus dem European Vegetation Archive (EVA):
+
+</div>
+
+```{r load-data}
+# Load the data
+species <- read.csv("../data/austria_species.csv")
+plots <- read.csv("../data/austria_header.csv")
+
+# How big is our dataset?
+nrow(species)  # Number of species observations
+nrow(plots)    # Number of plots
+```
+
+```{r explore-data}
+# Look at the first few rows
+head(species)
+```
+
+```{r data-structure}
+# What columns do we have?
+names(species)
+names(plots)
+```
+
+```{r summary-stats}
+# How many unique species?
+length(unique(species$WFO_TAXON))
+
+# How many unique plots?
+length(unique(species$PlotObservationID))
+```
+
+<div class="en">
+
+**Key functions:**
+
+- `read.csv()` - load data from a file
+- `head()` - see first rows
+- `names()` - column names
+- `nrow()` - number of rows
+
+</div>
+
+<div class="de">
+
+**Wichtige Funktionen:**
+
+- `read.csv()` - Daten aus Datei laden
+- `head()` - erste Zeilen anzeigen
+- `names()` - Spaltennamen
+- `nrow()` - Anzahl der Zeilen
+
+</div>
+
+</div>
+
+---
+
+# <span class="en">Exercise 3: Building Your First Curve</span><span class="de">Übung 3: Deine erste Kurve bauen</span>
+
+<div class="exercise-box">
+
+<div class="en">
+
+#### Using cumsum() to Build Accumulation Curves
+
+</div>
+
+<div class="de">
+
+#### Mit cumsum() Akkumulationskurven bauen
+
+</div>
+
+```{r manual-curve}
+# New species found in each plot
+new_species <- c(12, 8, 5, 3, 2, 2, 1, 1, 1, 0)
+
+# Calculate cumulative sum
+cumulative <- cumsum(new_species)
+cumulative
+```
+
+```{r plot-manual-curve, fig.height=4}
+# Create a data frame for plotting
+curve_data <- data.frame(
+  plot = 1:10,
+  new = new_species,
+  total = cumulative
+)
+
+# Plot the curve
+ggplot(curve_data, aes(x = plot, y = total)) +
+  geom_line(color = "#2E7D32", linewidth = 1.5) +
+  geom_point(color = "#2E7D32", size = 3) +
+  labs(title = "My First Accumulation Curve",
+       x = "Plot Number",
+       y = "Cumulative Species") +
+  theme_minimal(base_size = 14)
+```
+
+<div class="en">
+
+**Key function:**
+
+- `cumsum()` - cumulative sum: each element is the sum of all previous elements
+
+Try it: What is `cumsum(c(1, 2, 3, 4, 5))`?
+
+</div>
+
+<div class="de">
+
+**Wichtige Funktion:**
+
+- `cumsum()` - kumulative Summe: jedes Element ist die Summe aller vorherigen
+
+Probiere: Was ist `cumsum(c(1, 2, 3, 4, 5))`?
+
+</div>
+
+</div>
+
+---
+
+# <span class="en">Exercise 4: Visualizing the Asymptote</span><span class="de">Übung 4: Die Asymptote visualisieren</span>
+
+<div class="exercise-box">
+
+<div class="en">
+
+#### Adding an Asymptote Line
+
+</div>
+
+<div class="de">
+
+#### Eine Asymptoten-Linie hinzufügen
+
+</div>
+
+```{r asymptote-exercise, fig.height=4}
+# Our data from before
+curve_data <- data.frame(
+  plot = 1:10,
+  total = cumsum(c(12, 8, 5, 3, 2, 2, 1, 1, 1, 0))
+)
+
+# Estimate the asymptote (total species in the area)
+estimated_total <- 40
+
+# Plot with asymptote
+ggplot(curve_data, aes(x = plot, y = total)) +
+  geom_line(color = "#2E7D32", linewidth = 1.5) +
+  geom_point(color = "#2E7D32", size = 3) +
+  geom_hline(yintercept = estimated_total,
+             linetype = "dashed", color = "#D32F2F", linewidth = 1) +
+  annotate("text", x = 8, y = estimated_total + 2,
+           label = paste("Estimated total:", estimated_total),
+           color = "#D32F2F") +
+  labs(title = "Accumulation Curve with Asymptote",
+       x = "Plot Number",
+       y = "Cumulative Species") +
+  theme_minimal(base_size = 14) +
+  ylim(0, 50)
+```
+
+```{r calculate-completeness}
+# How complete is our sampling?
+found <- max(curve_data$total)
+completeness <- (found / estimated_total) * 100
+
+cat("Species found:", found, "\n")
+cat("Estimated total:", estimated_total, "\n")
+cat("Sampling completeness:", round(completeness, 1), "%\n")
+```
+
+<div class="en">
+
+With 10 plots, we found `r found` of an estimated `r estimated_total` species (`r round(completeness, 1)`% complete).
+
+</div>
+
+<div class="de">
+
+Mit 10 Plots haben wir `r found` von geschätzten `r estimated_total` Arten gefunden (`r round(completeness, 1)`% vollständig).
+
+</div>
+
+</div>
+
+---
+
+# <span class="en">Exercise 5: Exploring Native vs. Alien</span><span class="de">Übung 5: Heimisch vs. Alien erkunden</span>
+
+<div class="exercise-box">
+
+<div class="en">
+
+#### Filtering and Counting by Status
+
+</div>
+
+<div class="de">
+
+#### Filtern und Zählen nach Status
+
+</div>
+
+```{r native-alien-count}
+# Load the data
+species <- read.csv("../data/austria_species.csv")
+
+# Count by status
+table(species$STATUS)
+```
+
+```{r filter-species}
+# Filter native species only
+native <- species[species$STATUS == "native", ]
+nrow(native)
+
+# Filter alien species only
+alien <- species[species$STATUS == "alien", ]
+nrow(alien)
+```
+
+```{r unique-by-status}
+# How many UNIQUE native species?
+n_native <- length(unique(native$WFO_TAXON))
+n_native
+
+# How many UNIQUE alien species?
+n_alien <- length(unique(alien$WFO_TAXON))
+n_alien
+
+# Ratio
+cat("Ratio of native to alien:", round(n_native / n_alien, 1), ": 1\n")
+```
+
+```{r plot-status, fig.height=4}
+# Visualize the difference
+status_counts <- data.frame(
+  Status = c("Native", "Alien"),
+  Count = c(n_native, n_alien)
+)
+
+ggplot(status_counts, aes(x = Status, y = Count, fill = Status)) +
+  geom_col(width = 0.6) +
+  geom_text(aes(label = Count), vjust = -0.5, size = 5) +
+  scale_fill_manual(values = c("Alien" = "#FF9800", "Native" = "#4CAF50")) +
+  labs(title = "Unique Species by Status in Austrian Data",
+       y = "Number of Unique Species") +
+  theme_minimal(base_size = 14) +
+  theme(legend.position = "none")
+```
+
+<div class="en">
+
+There are about `r round(n_native / n_alien, 0)` times more native species than alien species in our dataset.
+
+**Tomorrow:** We'll build separate accumulation curves for each group and compare their shapes!
+
+</div>
+
+<div class="de">
+
+Es gibt etwa `r round(n_native / n_alien, 0)` mal mehr heimische als Alien-Arten in unserem Datensatz.
+
+**Morgen:** Wir werden separate Akkumulationskurven für jede Gruppe bauen und ihre Formen vergleichen!
+
+</div>
+
+</div>
+
+---
+
+# <span class="en">Summary: R Functions Learned</span><span class="de">Zusammenfassung: Gelernte R-Funktionen</span>
+
+```{r functions-summary, echo=FALSE}
+functions <- data.frame(
+  Function = c("c()", "length()", "unique()", "read.csv()", "head()",
+               "names()", "nrow()", "cumsum()", "table()"),
+  Purpose_EN = c("Combine values into vector", "Count elements", "Find unique values",
+                 "Load CSV file", "View first rows", "Column names",
+                 "Number of rows", "Cumulative sum", "Count by category"),
+  Purpose_DE = c("Werte zu Vektor kombinieren", "Elemente zählen", "Eindeutige Werte finden",
+                 "CSV-Datei laden", "Erste Zeilen anzeigen", "Spaltennamen",
+                 "Zeilenanzahl", "Kumulative Summe", "Nach Kategorie zählen")
+)
+kable(functions)
+```

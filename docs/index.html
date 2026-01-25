@@ -55,7 +55,7 @@
 
     .container {
       text-align: center;
-      max-width: 800px;
+      max-width: 900px;
     }
 
     h1 {
@@ -68,62 +68,83 @@
     .subtitle {
       color: #388E3C;
       font-size: 1.3rem;
-      margin-bottom: 3rem;
+      margin-bottom: 2rem;
     }
 
-    .cards {
+    .grid-header {
+      display: grid;
+      grid-template-columns: 100px 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .grid-header span {
+      font-weight: bold;
+      color: #2E7D32;
+      font-size: 1.1rem;
+      padding: 10px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 100px 1fr 1fr;
+      gap: 15px;
+    }
+
+    .row-label {
       display: flex;
-      gap: 30px;
+      align-items: center;
       justify-content: center;
-      flex-wrap: wrap;
+      font-weight: bold;
+      color: #2E7D32;
+      font-size: 1.1rem;
+      background: rgba(255,255,255,0.5);
+      border-radius: 12px;
+      padding: 10px;
     }
 
     .card {
       background: white;
-      border-radius: 20px;
-      padding: 40px 30px;
-      width: 300px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+      border-radius: 16px;
+      padding: 25px 20px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.1);
       transition: transform 0.3s, box-shadow 0.3s;
       text-decoration: none;
       color: inherit;
     }
 
     .card:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.15);
     }
 
     .card-icon {
-      font-size: 4rem;
-      margin-bottom: 20px;
+      font-size: 2.5rem;
+      margin-bottom: 12px;
     }
 
     .card h2 {
       color: #2E7D32;
-      margin-bottom: 10px;
-      font-size: 1.5rem;
+      margin-bottom: 8px;
+      font-size: 1.2rem;
     }
 
     .card p {
       color: #666;
-      line-height: 1.6;
+      line-height: 1.5;
+      font-size: 0.95rem;
     }
 
-    .card.day1 {
-      border-top: 5px solid #4CAF50;
+    .card.theory {
+      border-left: 4px solid #4CAF50;
     }
 
-    .card.day2 {
-      border-top: 5px solid #FF9800;
-    }
-
-    .card.exercises {
-      border-top: 5px solid #1976D2;
+    .card.code {
+      border-left: 4px solid #1976D2;
     }
 
     footer {
-      margin-top: 3rem;
+      margin-top: 2rem;
       color: #666;
       font-size: 0.9rem;
     }
@@ -133,6 +154,22 @@
     .en { display: inline; }
     body.lang-de .de { display: inline; }
     body.lang-de .en { display: none; }
+
+    @media (max-width: 700px) {
+      .grid-header, .grid {
+        grid-template-columns: 1fr;
+      }
+      .grid-header span:first-child,
+      .row-label {
+        display: none;
+      }
+      .card h2::before {
+        display: block;
+        font-size: 0.8rem;
+        color: #666;
+        margin-bottom: 5px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -151,40 +188,76 @@
       <span class="de">Ökologie-Workshop - 2 Tage</span>
     </p>
 
-    <div class="cards">
-      <a href="day1.html" class="card day1">
+    <div class="grid-header">
+      <span></span>
+      <span>
+        <span class="en">Theory</span>
+        <span class="de">Theorie</span>
+      </span>
+      <span>
+        <span class="en">Code</span>
+        <span class="de">Code</span>
+      </span>
+    </div>
+
+    <div class="grid">
+      <!-- Day 1 Row -->
+      <div class="row-label">
+        <span class="en">Day 1</span>
+        <span class="de">Tag 1</span>
+      </div>
+
+      <a href="day1_theory.html" class="card theory">
         <div class="card-icon">🌱</div>
         <h2>
-          <span class="en">Day 1</span>
-          <span class="de">Tag 1</span>
+          <span class="en">Concepts</span>
+          <span class="de">Konzepte</span>
         </h2>
         <p>
-          <span class="en">Biodiversity concepts, accumulation curves, vegetation plots, and introduction to R</span>
-          <span class="de">Biodiversitätskonzepte, Akkumulationskurven, Vegetationsplots und Einführung in R</span>
+          <span class="en">Biodiversity, accumulation curves, asymptotes, native vs. alien species</span>
+          <span class="de">Biodiversität, Akkumulationskurven, Asymptoten, heimische vs. Alien-Arten</span>
         </p>
       </a>
 
-      <a href="day2.html" class="card day2">
-        <div class="card-icon">📊</div>
-        <h2>
-          <span class="en">Day 2</span>
-          <span class="de">Tag 2</span>
-        </h2>
-        <p>
-          <span class="en">Hands-on data analysis with real Austrian vegetation data</span>
-          <span class="de">Praktische Datenanalyse mit echten österreichischen Vegetationsdaten</span>
-        </p>
-      </a>
-
-      <a href="exercises.html" class="card exercises">
+      <a href="day1_code.html" class="card code">
         <div class="card-icon">💻</div>
         <h2>
-          <span class="en">Exercises</span>
-          <span class="de">Übungen</span>
+          <span class="en">R Exercises</span>
+          <span class="de">R-Übungen</span>
         </h2>
         <p>
-          <span class="en">Copy-paste R code examples with solutions for all sessions</span>
-          <span class="de">R-Code zum Kopieren mit Lösungen für alle Sitzungen</span>
+          <span class="en">Vectors, data loading, cumsum(), plotting basics</span>
+          <span class="de">Vektoren, Daten laden, cumsum(), Plot-Grundlagen</span>
+        </p>
+      </a>
+
+      <!-- Day 2 Row -->
+      <div class="row-label">
+        <span class="en">Day 2</span>
+        <span class="de">Tag 2</span>
+      </div>
+
+      <a href="day2_theory.html" class="card theory">
+        <div class="card-icon">📊</div>
+        <h2>
+          <span class="en">Algorithms</span>
+          <span class="de">Algorithmen</span>
+        </h2>
+        <p>
+          <span class="en">Spatial order, nearest-neighbor, multiple seeds, interpretation</span>
+          <span class="de">Räumliche Ordnung, Nearest-Neighbor, mehrere Seeds, Interpretation</span>
+        </p>
+      </a>
+
+      <a href="day2_code.html" class="card code">
+        <div class="card-icon">🔬</div>
+        <h2>
+          <span class="en">Analysis</span>
+          <span class="de">Analyse</span>
+        </h2>
+        <p>
+          <span class="en">Distance functions, loops, spatial curves, native vs. alien comparison</span>
+          <span class="de">Distanzfunktionen, Schleifen, räumliche Kurven, Vergleich heimisch vs. Alien</span>
         </p>
       </a>
     </div>

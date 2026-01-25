@@ -1,0 +1,543 @@
+---
+title: '<span class="en">Day 1: Theory</span><span class="de">Tag 1: Theorie</span>'
+subtitle: '<span class="en">Biodiversity & Species Accumulation Curves</span><span class="de">Biodiversität & Artenakkumulationskurven</span>'
+author: '<span class="en">Ecology Workshop</span><span class="de">Ökologie-Workshop</span>'
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: flatly
+    self_contained: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, fig.width = 9, fig.height = 5)
+library(tidyverse)
+library(knitr)
+```
+
+```{css, echo=FALSE}
+/* ========== WORKSHOP THEME ========== */
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.7;
+  background-color: #fafffe;
+}
+
+h1 { color: #2E7D32 !important; border-bottom: 3px solid #4CAF50; padding-bottom: 10px; }
+h2 { color: #388E3C !important; margin-top: 2em; }
+h3 { color: #43A047 !important; }
+
+table { border-collapse: collapse; margin: 1em 0; width: 100%; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+th { background-color: #4CAF50 !important; color: white !important; padding: 12px; text-align: left; }
+td { padding: 10px 12px; border-bottom: 1px solid #ddd; }
+tr:nth-child(even) { background-color: #f9f9f9; }
+tr:hover { background-color: #E8F5E9; }
+
+blockquote { border-left: 4px solid #FF9800; background-color: #FFF8E1; padding: 15px 20px; margin: 1em 0; border-radius: 0 8px 8px 0; }
+
+hr { border: none; height: 3px; background: linear-gradient(to right, #4CAF50, #81C784, #C8E6C9, #81C784, #4CAF50); margin: 2em 0; border-radius: 2px; }
+
+.tocify { border: none !important; border-radius: 12px !important; background-color: #f1f8e9 !important; }
+.tocify-item.active { background-color: #4CAF50 !important; color: white !important; }
+
+/* Concept boxes */
+.concept-box {
+  background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+  border-left: 5px solid #4CAF50;
+  padding: 20px;
+  margin: 1.5em 0;
+  border-radius: 0 12px 12px 0;
+}
+
+/* ========== LANGUAGE TOGGLE ========== */
+.lang-toggle {
+  position: fixed; top: 10px; right: 20px; z-index: 9999;
+  background: linear-gradient(135deg, #2E7D32, #4CAF50);
+  padding: 8px 12px; border-radius: 25px;
+  box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3);
+}
+.lang-toggle button {
+  background: transparent; border: none; color: #fff;
+  padding: 6px 14px; cursor: pointer; font-weight: bold;
+  border-radius: 20px; transition: all 0.3s; font-size: 14px;
+}
+.lang-toggle button.active { background: white; color: #2E7D32; }
+.lang-toggle button:hover:not(.active) { background: rgba(255,255,255,0.2); }
+
+.de { display: none; }
+.en { display: inline; }
+body.lang-de .de { display: inline; }
+body.lang-de .en { display: none; }
+
+div.de, p.de, li.de, h1.de, h2.de, h3.de, h4.de, section.de { display: none; }
+div.en, p.en, li.en, h1.en, h2.en, h3.en, h4.en, section.en { display: block; }
+
+body.lang-de div.de, body.lang-de p.de, body.lang-de li.de,
+body.lang-de h1.de, body.lang-de h2.de, body.lang-de h3.de,
+body.lang-de h4.de, body.lang-de section.de { display: block; }
+
+body.lang-de div.en, body.lang-de p.en, body.lang-de li.en,
+body.lang-de h1.en, body.lang-de h2.en, body.lang-de h3.en,
+body.lang-de h4.en, body.lang-de section.en { display: none; }
+
+body.lang-de #TOC .en { display: none; }
+body.lang-de #TOC .de { display: inline; }
+#TOC .de { display: none; }
+#TOC .en { display: inline; }
+
+@media print {
+  .tocify, .lang-toggle { display: none; }
+}
+```
+
+```{js, echo=FALSE}
+document.addEventListener('DOMContentLoaded', function() {
+  var toggle = document.createElement('div');
+  toggle.className = 'lang-toggle';
+  toggle.innerHTML = '<button id="btn-en" class="active">EN</button><button id="btn-de">DE</button>';
+  document.body.appendChild(toggle);
+
+  var savedLang = localStorage.getItem('workshop-lang');
+  var browserLang = navigator.language.substring(0, 2);
+  var defaultLang = savedLang || (browserLang === 'de' ? 'de' : 'en');
+  if (defaultLang === 'de') setLanguage('de');
+
+  document.getElementById('btn-en').addEventListener('click', function() { setLanguage('en'); });
+  document.getElementById('btn-de').addEventListener('click', function() { setLanguage('de'); });
+
+  function setLanguage(lang) {
+    document.body.classList.remove('lang-en', 'lang-de');
+    document.body.classList.add('lang-' + lang);
+    document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+    document.getElementById('btn-de').classList.toggle('active', lang === 'de');
+    localStorage.setItem('workshop-lang', lang);
+  }
+});
+```
+
+---
+
+# <span class="en">What is Biodiversity?</span><span class="de">Was ist Biodiversität?</span>
+
+## <span class="en">Definition</span><span class="de">Definition</span>
+
+<div class="en">
+
+**Biodiversity** = the variety of life in an area
+
+Compare two forests:
+
+| Forest A | Forest B |
+|----------|----------|
+| Oak, Oak, Oak, Oak, Oak | Oak, Beech, Maple, Pine, Birch |
+| 5 trees, **1 species** | 5 trees, **5 species** |
+
+**Which forest is more biodiverse?** Forest B - even though both have the same number of trees.
+
+</div>
+
+<div class="de">
+
+**Biodiversität** = die Vielfalt des Lebens in einem Gebiet
+
+Denk an zwei Wälder...
+
+| Wald A | Wald B |
+|--------|--------|
+| Eiche, Eiche, Eiche, Eiche, Eiche | Eiche, Buche, Ahorn, Kiefer, Birke |
+| 5 Bäume, **1 Art** | 5 Bäume, **5 Arten** |
+
+**Welcher Wald ist artenreicher?** Wald B - obwohl beide gleich viele Bäume haben.
+
+</div>
+
+---
+
+## <span class="en">Why Does Biodiversity Matter?</span><span class="de">Warum ist Biodiversität wichtig?</span>
+
+```{r biodiversity-importance, fig.height=3.5}
+facts <- data.frame(
+  category = c("Economy", "Decline", "Risk"),
+  value = c(44, 69, 25),
+  label_en = c("44 trillion USD\nGDP depends on nature", "69% wildlife\ndecline since 1970", "25% of species\nthreatened"),
+  label_de = c("44 Billionen USD\nBIP hängt von Natur ab", "69% Wildtier-\nrückgang seit 1970", "25% der Arten\nbedroht")
+)
+
+ggplot(facts, aes(x = category, y = value, fill = category)) +
+  geom_col(width = 0.6) +
+  geom_text(aes(label = label_en), vjust = -0.3, size = 4, lineheight = 0.9) +
+  scale_fill_manual(values = c("#4CAF50", "#FF9800", "#F44336")) +
+  labs(title = "Why Biodiversity Matters", y = "", x = "") +
+  theme_minimal(base_size = 14) +
+  theme(legend.position = "none",
+        axis.text.y = element_blank(),
+        panel.grid = element_blank()) +
+  ylim(0, 100)
+```
+
+<div class="en">
+
+- **Ecosystem services**: Clean air, water filtration, pollination
+- **Medicine**: 70% of cancer drugs come from natural sources
+- **Food security**: Genetic diversity protects crops from disease
+
+</div>
+
+<div class="de">
+
+- **Ökosystemleistungen**: Saubere Luft, Wasserfilterung, Bestäubung
+- **Medizin**: 70% der Krebsmedikamente stammen aus natürlichen Quellen
+- **Ernährungssicherheit**: Genetische Vielfalt schützt Pflanzen vor Krankheiten
+
+</div>
+
+---
+
+# <span class="en">The Sampling Problem</span><span class="de">Das Stichproben-Problem</span>
+
+## <span class="en">The Counting Problem</span><span class="de">Das Zählproblem</span>
+
+<div class="en">
+
+**How many plant species are in Austria?**
+
+Can we count them all? Consider:
+
+- Austria = 83,879 km²
+- Some species are tiny (mosses, lichens)
+- Some only appear in certain seasons
+- Some are extremely rare
+
+**The answer: Sampling!**
+
+We study small areas carefully and use statistics to estimate the total.
+
+</div>
+
+<div class="de">
+
+**Wie viele Pflanzenarten gibt es in Österreich?**
+
+Können wir alle zählen? Bedenke:
+
+- Österreich = 83.879 km²
+- Manche Arten sind winzig (Moose, Flechten)
+- Manche erscheinen nur zu bestimmten Jahreszeiten
+- Manche sind extrem selten
+
+**Die Lösung: Stichproben!**
+
+Wir untersuchen kleine Flächen sorgfältig und nutzen Statistik zur Schätzung.
+
+</div>
+
+---
+
+## <span class="en">Vegetation Plots</span><span class="de">Vegetationsplots</span>
+
+<div class="en">
+
+A **vegetation plot** is a small area (typically 1-100 m²) where ecologists record every plant species.
+
+| What we record | Example |
+|----------------|---------|
+| Location (coordinates) | 47.0707° N, 15.4395° E |
+| Date | 2023-06-15 |
+| All species present | Festuca rubra, Trifolium repens, ... |
+| Cover (%) per species | 25%, 10%, ... |
+
+</div>
+
+<div class="de">
+
+Ein **Vegetationsplot** ist eine kleine Fläche (typisch 1-100 m²), auf der Ökologen jede Pflanzenart notieren.
+
+| Was wir aufnehmen | Beispiel |
+|-------------------|----------|
+| Standort (Koordinaten) | 47.0707° N, 15.4395° E |
+| Datum | 2023-06-15 |
+| Alle vorhandenen Arten | Festuca rubra, Trifolium repens, ... |
+| Deckung (%) pro Art | 25%, 10%, ... |
+
+</div>
+
+---
+
+# <span class="en">Species Accumulation Curves</span><span class="de">Artenakkumulationskurven</span>
+
+## <span class="en">The Core Idea</span><span class="de">Die Kernidee</span>
+
+<div class="en">
+
+As we sample more plots, we find more species - but at a **decreasing rate**.
+
+**Why?**
+
+- First plots: Mostly **common** species (easy to find)
+- Later plots: Mostly **rare** species (hard to find)
+- Eventually: Very few new species per plot
+
+</div>
+
+<div class="de">
+
+Je mehr Plots wir untersuchen, desto mehr Arten finden wir - aber mit **abnehmender Rate**.
+
+**Warum?**
+
+- Erste Plots: Hauptsächlich **häufige** Arten (leicht zu finden)
+- Spätere Plots: Hauptsächlich **seltene** Arten (schwer zu finden)
+- Schließlich: Sehr wenige neue Arten pro Plot
+
+</div>
+
+```{r accumulation-concept, fig.height=4}
+set.seed(42)
+n_plots <- 50
+species_pool <- 80
+
+# Simulate accumulation
+accumulation <- data.frame(plots = 1:n_plots, species = 0)
+current <- 15
+for(i in 1:n_plots) {
+  prob_new <- (species_pool - current) / species_pool
+  current <- current + rbinom(1, 6, prob_new)
+  accumulation$species[i] <- min(current, species_pool - 2)
+}
+
+ggplot(accumulation, aes(x = plots, y = species)) +
+  geom_line(color = "#2E7D32", linewidth = 2) +
+  geom_point(color = "#2E7D32", size = 2, alpha = 0.7) +
+  annotate("text", x = 10, y = 60, label = "Steep: Many new species!",
+           color = "#1565C0", size = 5, hjust = 0) +
+  annotate("text", x = 35, y = 75, label = "Flat: Few new species",
+           color = "#F57C00", size = 5, hjust = 0) +
+  labs(title = "Species Accumulation Curve",
+       x = "Number of Plots Sampled",
+       y = "Cumulative Species Count") +
+  theme_minimal(base_size = 14)
+```
+
+---
+
+## <span class="en">Building a Curve Step by Step</span><span class="de">Eine Kurve Schritt für Schritt bauen</span>
+
+<div class="en">
+
+Imagine sampling 5 plots:
+
+| Plot | New Species Found | Cumulative Total |
+|------|-------------------|------------------|
+| 1 | 12 | 12 |
+| 2 | 8 | 20 |
+| 3 | 5 | 25 |
+| 4 | 3 | 28 |
+| 5 | 2 | 30 |
+
+Notice: Each plot adds fewer new species!
+
+</div>
+
+<div class="de">
+
+Stell dir vor, wir untersuchen 5 Plots:
+
+| Plot | Neue Arten gefunden | Kumulierte Summe |
+|------|---------------------|------------------|
+| 1 | 12 | 12 |
+| 2 | 8 | 20 |
+| 3 | 5 | 25 |
+| 4 | 3 | 28 |
+| 5 | 2 | 30 |
+
+Beachte: Jeder Plot fügt weniger neue Arten hinzu!
+
+</div>
+
+---
+
+# <span class="en">The Asymptote</span><span class="de">Die Asymptote</span>
+
+## <span class="en">Predicting the Unknowable</span><span class="de">Das Unbekannte vorhersagen</span>
+
+<div class="en">
+
+The **asymptote** is the line the curve approaches but never quite reaches.
+
+It represents: **the estimated total number of species**
+
+Even without sampling everything, we can estimate how much we're missing!
+
+</div>
+
+<div class="de">
+
+Die **Asymptote** ist die Linie, der sich die Kurve nähert, aber nie ganz erreicht.
+
+Sie repräsentiert: **die geschätzte Gesamtartenzahl**
+
+Selbst ohne alles zu untersuchen, können wir schätzen, wie viel wir verpassen!
+
+</div>
+
+```{r asymptote-demo, fig.height=4}
+set.seed(42)
+n_plots <- 50
+species_pool <- 80
+
+accumulation <- data.frame(plots = 1:n_plots, species = 0)
+current <- 15
+for(i in 1:n_plots) {
+  prob_new <- (species_pool - current) / species_pool
+  current <- current + rbinom(1, 6, prob_new)
+  accumulation$species[i] <- min(current, species_pool - 3)
+}
+
+final_species <- max(accumulation$species)
+
+ggplot(accumulation, aes(x = plots, y = species)) +
+  geom_line(color = "#2E7D32", linewidth = 2) +
+  geom_hline(yintercept = species_pool, linetype = "dashed", color = "#D32F2F", linewidth = 1.5) +
+  annotate("rect", xmin = 40, xmax = 50, ymin = species_pool - 6, ymax = species_pool + 4,
+           fill = "#FFEB3B", alpha = 0.3) +
+  annotate("text", x = 45, y = species_pool + 8,
+           label = paste0("Asymptote: ~", species_pool, " species"),
+           color = "#D32F2F", size = 5, fontface = "bold") +
+  annotate("text", x = 25, y = 50,
+           label = paste0("Found: ", final_species, " species\nStill missing a few!"),
+           size = 4, color = "#2E7D32") +
+  labs(title = "The Asymptote: Estimating Total Species",
+       x = "Plots Sampled",
+       y = "Species Found") +
+  theme_minimal(base_size = 14) +
+  ylim(0, species_pool + 15)
+```
+
+---
+
+# <span class="en">The European Vegetation Archive</span><span class="de">Das Europäische Vegetationsarchiv</span>
+
+## <span class="en">EVA Database</span><span class="de">EVA-Datenbank</span>
+
+<div class="en">
+
+**EVA** (European Vegetation Archive) is the largest vegetation database in Europe:
+
+- **1.6+ million** plots
+- **82** countries
+- Data from **1900 to today**
+
+For Austria, we have access to ~52,000 plots with location data.
+
+</div>
+
+<div class="de">
+
+**EVA** (European Vegetation Archive) ist die größte Vegetationsdatenbank Europas:
+
+- **1,6+ Millionen** Plots
+- **82** Länder
+- Daten von **1900 bis heute**
+
+Für Österreich haben wir Zugang zu ~52.000 Plots mit Standortdaten.
+
+</div>
+
+---
+
+## <span class="en">Native vs. Alien Species</span><span class="de">Heimische vs. Alien-Arten</span>
+
+<div class="en">
+
+Our dataset distinguishes between:
+
+| Native Species | Alien Species (Neophytes) |
+|----------------|---------------------------|
+| Naturally occurring | Introduced by humans |
+| Part of original ecosystem | Arrived after 1492 |
+| Co-evolved with other species | May outcompete natives |
+
+**Research Question for Day 2:** Do alien species accumulate differently than native species?
+
+</div>
+
+<div class="de">
+
+Unser Datensatz unterscheidet zwischen:
+
+| Heimische Arten | Alien-Arten (Neophyten) |
+|-----------------|-------------------------|
+| Natürlich vorkommend | Vom Menschen eingeführt |
+| Teil des ursprünglichen Ökosystems | Nach 1492 angekommen |
+| Mit anderen Arten co-evolviert | Können Einheimische verdrängen |
+
+**Forschungsfrage für Tag 2:** Akkumulieren Alien-Arten anders als heimische Arten?
+
+</div>
+
+---
+
+# <span class="en">Summary</span><span class="de">Zusammenfassung</span>
+
+## <span class="en">Key Concepts</span><span class="de">Schlüsselkonzepte</span>
+
+<div class="en">
+
+| Concept | What it means |
+|---------|---------------|
+| **Biodiversity** | Variety of species in an area |
+| **Vegetation plot** | Small area where all plants are recorded |
+| **Accumulation curve** | Graph showing species discovery over sampling effort |
+| **Asymptote** | Estimated total species (curve approaches but never reaches) |
+| **Native species** | Naturally occurring in the region |
+| **Alien species** | Introduced by humans (after 1492) |
+
+</div>
+
+<div class="de">
+
+| Konzept | Bedeutung |
+|---------|-----------|
+| **Biodiversität** | Artenvielfalt in einem Gebiet |
+| **Vegetationsplot** | Kleine Fläche, auf der alle Pflanzen erfasst werden |
+| **Akkumulationskurve** | Graph der Artenentdeckung über Stichprobenaufwand |
+| **Asymptote** | Geschätzte Gesamtartenzahl (Kurve nähert sich, erreicht sie aber nie) |
+| **Heimische Arten** | Natürlich in der Region vorkommend |
+| **Alien-Arten** | Vom Menschen eingeführt (nach 1492) |
+
+</div>
+
+---
+
+## <span class="en">Preview: Day 2</span><span class="de">Vorschau: Tag 2</span>
+
+<div class="en">
+
+Tomorrow we will:
+
+1. Learn the **nearest-neighbor algorithm** for building spatial curves
+2. Understand why **plot order matters**
+3. Build curves with **multiple starting points**
+4. Compare **native vs. alien** accumulation patterns
+5. Interpret results and discuss **biological mechanisms**
+
+**Hypothesis to test:** Do alien species accumulate differently than native species?
+
+</div>
+
+<div class="de">
+
+Morgen werden wir:
+
+1. Den **Nearest-Neighbor-Algorithmus** für räumliche Kurven lernen
+2. Verstehen, warum die **Plot-Reihenfolge wichtig** ist
+3. Kurven mit **mehreren Startpunkten** bauen
+4. **Heimische vs. Alien**-Akkumulationsmuster vergleichen
+5. Ergebnisse interpretieren und **biologische Mechanismen** diskutieren
+
+**Zu testende Hypothese:** Akkumulieren Alien-Arten anders als heimische Arten?
+
+</div>

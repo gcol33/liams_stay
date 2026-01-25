@@ -1,0 +1,444 @@
+---
+title: "Species-Area Accumulation Curves: Aliens vs Natives"
+author: "Liam (with Gilles)"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: flatly
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+# Introduction
+
+In this exercise, we'll explore how **alien** and **native** plant species accumulate as we sample larger areas.
+
+**Research Question:** Do alien species accumulate differently with area compared to native species?
+
+**Hypothesis:** Aliens might accumulate more steadily with area (because they're patchy and concentrated in hotspots), while natives might saturate faster (because their species pool is already well represented locally).
+
+---
+
+# Part 1: Load the Data
+
+First, we need to load our R packages and data.
+
+```{r load-packages}
+# Load required packages
+library(tidyverse)  # For data manipulation and plotting
+library(sf)         # For spatial operations
+
+# Set the data path
+data_path <- "../data/"
+```
+
+## Exercise 1.1: Load the header data
+
+The header file contains information about each vegetation plot: its ID, location (coordinates), and other metadata.
+
+```{r load-header}
+# Load the header data (plot locations)
+# FILL IN: Complete the read_csv() function with the correct file name
+header <- read_csv(paste0(data_path, "_____"))  # Hint: austria_header.csv
+
+# How many plots do we have?
+# FILL IN: Use a function to count the number of rows
+n_plots <- _____
+print(paste("Number of plots:", n_plots))
+```
+
+## Exercise 1.2: Load the species data
+
+The species file tells us which species occur in each plot, and whether they are native or alien (neophyte).
+
+```{r load-species}
+# Load the species data
+species <- read_csv(paste0(data_path, "austria_species.csv"))
+
+# Look at the first few rows
+# FILL IN: Use the head() function to see the first 6 rows
+_____
+
+# What are the unique values in the STATUS column?
+# FILL IN: Use unique() on the STATUS column
+unique(species$_____)
+```
+
+**Question:** What do you think "neo" means in the STATUS column?
+
+---
+
+# Part 2: Explore the Data
+
+Before we start the analysis, let's understand our data better.
+
+## Exercise 2.1: Count species by status
+
+```{r count-status}
+# Count how many records we have for each status
+# FILL IN: Complete the group_by() and summarise() functions
+species %>%
+  group_by(_____) %>%
+  summarise(
+    n_records = n(),
+    n_species = n_distinct(WFO_TAXON)
+  )
+```
+
+## Exercise 2.2: Plot the locations
+
+Let's see where our plots are located in Austria.
+
+```{r plot-locations, fig.width=8, fig.height=6}
+# Create a simple map of plot locations
+# FILL IN: What variables should go on the x and y axes?
+ggplot(header, aes(x = _____, y = _____)) +
+  geom_point(alpha = 0.3, size = 0.5, color = "darkgreen") +
+  coord_fixed() +  # Keep the aspect ratio correct
+  labs(
+    title = "Vegetation Plot Locations in Austria",
+    x = "Longitude",
+    y = "Latitude"
+  ) +
+  theme_minimal()
+```
+
+---
+
+# Part 3: Calculate Distances Between Plots
+
+To build species-area curves, we need to find the nearest neighbours of each plot.
+
+## Exercise 3.1: Convert to spatial format
+
+```{r convert-sf}
+# Convert header to spatial format (sf object)
+# We tell R that Longitude is x and Latitude is y
+header_sf <- st_as_sf(
+  header,
+  coords = c("Longitude", "Latitude"),
+  crs = 4326  # This is the standard GPS coordinate system
+)
+
+# Transform to a projected coordinate system (meters)
+# This allows us to calculate distances in meters
+header_sf <- st_transform(header_sf, crs = 31287)  # Austrian Lambert projection
+```
+
+## Exercise 3.2: Create a distance function
+
+This function will find the k nearest neighbours of a given plot.
+
+```{r distance-function}
+# Function to get nearest neighbours
+get_nearest_neighbours <- function(plot_id, header_sf, k = 50) {
+  # Find the target plot
+  target <- header_sf[header_sf$PlotObservationID == plot_id, ]
+
+  # Calculate distances to all other plots
+  distances <- st_distance(target, header_sf)
+
+  # Convert to a vector and add plot IDs
+  dist_df <- data.frame(
+    PlotObservationID = header_sf$PlotObservationID,
+    distance_m = as.numeric(distances)
+  )
+
+  # Sort by distance and take the k nearest (excluding itself)
+  # FILL IN: Complete the arrange() function - should we sort ascending or descending?
+  dist_df %>%
+    arrange(_____) %>%       # Hint: we want nearest first
+    filter(distance_m > 0) %>%  # Exclude the plot itself
+    head(k)
+}
+```
+
+---
+
+# Part 4: Build Species-Area Curves
+
+Now for the exciting part! We'll start from a random plot and gradually add neighbours.
+
+## Exercise 4.1: Single seed example
+
+Let's trace through the logic with one starting plot.
+
+```{r single-seed}
+# Pick a random starting plot (seed)
+set.seed(42)  # For reproducibility
+seed_id <- sample(header$PlotObservationID, 1)
+print(paste("Starting from plot:", seed_id))
+
+# Get the 30 nearest neighbours
+neighbours <- get_nearest_neighbours(seed_id, header_sf, k = 30)
+
+# Add the seed plot at the beginning (distance = 0)
+neighbours <- bind_rows(
+  data.frame(PlotObservationID = seed_id, distance_m = 0),
+  neighbours
+)
+
+# Look at the first few neighbours
+head(neighbours, 10)
+```
+
+## Exercise 4.2: Accumulate species step by step
+
+```{r accumulate-species}
+# Function to count cumulative species as we add plots
+accumulate_species <- function(plot_ids, species_data) {
+  results <- list()
+
+  all_natives <- c()
+  all_aliens <- c()
+
+  for (i in seq_along(plot_ids)) {
+    # Get species in the current plot
+    current_species <- species_data %>%
+      filter(PlotObservationID == plot_ids[i])
+
+    # Separate natives and aliens
+    current_natives <- current_species %>%
+      filter(STATUS == "native") %>%
+      pull(WFO_TAXON)
+
+    current_aliens <- current_species %>%
+      filter(STATUS == "neo") %>%
+      pull(WFO_TAXON)
+
+    # Add to cumulative lists (using unique to avoid duplicates)
+    all_natives <- unique(c(all_natives, current_natives))
+    all_aliens <- unique(c(all_aliens, current_aliens))
+
+    # Store results
+    # FILL IN: What should we count? (Hint: use length())
+    results[[i]] <- data.frame(
+      step = i,
+      n_plots = i,
+      n_native = _____,
+      n_alien = _____
+    )
+  }
+
+  bind_rows(results)
+}
+
+# Run the accumulation for our seed
+curve_data <- accumulate_species(neighbours$PlotObservationID, species)
+
+# Look at the results
+head(curve_data, 10)
+```
+
+## Exercise 4.3: Plot the accumulation curve
+
+```{r plot-curve, fig.width=8, fig.height=5}
+# Reshape data for plotting
+curve_long <- curve_data %>%
+  pivot_longer(
+    cols = c(n_native, n_alien),
+    names_to = "status",
+    values_to = "n_species"
+  ) %>%
+  mutate(status = ifelse(status == "n_native", "Native", "Alien"))
+
+# Create the plot
+# FILL IN: What should the x and y axes be?
+ggplot(curve_long, aes(x = _____, y = _____, color = status)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 2) +
+  scale_color_manual(values = c("Alien" = "red", "Native" = "darkgreen")) +
+  labs(
+    title = "Species Accumulation Curve",
+    subtitle = paste("Starting from plot:", seed_id),
+    x = "Number of Plots Added",
+    y = "Cumulative Number of Species",
+    color = "Status"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+```
+
+**Question:** What do you notice about the shapes of the two curves? Does one saturate faster than the other?
+
+---
+
+# Part 5: Multiple Seeds
+
+One starting point might not be representative. Let's repeat with multiple random seeds!
+
+## Exercise 5.1: Run multiple simulations
+
+```{r multiple-seeds}
+# Number of random seeds to try
+n_seeds <- 10
+
+# FILL IN: How many neighbours should we include?
+n_neighbours <- _____  # Try 30, 50, or 100
+
+# Store all results
+all_curves <- list()
+
+set.seed(123)  # For reproducibility
+seed_ids <- sample(header$PlotObservationID, n_seeds)
+
+for (s in seq_along(seed_ids)) {
+  # Get neighbours
+  neighbours <- get_nearest_neighbours(seed_ids[s], header_sf, k = n_neighbours)
+  neighbours <- bind_rows(
+    data.frame(PlotObservationID = seed_ids[s], distance_m = 0),
+    neighbours
+  )
+
+  # Calculate accumulation
+  curve <- accumulate_species(neighbours$PlotObservationID, species)
+  curve$seed_id <- seed_ids[s]
+  curve$seed_num <- s
+
+  all_curves[[s]] <- curve
+}
+
+# Combine all results
+all_curves_df <- bind_rows(all_curves)
+```
+
+## Exercise 5.2: Plot all curves together
+
+```{r plot-all-curves, fig.width=10, fig.height=6}
+# Reshape for plotting
+all_curves_long <- all_curves_df %>%
+  pivot_longer(
+    cols = c(n_native, n_alien),
+    names_to = "status",
+    values_to = "n_species"
+  ) %>%
+  mutate(status = ifelse(status == "n_native", "Native", "Alien"))
+
+# Plot with individual lines and mean
+ggplot(all_curves_long, aes(x = n_plots, y = n_species, color = status)) +
+  # Individual curves (thin, transparent)
+  geom_line(aes(group = interaction(seed_num, status)), alpha = 0.3) +
+  # Mean curve (thick)
+  stat_summary(fun = mean, geom = "line", linewidth = 2) +
+  scale_color_manual(values = c("Alien" = "red", "Native" = "darkgreen")) +
+  labs(
+    title = "Species Accumulation Across Multiple Starting Points",
+    subtitle = paste(n_seeds, "random seeds,", n_neighbours, "neighbours each"),
+    x = "Number of Plots Added",
+    y = "Cumulative Number of Species",
+    color = "Status"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+```
+
+---
+
+# Part 6: Calculate Accumulation Rates
+
+## Exercise 6.1: Compare the rate of accumulation
+
+```{r accumulation-rate}
+# Calculate the proportion of new species added at each step
+all_curves_df <- all_curves_df %>%
+  group_by(seed_num) %>%
+  mutate(
+    # FILL IN: Calculate how many new species were added at each step
+    new_native = n_native - lag(n_native, default = 0),
+    new_alien = n_alien - lag(n_alien, default = _____),
+    # Calculate proportion of final total
+    prop_native = n_native / max(n_native),
+    prop_alien = n_alien / max(n_alien)
+  ) %>%
+  ungroup()
+
+# At what step do we reach 50% of species?
+half_point <- all_curves_df %>%
+  group_by(seed_num) %>%
+  summarise(
+    steps_to_50pct_native = min(step[prop_native >= 0.5]),
+    steps_to_50pct_alien = min(step[prop_alien >= 0.5])
+  )
+
+print("Steps needed to reach 50% of species:")
+half_point
+```
+
+## Exercise 6.2: Summary statistics
+
+```{r summary-stats}
+# Average across all seeds
+summary_stats <- half_point %>%
+  summarise(
+    mean_steps_native = mean(steps_to_50pct_native),
+    mean_steps_alien = mean(steps_to_50pct_alien),
+    sd_steps_native = sd(steps_to_50pct_native),
+    sd_steps_alien = sd(steps_to_50pct_alien)
+  )
+
+print("On average, how many steps to reach 50% of species?")
+summary_stats
+```
+
+**Question:** Which group (natives or aliens) reaches 50% faster? What does this tell us about their spatial distribution?
+
+---
+
+# Part 7: Discussion
+
+Based on your results, answer these questions:
+
+1. **Do alien and native species accumulate at different rates?**
+
+   Your answer: _____
+
+2. **What does the shape of the curve tell us about spatial distribution?**
+   - A curve that rises quickly and then flattens = species are evenly distributed
+   - A curve that rises steadily = species are more patchily distributed
+
+   Your answer: _____
+
+3. **How much do results vary depending on where you start?**
+
+   Your answer: _____
+
+4. **What factors might explain the differences you observed?**
+
+   Your answer: _____
+
+---
+
+# Bonus Challenges
+
+If you finish early, try these extensions:
+
+## Bonus 1: Add habitat information
+
+Can you color the starting points by their habitat type?
+
+```{r bonus-habitat, eval=FALSE}
+# CHALLENGE: The header has a column called "Eunis_lvl1"
+# Try adding this to your analysis!
+```
+
+## Bonus 2: Compare urban vs rural starting points
+
+Do curves look different if you start in human-modified vs natural areas?
+
+```{r bonus-urban, eval=FALSE}
+# CHALLENGE: Divide seeds into categories based on their habitat
+# and compare the curves!
+```
+
+---
+
+# Session Info
+
+```{r session-info}
+sessionInfo()
+```

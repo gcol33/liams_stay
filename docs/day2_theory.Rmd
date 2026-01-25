@@ -398,11 +398,6 @@ p1 <- ggplot() +
   # Grid lines
   geom_vline(xintercept = grid_x, color = "gray50", linewidth = 0.2, alpha = 0.5) +
   geom_hline(yintercept = grid_y, color = "gray50", linewidth = 0.2, alpha = 0.5) +
-  # City labels
-  annotate("point", x = 16.4, y = 48.2, size = 3, color = "black") +
-  annotate("text", x = 16.4, y = 48.5, label = "Vienna", size = 3, fontface = "bold") +
-  annotate("point", x = 14.3, y = 48.3, size = 2, color = "black") +
-  annotate("text", x = 14.3, y = 48.55, label = "Linz", size = 2.5) +
   scale_fill_gradient(low = "white", high = "#D32F2F", na.value = "transparent",
                       name = "Alien\nSpecies") +
   labs(title = "Alien Species Hotspots",
@@ -420,9 +415,6 @@ p2 <- ggplot() +
   geom_polygon(data = austria, aes(x, y), fill = NA, color = "#333333", linewidth = 1.2) +
   geom_vline(xintercept = grid_x, color = "gray50", linewidth = 0.2, alpha = 0.5) +
   geom_hline(yintercept = grid_y, color = "gray50", linewidth = 0.2, alpha = 0.5) +
-  # Mountain region labels
-  annotate("text", x = 11, y = 46.7, label = "Tyrol", size = 3, fontface = "italic") +
-  annotate("text", x = 13.5, y = 46.9, label = "Hohe Tauern", size = 2.5, fontface = "italic") +
   scale_fill_gradient(low = "white", high = "#2E7D32", na.value = "transparent",
                       name = "Native\nSpecies") +
   labs(title = "Native Species Hotspots",

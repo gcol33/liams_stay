@@ -378,6 +378,390 @@ Die Form der Kurve hängt davon ab, **wo wir starten**!
 
 ---
 
+## <span class="en">Visualizing Starting Positions</span><span class="de">Startpositionen visualisieren</span>
+
+<div class="en">
+
+Let's imagine we have plots spread across a landscape. Some areas are **biodiversity hotspots** (many species), others are **low-diversity areas** (few species).
+
+Where we choose to start our sampling walk dramatically affects the curve shape!
+
+</div>
+
+<div class="de">
+
+Stellen wir uns vor, wir haben Plots über eine Landschaft verteilt. Einige Gebiete sind **Biodiversitäts-Hotspots** (viele Arten), andere sind **artenarme Gebiete** (wenige Arten).
+
+Wo wir unseren Probenweg beginnen, beeinflusst die Kurvenform dramatisch!
+
+</div>
+
+```{r starting-positions-map, fig.height=5.5}
+set.seed(2024)
+
+# Create a landscape with clustering
+n_plots <- 80
+
+# Generate clustered points (hotspot in top-right, low diversity in bottom-left)
+hotspot_x <- rnorm(25, mean = 8, sd = 1)
+hotspot_y <- rnorm(25, mean = 8, sd = 1)
+lowdiv_x <- rnorm(20, mean = 2, sd = 1.5)
+lowdiv_y <- rnorm(20, mean = 2, sd = 1.5)
+scattered_x <- runif(35, 0, 10)
+scattered_y <- runif(35, 0, 10)
+
+plots_df <- data.frame(
+  x = c(hotspot_x, lowdiv_x, scattered_x),
+  y = c(hotspot_y, lowdiv_y, scattered_y),
+  richness = c(
+    rpois(25, lambda = 25),    # Hotspot: high richness
+    rpois(20, lambda = 5),     # Low diversity: few species
+    rpois(35, lambda = 12)     # Scattered: medium richness
+  )
+)
+
+# Clip to 0-10 range
+plots_df$x <- pmin(pmax(plots_df$x, 0.5), 9.5)
+plots_df$y <- pmin(pmax(plots_df$y, 0.5), 9.5)
+
+# Define three starting points
+start_points <- data.frame(
+  x = c(8.2, 1.8, 5),
+  y = c(8.2, 1.5, 5),
+  label = c("A: Hotspot Start", "B: Low-diversity Start", "C: Center Start"),
+  color = c("#D32F2F", "#1976D2", "#7B1FA2")
+)
+
+ggplot() +
+  # Background gradient showing richness
+  geom_point(data = plots_df, aes(x = x, y = y, size = richness),
+             color = "#4CAF50", alpha = 0.4) +
+  geom_point(data = plots_df, aes(x = x, y = y),
+             color = "#2E7D32", size = 2) +
+  # Starting points with labels
+  geom_point(data = start_points, aes(x = x, y = y, color = label),
+             size = 8, shape = 17) +
+  geom_label(data = start_points, aes(x = x, y = y + 0.8, label = label, color = label),
+             fontface = "bold", size = 3.5, fill = "white", label.padding = unit(0.3, "lines")) +
+  # Annotations for regions
+  annotate("text", x = 8, y = 10, label = "Biodiversity Hotspot",
+           color = "#D32F2F", fontface = "italic", size = 4) +
+  annotate("text", x = 2, y = 0.3, label = "Low-diversity Area",
+           color = "#1976D2", fontface = "italic", size = 4) +
+  scale_color_manual(values = c("A: Hotspot Start" = "#D32F2F",
+                                 "B: Low-diversity Start" = "#1976D2",
+                                 "C: Center Start" = "#7B1FA2")) +
+  scale_size_continuous(range = c(3, 12), guide = "none") +
+  labs(title = "Three Different Starting Positions",
+       subtitle = "Larger circles = more species at that plot",
+       x = "Longitude", y = "Latitude") +
+  theme_minimal(base_size = 14) +
+  theme(legend.position = "none") +
+  coord_fixed(ratio = 1, xlim = c(0, 10), ylim = c(0, 10.5))
+```
+
+<div class="en">
+
+**What happens with each start?**
+
+| Start Position | Initial Species | Curve Shape |
+|----------------|-----------------|-------------|
+| **A: Hotspot** | Many species quickly | Steep rise, then flattens |
+| **B: Low-diversity** | Few species slowly | Gradual rise throughout |
+| **C: Center** | Medium start | Balanced curve |
+
+</div>
+
+<div class="de">
+
+**Was passiert bei jedem Start?**
+
+| Startposition | Anfängliche Arten | Kurvenform |
+|---------------|-------------------|------------|
+| **A: Hotspot** | Viele Arten schnell | Steiler Anstieg, dann flach |
+| **B: Artenarm** | Wenige Arten langsam | Gradueller Anstieg |
+| **C: Zentrum** | Mittlerer Start | Ausgewogene Kurve |
+
+</div>
+
+---
+
+## <span class="en">The Effect of Starting Position</span><span class="de">Der Effekt der Startposition</span>
+
+```{r starting-position-curves, fig.height=5}
+# Simulate accumulation curves from different starting points
+set.seed(42)
+n_steps <- 60
+
+# Hotspot start: fast initial accumulation
+hotspot_curve <- data.frame(
+  plots = 1:n_steps,
+  species = cumsum(c(20, pmax(0, round(rnorm(n_steps-1, mean = 4, sd = 2) *
+                                        exp(-(1:(n_steps-1))/15))))),
+  start = "A: Hotspot Start"
+)
+
+# Low-diversity start: slow initial accumulation
+lowdiv_curve <- data.frame(
+  plots = 1:n_steps,
+  species = cumsum(c(3, pmax(0, round(rnorm(n_steps-1, mean = 2.5, sd = 1.5) *
+                                       (1 + (1:(n_steps-1))/40) *
+                                       exp(-(1:(n_steps-1))/25))))),
+  start = "B: Low-diversity Start"
+)
+
+# Center start: medium curve
+center_curve <- data.frame(
+  plots = 1:n_steps,
+  species = cumsum(c(10, pmax(0, round(rnorm(n_steps-1, mean = 3, sd = 1.8) *
+                                        exp(-(1:(n_steps-1))/20))))),
+  start = "C: Center Start"
+)
+
+all_curves <- rbind(hotspot_curve, lowdiv_curve, center_curve)
+
+ggplot(all_curves, aes(x = plots, y = species, color = start)) +
+  geom_line(linewidth = 2) +
+  scale_color_manual(values = c("A: Hotspot Start" = "#D32F2F",
+                                 "B: Low-diversity Start" = "#1976D2",
+                                 "C: Center Start" = "#7B1FA2")) +
+  labs(title = "Same Landscape, Different Starting Points",
+       subtitle = "The curve shape depends heavily on where you begin!",
+       x = "Plots Sampled", y = "Cumulative Species",
+       color = "Starting Point") +
+  theme_minimal(base_size = 14) +
+  theme(legend.position = "bottom")
+```
+
+<div class="en">
+
+**Key observation:** All three curves eventually reach approximately the same number of species (they converge), but the **path to get there is very different!**
+
+This is why we must consider multiple starting points in our analysis.
+
+</div>
+
+<div class="de">
+
+**Wichtige Beobachtung:** Alle drei Kurven erreichen schließlich ungefähr die gleiche Artenzahl (sie konvergieren), aber der **Weg dorthin ist sehr unterschiedlich!**
+
+Deshalb müssen wir mehrere Startpunkte in unserer Analyse berücksichtigen.
+
+</div>
+
+---
+
+# <span class="en">The Null Hypothesis</span><span class="de">Die Nullhypothese</span>
+
+## <span class="en">What If Starting Position Doesn't Matter?</span><span class="de">Was wenn die Startposition egal ist?</span>
+
+<div class="hypothesis-box">
+
+<div class="en">
+
+**The Null Hypothesis (H₀):**
+
+> "Starting position does not affect the accumulation curve - all curves from different starting points should look the same."
+
+**If true:** Species are randomly distributed across the landscape. No hotspots, no clusters. Every location is equally likely to have any species.
+
+</div>
+
+<div class="de">
+
+**Die Nullhypothese (H₀):**
+
+> "Die Startposition beeinflusst die Akkumulationskurve nicht - alle Kurven von verschiedenen Startpunkten sollten gleich aussehen."
+
+**Wenn wahr:** Arten sind zufällig über die Landschaft verteilt. Keine Hotspots, keine Cluster. Jeder Ort hat die gleiche Wahrscheinlichkeit für jede Art.
+
+</div>
+
+</div>
+
+```{r null-hypothesis-visual, fig.height=5}
+# Show what random vs clustered distribution looks like
+set.seed(123)
+par_old <- par(mfrow = c(1, 2))
+
+# Random distribution (null hypothesis world)
+random_plots <- data.frame(
+  x = runif(60, 0, 10),
+  y = runif(60, 0, 10),
+  type = "Random (H₀ World)"
+)
+
+# Clustered distribution (real world)
+cluster1_x <- rnorm(20, 7, 1)
+cluster1_y <- rnorm(20, 7, 1)
+cluster2_x <- rnorm(15, 3, 0.8)
+cluster2_y <- rnorm(15, 8, 0.8)
+scattered_x <- runif(25, 0, 10)
+scattered_y <- runif(25, 0, 10)
+
+clustered_plots <- data.frame(
+  x = c(cluster1_x, cluster2_x, scattered_x),
+  y = c(cluster1_y, cluster2_y, scattered_y),
+  type = "Clustered (Real World)"
+)
+
+# Clip to bounds
+random_plots$x <- pmin(pmax(random_plots$x, 0.2), 9.8)
+random_plots$y <- pmin(pmax(random_plots$y, 0.2), 9.8)
+clustered_plots$x <- pmin(pmax(clustered_plots$x, 0.2), 9.8)
+clustered_plots$y <- pmin(pmax(clustered_plots$y, 0.2), 9.8)
+
+both_plots <- rbind(random_plots, clustered_plots)
+
+ggplot(both_plots, aes(x = x, y = y)) +
+  geom_point(size = 3, color = "#2E7D32", alpha = 0.7) +
+  facet_wrap(~type, ncol = 2) +
+  labs(title = "Null Hypothesis vs. Reality",
+       subtitle = "Left: If species were randomly distributed | Right: How species actually cluster",
+       x = "Longitude", y = "Latitude") +
+  theme_minimal(base_size = 14) +
+  coord_fixed(ratio = 1)
+```
+
+---
+
+## <span class="en">Testing the Null Hypothesis</span><span class="de">Testen der Nullhypothese</span>
+
+<div class="en">
+
+**How we test this:**
+
+1. Run the sampling algorithm from **many different starting points** (e.g., 20 seeds)
+2. Compare the curves - do they overlap or diverge?
+3. Calculate the **variation between curves**
+
+**If H₀ is true:** All curves should be nearly identical (low variation)
+
+**If H₀ is false:** Curves should differ based on starting location (high variation)
+
+</div>
+
+<div class="de">
+
+**Wie wir das testen:**
+
+1. Den Sampling-Algorithmus von **vielen verschiedenen Startpunkten** ausführen (z.B. 20 Seeds)
+2. Die Kurven vergleichen - überlappen sie oder divergieren sie?
+3. Die **Variation zwischen Kurven** berechnen
+
+**Wenn H₀ wahr ist:** Alle Kurven sollten fast identisch sein (geringe Variation)
+
+**Wenn H₀ falsch ist:** Kurven sollten je nach Startort variieren (hohe Variation)
+
+</div>
+
+```{r null-vs-real, fig.height=5}
+# Simulate multiple curves under null (random) and alternative (clustered)
+set.seed(2024)
+n_seeds <- 8
+n_plots <- 50
+
+simulate_curve <- function(clustered = FALSE, seed_num) {
+  set.seed(seed_num * 100)
+  if (clustered) {
+    # Clustered: starting position matters more
+    base_rate <- runif(1, 2, 6)  # Variable start
+    species <- cumsum(c(round(base_rate * 4),
+                        pmax(0, round(rnorm(n_plots-1, base_rate, 1.5) * exp(-(1:(n_plots-1))/20)))))
+  } else {
+    # Random: starting position matters less
+    base_rate <- runif(1, 3, 4)  # Similar start
+    species <- cumsum(c(round(base_rate * 3),
+                        pmax(0, round(rnorm(n_plots-1, 3, 1) * exp(-(1:(n_plots-1))/18)))))
+  }
+  return(species)
+}
+
+# Generate curves for both scenarios
+null_curves <- lapply(1:n_seeds, function(i) {
+  data.frame(plots = 1:n_plots,
+             species = simulate_curve(clustered = FALSE, seed_num = i),
+             seed = paste0("Seed ", i),
+             scenario = "H₀: Random Distribution")
+})
+
+real_curves <- lapply(1:n_seeds, function(i) {
+  data.frame(plots = 1:n_plots,
+             species = simulate_curve(clustered = TRUE, seed_num = i),
+             seed = paste0("Seed ", i),
+             scenario = "Reality: Clustered Species")
+})
+
+all_scenario_curves <- rbind(do.call(rbind, null_curves), do.call(rbind, real_curves))
+
+ggplot(all_scenario_curves, aes(x = plots, y = species, color = seed)) +
+  geom_line(linewidth = 1, alpha = 0.7) +
+  facet_wrap(~scenario, ncol = 2) +
+  labs(title = "Why We Need Multiple Starting Points",
+       subtitle = "Left: Similar curves (random world) | Right: Different curves (clustered world)",
+       x = "Plots Sampled", y = "Cumulative Species") +
+  theme_minimal(base_size = 14) +
+  theme(legend.position = "none")
+```
+
+<div class="results-box">
+
+<div class="en">
+
+**Key Insight:**
+
+In a world where species are **randomly distributed** (H₀), all curves look similar regardless of starting point.
+
+In the **real world** where species cluster around favorable habitats, curves differ dramatically based on where you start.
+
+**This is why we average across multiple seeds!** It gives us a more representative picture of the overall biodiversity pattern.
+
+</div>
+
+<div class="de">
+
+**Wichtige Erkenntnis:**
+
+In einer Welt, in der Arten **zufällig verteilt** sind (H₀), sehen alle Kurven ähnlich aus, unabhängig vom Startpunkt.
+
+In der **realen Welt**, wo Arten sich um günstige Habitate clustern, unterscheiden sich die Kurven dramatisch je nach Startort.
+
+**Deshalb mitteln wir über mehrere Seeds!** Das gibt uns ein repräsentativeres Bild des gesamten Biodiversitätsmusters.
+
+</div>
+
+</div>
+
+---
+
+## <span class="en">What Does High Variation Tell Us?</span><span class="de">Was sagt uns hohe Variation?</span>
+
+<div class="en">
+
+When curves from different starting points **vary a lot**, it tells us:
+
+1. **Species are clustered** - not evenly spread across the landscape
+2. **Hotspots exist** - some areas are biodiversity-rich
+3. **Geography matters** - position affects what you find
+
+This is actually **more interesting** than finding uniform curves! It means there are spatial patterns worth investigating.
+
+</div>
+
+<div class="de">
+
+Wenn Kurven von verschiedenen Startpunkten **stark variieren**, sagt uns das:
+
+1. **Arten sind geclustert** - nicht gleichmäßig über die Landschaft verteilt
+2. **Hotspots existieren** - einige Gebiete sind biodiversitätsreich
+3. **Geografie ist wichtig** - Position beeinflusst, was man findet
+
+Das ist eigentlich **interessanter** als einheitliche Kurven zu finden! Es bedeutet, dass es räumliche Muster gibt, die es wert sind, untersucht zu werden.
+
+</div>
+
+---
+
 # <span class="en">Comparing Native vs. Alien</span><span class="de">Vergleich Heimisch vs. Alien</span>
 
 ## <span class="en">Normalization for Fair Comparison</span><span class="de">Normalisierung für fairen Vergleich</span>

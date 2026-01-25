@@ -1613,8 +1613,45 @@ length(unique(after_two_plots))</code></pre>
 <pre><code>## [1] 4</code></pre>
 <hr />
 </div>
-<div id="exercise-3-loading-real-dataübung-3-echte-daten-laden" class="section level1">
-<h1><span class="en">Exercise 3: Loading Real Data</span><span class="de">Übung 3: Echte Daten laden</span></h1>
+<div id="exercise-3-data-framesübung-3-data-frames" class="section level1">
+<h1><span class="en">Exercise 3: Data Frames</span><span class="de">Übung 3: Data Frames</span></h1>
+<pre class="r"><code># 3a: Create a simple data frame
+my_data &lt;- data.frame(
+  species = c(&quot;Oak&quot;, &quot;Beech&quot;, &quot;Pine&quot;, &quot;Maple&quot;),
+  height = c(20, 18, 25, 15),
+  native = c(TRUE, TRUE, TRUE, FALSE)
+)
+
+my_data</code></pre>
+<pre><code>##   species height native
+## 1     Oak     20   TRUE
+## 2   Beech     18   TRUE
+## 3    Pine     25   TRUE
+## 4   Maple     15  FALSE</code></pre>
+<pre class="r"><code># 3b: How many rows and columns?
+nrow(my_data)</code></pre>
+<pre><code>## [1] 4</code></pre>
+<pre class="r"><code>ncol(my_data)</code></pre>
+<pre><code>## [1] 3</code></pre>
+<pre class="r"><code># 3c: Access a column with $
+my_data$species</code></pre>
+<pre><code>## [1] &quot;Oak&quot;   &quot;Beech&quot; &quot;Pine&quot;  &quot;Maple&quot;</code></pre>
+<pre class="r"><code>my_data$height</code></pre>
+<pre><code>## [1] 20 18 25 15</code></pre>
+<pre class="r"><code># 3d: Get the mean height
+mean(my_data$height)</code></pre>
+<pre><code>## [1] 19.5</code></pre>
+<pre class="r"><code># 3e: Access a specific row (row 2)
+my_data[2, ]</code></pre>
+<pre><code>##   species height native
+## 2   Beech     18   TRUE</code></pre>
+<pre class="r"><code># 3f: Access a specific cell (row 2, column &quot;height&quot;)
+my_data[2, &quot;height&quot;]</code></pre>
+<pre><code>## [1] 18</code></pre>
+<hr />
+</div>
+<div id="exercise-4-loading-real-dataübung-4-echte-daten-laden" class="section level1">
+<h1><span class="en">Exercise 4: Loading Real Data</span><span class="de">Übung 4: Echte Daten laden</span></h1>
 <pre class="r"><code>library(tidyverse)
 
 species_data &lt;- read_csv(&quot;../data/austria_species.csv&quot;)
@@ -1640,9 +1677,44 @@ head(species_data)</code></pre>
 <pre><code>## [1] 2700</code></pre>
 <hr />
 </div>
-<div id="exercise-4-building-the-accumulation-curveübung-4-die-akkumulationskurve-bauen" class="section level1">
-<h1><span class="en">Exercise 4: Building the Accumulation
-Curve</span><span class="de">Übung 4: Die Akkumulationskurve
+<div id="exercise-5-filtering-dataübung-5-daten-filtern" class="section level1">
+<h1><span class="en">Exercise 5: Filtering Data</span><span class="de">Übung 5: Daten filtern</span></h1>
+<pre class="r"><code># 5a: Look at the STATUS column
+unique(species_data$STATUS)</code></pre>
+<pre><code>## [1] &quot;native&quot; &quot;neo&quot;</code></pre>
+<pre class="r"><code># 5b: Filter for native species only
+native_only &lt;- species_data %&gt;%
+  filter(STATUS == &quot;nat&quot;)
+
+nrow(native_only)</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code># 5c: Filter for alien/invasive species
+alien_only &lt;- species_data %&gt;%
+  filter(STATUS == &quot;neo&quot;)
+
+nrow(alien_only)</code></pre>
+<pre><code>## [1] 26020</code></pre>
+<pre class="r"><code># 5d: How many unique native species?
+length(unique(native_only$WFO_TAXON))</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code># 5e: How many unique alien species?
+length(unique(alien_only$WFO_TAXON))</code></pre>
+<pre><code>## [1] 323</code></pre>
+<pre class="r"><code># 5f: Filter for a specific plot
+first_plot &lt;- unique(species_data$PlotObservationID)[1]
+first_plot</code></pre>
+<pre><code>## [1] 390844</code></pre>
+<pre class="r"><code>one_plot &lt;- species_data %&gt;%
+  filter(PlotObservationID == first_plot)
+
+# How many species in this one plot?
+length(unique(one_plot$WFO_TAXON))</code></pre>
+<pre><code>## [1] 44</code></pre>
+<hr />
+</div>
+<div id="exercise-6-building-the-accumulation-curveübung-6-die-akkumulationskurve-bauen" class="section level1">
+<h1><span class="en">Exercise 6: Building the Accumulation
+Curve</span><span class="de">Übung 6: Die Akkumulationskurve
 bauen</span></h1>
 <pre class="r"><code># Get all unique plots
 all_plots &lt;- unique(species_data$PlotObservationID)
@@ -1670,8 +1742,8 @@ accumulation</code></pre>
 ## [39] 364 364 373 375 378 379 379 379 379 382 382 382</code></pre>
 <hr />
 </div>
-<div id="exercise-5-plot-your-curveübung-5-zeichne-deine-kurve" class="section level1">
-<h1><span class="en">Exercise 5: Plot Your Curve!</span><span class="de">Übung 5: Zeichne deine Kurve!</span></h1>
+<div id="exercise-7-plot-your-curveübung-7-zeichne-deine-kurve" class="section level1">
+<h1><span class="en">Exercise 7: Plot Your Curve!</span><span class="de">Übung 7: Zeichne deine Kurve!</span></h1>
 <pre class="r"><code># Create data frame
 curve_data &lt;- data.frame(
   plots = 1:length(accumulation),
@@ -1719,14 +1791,21 @@ native_species &lt;- species_data %&gt;%
 
 length(unique(native_species$WFO_TAXON))</code></pre>
 <pre><code>## [1] 0</code></pre>
+<pre class="r"><code># Filter for alien species
+alien_species &lt;- species_data %&gt;%
+  filter(STATUS == &quot;neo&quot;)
+
+length(unique(alien_species$WFO_TAXON))</code></pre>
+<pre><code>## [1] 323</code></pre>
 <hr />
 <div class="en">
 <p><strong>Key concepts learned:</strong></p>
 <ul>
 <li>Variables store data with <code>&lt;-</code></li>
 <li><code>c()</code> creates vectors</li>
-<li><code>unique()</code> finds different values</li>
-<li><code>length(unique(x))</code> = species richness</li>
+<li><code>unique()</code> counts different values</li>
+<li>Data frames organize data in rows and columns</li>
+<li><code>filter()</code> selects specific rows</li>
 <li>Loops repeat actions for each plot</li>
 <li><code>ggplot()</code> creates visualizations</li>
 </ul>
@@ -1736,8 +1815,9 @@ length(unique(native_species$WFO_TAXON))</code></pre>
 <ul>
 <li>Variablen speichern Daten mit <code>&lt;-</code></li>
 <li><code>c()</code> erstellt Vektoren</li>
-<li><code>unique()</code> findet verschiedene Werte</li>
-<li><code>length(unique(x))</code> = Artenreichtum</li>
+<li><code>unique()</code> zählt verschiedene Werte</li>
+<li>Data Frames organisieren Daten in Zeilen und Spalten</li>
+<li><code>filter()</code> wählt bestimmte Zeilen aus</li>
 <li>Schleifen wiederholen Aktionen für jeden Plot</li>
 <li><code>ggplot()</code> erstellt Visualisierungen</li>
 </ul>

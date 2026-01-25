@@ -310,7 +310,68 @@ length(unique(after_two_plots))
 
 ---
 
-# <span class="en">Exercise 3: Loading Real Data</span><span class="de">Übung 3: Echte Daten laden</span>
+# <span class="en">Exercise 3: Data Frames</span><span class="de">Übung 3: Data Frames</span>
+
+<div class="en">
+
+A **data frame** is like a spreadsheet - it has rows and columns. Let's practice with a small example before loading real data!
+
+</div>
+
+<div class="de">
+
+Ein **Data Frame** ist wie eine Tabelle - er hat Zeilen und Spalten. Üben wir mit einem kleinen Beispiel, bevor wir echte Daten laden!
+
+</div>
+
+```{r}
+# 3a: Create a simple data frame
+# 3a: Erstelle einen einfachen Data Frame
+
+my_data <- data.frame(
+  species = c("Oak", "Beech", "Pine", "Maple"),
+  height = c(20, 18, 25, 15),
+  native = c(TRUE, TRUE, TRUE, FALSE)
+)
+
+my_data
+
+# 3b: How many rows and columns?
+# 3b: Wie viele Zeilen und Spalten?
+
+nrow(my_data)
+ncol(my_data)
+
+# 3c: Access a column with $
+# 3c: Greife auf eine Spalte mit $ zu
+
+my_data$species
+my_data$height
+
+# 3d: Your turn - get the mean height
+# 3d: Du bist dran - berechne die mittlere Höhe
+
+mean(my_data$___)
+
+# 3e: Access a specific row (row 2)
+# 3e: Greife auf eine bestimmte Zeile zu (Zeile 2)
+
+my_data[2, ]
+
+# 3f: Access a specific cell (row 2, column "height")
+# 3f: Greife auf eine bestimmte Zelle zu (Zeile 2, Spalte "height")
+
+my_data[2, "height"]
+```
+
+<div class="hint">
+<span class="en">Hint: `$` accesses columns by name. Square brackets `[row, column]` access specific cells.</span>
+<span class="de">Hinweis: `$` greift auf Spalten per Name zu. Eckige Klammern `[zeile, spalte]` greifen auf bestimmte Zellen zu.</span>
+</div>
+
+---
+
+# <span class="en">Exercise 4: Loading Real Data</span><span class="de">Übung 4: Echte Daten laden</span>
 
 <div class="en">
 
@@ -325,38 +386,38 @@ Jetzt laden wir die **österreichischen Vegetationsdaten**!
 </div>
 
 ```{r}
-# 3a: Load the tidyverse package
-# 3a: Lade das tidyverse Paket
+# 4a: Load the tidyverse package
+# 4a: Lade das tidyverse Paket
 
 library(tidyverse)
 
-# 3b: Load the species data
-# 3b: Lade die Artdaten
+# 4b: Load the species data
+# 4b: Lade die Artdaten
 
 species_data <- read_csv("../data/austria_species.csv")
 
-# 3c: Look at the first few rows
-# 3c: Schau dir die ersten Zeilen an
+# 4c: Look at the first few rows
+# 4c: Schau dir die ersten Zeilen an
 
 head(species_data)
 
-# 3d: How many rows (observations)?
-# 3d: Wie viele Zeilen (Beobachtungen)?
+# 4d: How many rows (observations)?
+# 4d: Wie viele Zeilen (Beobachtungen)?
 
 nrow(species_data)
 
-# 3e: What columns do we have?
-# 3e: Welche Spalten haben wir?
+# 4e: What columns do we have?
+# 4e: Welche Spalten haben wir?
 
 colnames(species_data)
 
-# 3f: How many unique plots?
-# 3f: Wie viele einzigartige Plots?
+# 4f: How many unique plots?
+# 4f: Wie viele einzigartige Plots?
 
 length(unique(species_data$PlotObservationID))
 
-# 3g: How many unique species in the whole dataset?
-# 3g: Wie viele einzigartige Arten im gesamten Datensatz?
+# 4g: How many unique species in the whole dataset?
+# 4g: Wie viele einzigartige Arten im gesamten Datensatz?
 
 length(unique(species_data$___))
 ```
@@ -368,7 +429,75 @@ length(unique(species_data$___))
 
 ---
 
-# <span class="en">Exercise 4: Building the Accumulation Curve</span><span class="de">Übung 4: Die Akkumulationskurve bauen</span>
+# <span class="en">Exercise 5: Filtering Data</span><span class="de">Übung 5: Daten filtern</span>
+
+<div class="en">
+
+Often we want to look at only **part** of our data. The `filter()` function helps us select specific rows!
+
+</div>
+
+<div class="de">
+
+Oft wollen wir nur einen **Teil** unserer Daten betrachten. Die `filter()` Funktion hilft uns, bestimmte Zeilen auszuwählen!
+
+</div>
+
+```{r}
+# 5a: Look at the STATUS column - what values are there?
+# 5a: Schau dir die STATUS-Spalte an - welche Werte gibt es?
+
+unique(species_data$STATUS)
+
+# 5b: Filter for native species only (STATUS == "nat")
+# 5b: Filtere nur heimische Arten (STATUS == "nat")
+
+native_only <- species_data %>%
+  filter(STATUS == "nat")
+
+nrow(native_only)
+
+# 5c: Filter for alien/invasive species (STATUS == "neo")
+# 5c: Filtere Alien/invasive Arten (STATUS == "neo")
+
+alien_only <- species_data %>%
+  filter(STATUS == "neo")
+
+nrow(alien_only)
+
+# 5d: How many unique native species?
+# 5d: Wie viele einzigartige heimische Arten?
+
+length(unique(native_only$WFO_TAXON))
+
+# 5e: Your turn - how many unique alien species?
+# 5e: Du bist dran - wie viele einzigartige Alien-Arten?
+
+length(unique(___$WFO_TAXON))
+
+# 5f: Filter for a specific plot
+# 5f: Filtere einen bestimmten Plot
+
+first_plot <- unique(species_data$PlotObservationID)[1]
+first_plot
+
+one_plot <- species_data %>%
+  filter(PlotObservationID == first_plot)
+
+# How many species in this one plot?
+# Wie viele Arten in diesem einen Plot?
+
+length(unique(one_plot$WFO_TAXON))
+```
+
+<div class="hint">
+<span class="en">Hint: `filter()` keeps rows where the condition is TRUE. Use `==` for "equals".</span>
+<span class="de">Hinweis: `filter()` behält Zeilen, wo die Bedingung TRUE ist. Benutze `==` für "gleich".</span>
+</div>
+
+---
+
+# <span class="en">Exercise 6: Building the Accumulation Curve</span><span class="de">Übung 6: Die Akkumulationskurve bauen</span>
 
 <div class="en">
 
@@ -383,27 +512,27 @@ Jetzt der spannende Teil - bauen wir eine Artenakkumulationskurve Schritt für S
 </div>
 
 ```{r}
-# 4a: Get a list of all unique plots
-# 4a: Hole eine Liste aller einzigartigen Plots
+# 6a: Get a list of all unique plots
+# 6a: Hole eine Liste aller einzigartigen Plots
 
 all_plots <- unique(species_data$PlotObservationID)
 head(all_plots)
 
-# 4b: Take a small sample (first 50 plots for speed)
-# 4b: Nimm eine kleine Stichprobe (erste 50 Plots für Geschwindigkeit)
+# 6b: Take a small sample (first 50 plots for speed)
+# 6b: Nimm eine kleine Stichprobe (erste 50 Plots für Geschwindigkeit)
 
 sample_plots <- all_plots[1:50]
 
-# 4c: Initialize our accumulation tracking
-# 4c: Initialisiere unsere Akkumulations-Verfolgung
+# 6c: Initialize our accumulation tracking
+# 6c: Initialisiere unsere Akkumulations-Verfolgung
 
 species_found <- c()           # Empty vector to collect species
                                # Leerer Vektor um Arten zu sammeln
 accumulation <- c()            # Will store species count after each plot
                                # Speichert Artenzahl nach jedem Plot
 
-# 4d: Loop through each plot and count species!
-# 4d: Schleife durch jeden Plot und zähle Arten!
+# 6d: Loop through each plot and count species!
+# 6d: Schleife durch jeden Plot und zähle Arten!
 
 for (i in 1:length(sample_plots)) {
 
@@ -428,15 +557,15 @@ for (i in 1:length(sample_plots)) {
   accumulation <- c(accumulation, total_species)
 }
 
-# 4e: Look at the result!
-# 4e: Schau dir das Ergebnis an!
+# 6e: Look at the result!
+# 6e: Schau dir das Ergebnis an!
 
 accumulation
 ```
 
 ---
 
-# <span class="en">Exercise 5: Plot Your Curve!</span><span class="de">Übung 5: Zeichne deine Kurve!</span>
+# <span class="en">Exercise 7: Plot Your Curve!</span><span class="de">Übung 7: Zeichne deine Kurve!</span>
 
 <div class="en">
 
@@ -451,8 +580,8 @@ Der letzte Schritt - visualisieren wir unsere Akkumulationskurve!
 </div>
 
 ```{r}
-# 5a: Create a data frame for plotting
-# 5a: Erstelle einen Data Frame zum Plotten
+# 7a: Create a data frame for plotting
+# 7a: Erstelle einen Data Frame zum Plotten
 
 curve_data <- data.frame(
   plots = 1:length(accumulation),
@@ -461,8 +590,8 @@ curve_data <- data.frame(
 
 head(curve_data)
 
-# 5b: Make the plot!
-# 5b: Mache den Plot!
+# 7b: Make the plot!
+# 7b: Mache den Plot!
 
 ggplot(curve_data, aes(x = plots, y = species)) +
   geom_line(color = "#2E7D32", linewidth = 2) +
@@ -474,8 +603,8 @@ ggplot(curve_data, aes(x = plots, y = species)) +
   ) +
   theme_minimal(base_size = 14)
 
-# 5c: Make it prettier with a filled area
-# 5c: Mache es schöner mit gefüllter Fläche
+# 7c: Make it prettier with a filled area
+# 7c: Mache es schöner mit gefüllter Fläche
 
 ggplot(curve_data, aes(x = plots, y = species)) +
   geom_area(fill = "#C8E6C9", alpha = 0.5) +
@@ -544,9 +673,11 @@ length(unique(alien_species$WFO_TAXON))
 **You did it!** You built your first species accumulation curve using real Austrian data!
 
 **Key concepts learned:**
-- Variables store data
+- Variables store data with `<-`
 - `c()` creates vectors
-- `unique()` counts different species
+- `unique()` counts different values
+- Data frames organize data in rows and columns
+- `filter()` selects specific rows
 - Loops let us repeat actions
 - `ggplot()` creates beautiful plots
 
@@ -557,9 +688,11 @@ length(unique(alien_species$WFO_TAXON))
 **Du hast es geschafft!** Du hast deine erste Artenakkumulationskurve mit echten österreichischen Daten gebaut!
 
 **Gelernte Schlüsselkonzepte:**
-- Variablen speichern Daten
+- Variablen speichern Daten mit `<-`
 - `c()` erstellt Vektoren
-- `unique()` zählt verschiedene Arten
+- `unique()` zählt verschiedene Werte
+- Data Frames organisieren Daten in Zeilen und Spalten
+- `filter()` wählt bestimmte Zeilen aus
 - Schleifen lassen uns Aktionen wiederholen
 - `ggplot()` erstellt schöne Plots
 

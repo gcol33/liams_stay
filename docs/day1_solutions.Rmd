@@ -131,7 +131,39 @@ length(unique(after_two_plots))
 
 ---
 
-# <span class="en">Exercise 3: Loading Real Data</span><span class="de">Übung 3: Echte Daten laden</span>
+# <span class="en">Exercise 3: Data Frames</span><span class="de">Übung 3: Data Frames</span>
+
+```{r}
+# 3a: Create a simple data frame
+my_data <- data.frame(
+  species = c("Oak", "Beech", "Pine", "Maple"),
+  height = c(20, 18, 25, 15),
+  native = c(TRUE, TRUE, TRUE, FALSE)
+)
+
+my_data
+
+# 3b: How many rows and columns?
+nrow(my_data)
+ncol(my_data)
+
+# 3c: Access a column with $
+my_data$species
+my_data$height
+
+# 3d: Get the mean height
+mean(my_data$height)
+
+# 3e: Access a specific row (row 2)
+my_data[2, ]
+
+# 3f: Access a specific cell (row 2, column "height")
+my_data[2, "height"]
+```
+
+---
+
+# <span class="en">Exercise 4: Loading Real Data</span><span class="de">Übung 4: Echte Daten laden</span>
 
 ```{r}
 library(tidyverse)
@@ -151,7 +183,44 @@ length(unique(species_data$WFO_TAXON))
 
 ---
 
-# <span class="en">Exercise 4: Building the Accumulation Curve</span><span class="de">Übung 4: Die Akkumulationskurve bauen</span>
+# <span class="en">Exercise 5: Filtering Data</span><span class="de">Übung 5: Daten filtern</span>
+
+```{r}
+# 5a: Look at the STATUS column
+unique(species_data$STATUS)
+
+# 5b: Filter for native species only
+native_only <- species_data %>%
+  filter(STATUS == "nat")
+
+nrow(native_only)
+
+# 5c: Filter for alien/invasive species
+alien_only <- species_data %>%
+  filter(STATUS == "neo")
+
+nrow(alien_only)
+
+# 5d: How many unique native species?
+length(unique(native_only$WFO_TAXON))
+
+# 5e: How many unique alien species?
+length(unique(alien_only$WFO_TAXON))
+
+# 5f: Filter for a specific plot
+first_plot <- unique(species_data$PlotObservationID)[1]
+first_plot
+
+one_plot <- species_data %>%
+  filter(PlotObservationID == first_plot)
+
+# How many species in this one plot?
+length(unique(one_plot$WFO_TAXON))
+```
+
+---
+
+# <span class="en">Exercise 6: Building the Accumulation Curve</span><span class="de">Übung 6: Die Akkumulationskurve bauen</span>
 
 ```{r}
 # Get all unique plots
@@ -179,7 +248,7 @@ accumulation
 
 ---
 
-# <span class="en">Exercise 5: Plot Your Curve!</span><span class="de">Übung 5: Zeichne deine Kurve!</span>
+# <span class="en">Exercise 7: Plot Your Curve!</span><span class="de">Übung 7: Zeichne deine Kurve!</span>
 
 ```{r}
 # Create data frame
@@ -224,6 +293,12 @@ native_species <- species_data %>%
   filter(STATUS == "nat")
 
 length(unique(native_species$WFO_TAXON))
+
+# Filter for alien species
+alien_species <- species_data %>%
+  filter(STATUS == "neo")
+
+length(unique(alien_species$WFO_TAXON))
 ```
 
 ---
@@ -234,8 +309,9 @@ length(unique(native_species$WFO_TAXON))
 
 - Variables store data with `<-`
 - `c()` creates vectors
-- `unique()` finds different values
-- `length(unique(x))` = species richness
+- `unique()` counts different values
+- Data frames organize data in rows and columns
+- `filter()` selects specific rows
 - Loops repeat actions for each plot
 - `ggplot()` creates visualizations
 
@@ -247,8 +323,9 @@ length(unique(native_species$WFO_TAXON))
 
 - Variablen speichern Daten mit `<-`
 - `c()` erstellt Vektoren
-- `unique()` findet verschiedene Werte
-- `length(unique(x))` = Artenreichtum
+- `unique()` zählt verschiedene Werte
+- Data Frames organisieren Daten in Zeilen und Spalten
+- `filter()` wählt bestimmte Zeilen aus
 - Schleifen wiederholen Aktionen für jeden Plot
 - `ggplot()` erstellt Visualisierungen
 

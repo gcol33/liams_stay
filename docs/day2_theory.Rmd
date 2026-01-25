@@ -1085,22 +1085,10 @@ So können wir die **Form** der Akkumulation vergleichen, nicht nur die Gesamtza
 
 > Accumulation curves reveal how species are distributed across space. Comparing native and alien species shows us which group is more clustered and helps identify invasion hotspots.
 
-**What's next?**
-
-- Apply these methods to other regions or taxa
-- Investigate temporal changes in accumulation patterns
-- Use curves to guide conservation planning
-
 </div>
 
 <div class="de">
 
 > Akkumulationskurven zeigen, wie Arten im Raum verteilt sind. Der Vergleich von heimischen und Alien-Arten zeigt uns, welche Gruppe stärker geclustert ist, und hilft Invasions-Hotspots zu identifizieren.
-
-**Wie geht es weiter?**
-
-- Diese Methoden auf andere Regionen oder Taxa anwenden
-- Zeitliche Veränderungen in Akkumulationsmustern untersuchen
-- Kurven zur Naturschutzplanung nutzen
 
 </div>

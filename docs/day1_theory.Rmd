@@ -91,6 +91,29 @@ body.lang-de #TOC .de { display: inline; }
 @media print {
   .tocify, .lang-toggle { display: none; }
 }
+
+/* ========== MOBILE RESPONSIVE ========== */
+@media (max-width: 768px) {
+  body { font-size: 14px; line-height: 1.5; }
+  h1 { font-size: 1.5rem; }
+  h2 { font-size: 1.3rem; }
+  h3 { font-size: 1.1rem; }
+
+  .lang-toggle { top: 5px; right: 10px; padding: 5px 8px; }
+  .lang-toggle button { padding: 4px 10px; font-size: 12px; }
+
+  table { font-size: 12px; display: block; overflow-x: auto; white-space: nowrap; }
+  th, td { padding: 6px 8px; }
+
+  blockquote { padding: 10px 15px; margin: 0.5em 0; }
+
+  .tocify-header { font-size: 12px; }
+
+  pre { font-size: 11px; padding: 10px; }
+  code { font-size: 11px; }
+
+  img, .figure img { max-width: 100%; height: auto; }
+}
 ```
 
 ```{js, echo=FALSE}
@@ -234,6 +257,102 @@ Wir untersuchen kleine Flächen sorgfältig und nutzen Statistik zur Schätzung.
 
 </div>
 
+```{r austria-sampling, fig.height=4.5}
+set.seed(42)
+
+# Simplified Austria outline (approximate polygon)
+austria <- data.frame(
+  x = c(9.5, 10, 11, 12, 13, 14, 15, 16, 17, 17, 16.5, 16, 15, 14, 13, 12, 11, 10, 9.5),
+  y = c(47, 47.5, 47.8, 47.5, 47.8, 48.5, 48.8, 48.5, 48, 47.5, 47, 46.8, 46.5, 46.8, 47, 47.2, 47, 47, 47)
+)
+
+# Point-in-polygon test (ray casting algorithm)
+point_in_polygon <- function(px, py, poly_x, poly_y) {
+  n <- length(poly_x)
+  inside <- FALSE
+  j <- n
+  for (i in 1:n) {
+    if (((poly_y[i] > py) != (poly_y[j] > py)) &&
+        (px < (poly_x[j] - poly_x[i]) * (py - poly_y[i]) / (poly_y[j] - poly_y[i]) + poly_x[i])) {
+      inside <- !inside
+    }
+    j <- i
+  }
+  inside
+}
+
+# Sample plot locations
+samples <- data.frame(
+  x = runif(35, 9.5, 17),
+  y = runif(35, 46.3, 49)
+)
+
+# Check which points are inside Austria
+samples$inside <- mapply(point_in_polygon, samples$x, samples$y,
+                         MoreArgs = list(poly_x = austria$x, poly_y = austria$y))
+samples$location <- ifelse(samples$inside, "Inside Austria", "Outside Austria")
+
+ggplot() +
+  geom_polygon(data = austria, aes(x, y), fill = "#C8E6C9", color = "#2E7D32", linewidth = 1.5, alpha = 0.7) +
+  geom_point(data = samples, aes(x, y, color = location), size = 3, shape = 15) +
+  scale_color_manual(values = c("Inside Austria" = "#D32F2F", "Outside Austria" = "#9E9E9E"),
+                     labels = c("Inside Austria" = "In Austria / In Österreich",
+                                "Outside Austria" = "Outside / Außerhalb")) +
+  annotate("text", x = 13, y = 49.4, label = "Austria / Österreich", size = 6, fontface = "bold", color = "#2E7D32") +
+  labs(color = NULL) +
+  theme_void() +
+  theme(legend.position = "bottom") +
+  coord_fixed(ratio = 1.3)
+```
+
+<div class="en">
+
+**Key insight:** We study small plots carefully, then use patterns to understand the whole.
+
+</div>
+
+<div class="de">
+
+**Kernidee:** Wir untersuchen kleine Flächen sorgfältig und nutzen Muster, um das Ganze zu verstehen.
+
+</div>
+
+---
+
+## <span class="en">Discussion Question</span><span class="de">Diskussionsfrage</span>
+
+<div class="en">
+
+Imagine you want to know how many different types of candy exist in a candy store.
+
+You have **5 minutes** and can look in **10 jars** (out of 100 total jars).
+
+**Which strategy is better?**
+
+A) Look at the 10 jars closest to the door
+
+B) Look at 10 jars spread throughout the store
+
+**Why does this matter for ecology?**
+
+</div>
+
+<div class="de">
+
+Stell dir vor, du willst wissen, wie viele verschiedene Süßigkeiten es in einem Süßwarenladen gibt.
+
+Du hast **5 Minuten** und kannst in **10 Gläser** schauen (von insgesamt 100).
+
+**Welche Strategie ist besser?**
+
+A) Die 10 Gläser direkt neben der Tür
+
+B) 10 Gläser verteilt im ganzen Laden
+
+**Warum ist das für Ökologie wichtig?**
+
+</div>
+
 ---
 
 ## <span class="en">Vegetation Plots</span><span class="de">Vegetationsplots</span>
@@ -263,6 +382,36 @@ Ein **Vegetationsplot** ist eine kleine Fläche (typisch 1-100 m²), auf der Ök
 | Deckung (%) pro Art | 25%, 10%, ... |
 
 </div>
+
+```{r plot-illustration, fig.height=4}
+# Create a 10x10m plot visualization
+plot_area <- data.frame(
+  x = c(0, 10, 10, 0, 0),
+  y = c(0, 0, 10, 10, 0)
+)
+
+set.seed(42)
+plants <- data.frame(
+  x = runif(25, 0.5, 9.5),
+  y = runif(25, 0.5, 9.5),
+  species = sample(c("Grass/Gras", "Clover/Klee", "Daisy/Gänsebl.", "Moss/Moos", "Fern/Farn"), 25,
+                   replace = TRUE, prob = c(0.4, 0.2, 0.2, 0.1, 0.1))
+)
+
+ggplot() +
+  geom_path(data = plot_area, aes(x, y), linewidth = 2, color = "#2E7D32") +
+  geom_point(data = plants, aes(x, y, color = species, shape = species), size = 4) +
+  annotate("segment", x = 0, xend = 10, y = -0.8, yend = -0.8,
+           arrow = arrow(ends = "both", length = unit(0.2, "cm")), color = "#666666") +
+  annotate("text", x = 5, y = -1.5, label = "10 meters / 10 Meter", size = 4, color = "#666666") +
+  scale_color_brewer(palette = "Set1") +
+  labs(title = "10m × 10m Vegetation Plot",
+       color = "Species / Art", shape = "Species / Art") +
+  theme_void(base_size = 14) +
+  theme(legend.position = "right",
+        plot.title = element_text(hjust = 0.5, face = "bold", color = "#2E7D32")) +
+  coord_fixed()
+```
 
 ---
 
@@ -311,7 +460,7 @@ for(i in 1:n_plots) {
 ggplot(accumulation, aes(x = plots, y = species)) +
   geom_line(color = "#2E7D32", linewidth = 2) +
   geom_point(color = "#2E7D32", size = 2, alpha = 0.7) +
-  annotate("text", x = 10, y = 60, label = "Steep: Many new species!",
+  annotate("text", x = 18, y = 45, label = "Steep: Many new species!",
            color = "#1565C0", size = 5, hjust = 0) +
   annotate("text", x = 35, y = 75, label = "Flat: Few new species",
            color = "#F57C00", size = 5, hjust = 0) +
@@ -323,37 +472,183 @@ ggplot(accumulation, aes(x = plots, y = species)) +
 
 ---
 
-## <span class="en">Building a Curve Step by Step</span><span class="de">Eine Kurve Schritt für Schritt bauen</span>
+## <span class="en">Why Does the Curve Flatten?</span><span class="de">Warum flacht die Kurve ab?</span>
 
 <div class="en">
 
-Imagine sampling 5 plots:
+Think of it like a **card game**:
 
-| Plot | New Species Found | Cumulative Total |
-|------|-------------------|------------------|
-| 1 | 12 | 12 |
-| 2 | 8 | 20 |
-| 3 | 5 | 25 |
-| 4 | 3 | 28 |
-| 5 | 2 | 30 |
+| Draw # | What happens |
+|--------|--------------|
+| 1st card | Definitely new! |
+| 10th card | Probably still new |
+| 30th card | Maybe seen it before |
+| 50th card | Very likely a repeat |
 
-Notice: Each plot adds fewer new species!
+**The more species you've already found, the harder it is to find new ones.**
 
 </div>
 
 <div class="de">
 
-Stell dir vor, wir untersuchen 5 Plots:
+Denk an ein **Kartenspiel**:
 
-| Plot | Neue Arten gefunden | Kumulierte Summe |
-|------|---------------------|------------------|
-| 1 | 12 | 12 |
-| 2 | 8 | 20 |
-| 3 | 5 | 25 |
-| 4 | 3 | 28 |
-| 5 | 2 | 30 |
+| Karte # | Was passiert |
+|---------|--------------|
+| 1. Karte | Definitiv neu! |
+| 10. Karte | Wahrscheinlich noch neu |
+| 30. Karte | Vielleicht schon gesehen |
+| 50. Karte | Sehr wahrscheinlich ein Duplikat |
 
-Beachte: Jeder Plot fügt weniger neue Arten hinzu!
+**Je mehr Arten du schon gefunden hast, desto schwieriger wird es, neue zu finden.**
+
+</div>
+
+---
+
+## <span class="en">Let's Build One Together</span><span class="de">Lasst uns eine Kurve bauen</span>
+
+<div class="en">
+
+Imagine we're sampling a meadow. Each "plot" reveals some species:
+
+```{r build-curve-table-en}
+build_example <- data.frame(
+  Plot = 1:8,
+  `Species Found` = c("Daisy, Clover, Grass",
+                      "Buttercup, Dandelion, Grass",
+                      "Daisy, Thistle, Clover",
+                      "Grass, Plantain, Daisy",
+                      "Clover, Buttercup, Yarrow",
+                      "Daisy, Grass, Clover",
+                      "Dandelion, Plantain, Grass",
+                      "Clover, Daisy, Sorrel"),
+  `New Species` = c(3, 2, 1, 1, 1, 0, 0, 1),
+  `Cumulative Total` = c(3, 5, 6, 7, 8, 8, 8, 9)
+)
+
+kable(build_example, align = "clcc")
+```
+
+**Notice:** By plot 6-7, we're not finding anything new!
+
+</div>
+
+<div class="de">
+
+Stell dir vor, wir untersuchen eine Wiese. Jeder "Plot" zeigt einige Arten:
+
+```{r build-curve-table-de}
+build_example_de <- data.frame(
+  Plot = 1:8,
+  `Gefundene Arten` = c("Gänseblümchen, Klee, Gras",
+                        "Butterblume, Löwenzahn, Gras",
+                        "Gänseblümchen, Distel, Klee",
+                        "Gras, Spitzwegerich, Gänseblümchen",
+                        "Klee, Butterblume, Schafgarbe",
+                        "Gänseblümchen, Gras, Klee",
+                        "Löwenzahn, Spitzwegerich, Gras",
+                        "Klee, Gänseblümchen, Sauerampfer"),
+  `Neue Arten` = c(3, 2, 1, 1, 1, 0, 0, 1),
+  `Kumulativ` = c(3, 5, 6, 7, 8, 8, 8, 9)
+)
+
+kable(build_example_de, align = "clcc")
+```
+
+**Beachte:** Bei Plot 6-7 finden wir nichts Neues mehr!
+
+</div>
+
+---
+
+## <span class="en">Visualizing Our Example</span><span class="de">Unsere Beispielkurve</span>
+
+```{r example-curve, fig.height=4}
+example_data <- data.frame(
+  plot = 1:8,
+  cumulative = c(3, 5, 6, 7, 8, 8, 8, 9)
+)
+
+ggplot(example_data, aes(x = plot, y = cumulative)) +
+  geom_line(color = "#2E7D32", linewidth = 2) +
+  geom_point(color = "#2E7D32", size = 4) +
+  geom_segment(aes(x = plot, xend = plot, y = lag(cumulative, default = 0), yend = cumulative),
+               color = "#FF9800", linewidth = 1.5, alpha = 0.7) +
+  labs(title = "Meadow Accumulation Curve / Wiesen-Akkumulationskurve",
+       x = "Plot Number / Plotnummer",
+       y = "Total Species / Gesamtartenzahl") +
+  theme_minimal(base_size = 14) +
+  scale_x_continuous(breaks = 1:8) +
+  scale_y_continuous(breaks = 0:10)
+```
+
+<div class="en">
+
+The **orange segments** show how many new species each plot adds. Notice how they get shorter!
+
+</div>
+
+<div class="de">
+
+Die **orangenen Segmente** zeigen, wie viele neue Arten jeder Plot hinzufügt. Beachte, wie sie kürzer werden!
+
+</div>
+
+---
+
+## <span class="en">Discussion Question</span><span class="de">Diskussionsfrage</span>
+
+<div class="en">
+
+Look at these two curves:
+
+</div>
+
+<div class="de">
+
+Schau dir diese zwei Kurven an:
+
+</div>
+
+```{r two-curves, fig.height=4}
+curves <- data.frame(
+  plots = rep(1:30, 2),
+  species = c(
+    cumsum(c(20, 10, 5, 3, 2, rep(1, 5), rep(0, 20))),
+    cumsum(c(10, 8, 7, 6, 5, 4, 4, 3, 3, 3, rep(2, 10), rep(1, 10)))
+  ),
+  curve = rep(c("Forest A / Wald A", "Forest B / Wald B"), each = 30)
+)
+
+ggplot(curves, aes(x = plots, y = species, color = curve)) +
+  geom_line(linewidth = 2) +
+  scale_color_manual(values = c("Forest A / Wald A" = "#2E7D32", "Forest B / Wald B" = "#1565C0")) +
+  labs(title = "Two Different Forests / Zwei verschiedene Wälder",
+       x = "Number of Plots / Anzahl Plots",
+       y = "Total Species / Gesamtartenzahl",
+       color = "") +
+  theme_minimal(base_size = 14) +
+  theme(legend.position = "bottom")
+```
+
+<div class="en">
+
+**Questions:**
+
+1. Which forest probably has more total species?
+2. Which forest has species spread more evenly?
+3. In which forest would you need to sample MORE plots to find everything?
+
+</div>
+
+<div class="de">
+
+**Fragen:**
+
+1. Welcher Wald hat wahrscheinlich mehr Arten insgesamt?
+2. In welchem Wald sind die Arten gleichmäßiger verteilt?
+3. In welchem Wald müsstest du MEHR Plots untersuchen, um alles zu finden?
 
 </div>
 
@@ -480,6 +775,178 @@ Unser Datensatz unterscheidet zwischen:
 
 ---
 
+# <span class="en">Why Not Excel?</span><span class="de">Warum nicht Excel?</span>
+
+## <span class="en">Excel is Great For...</span><span class="de">Excel ist super für...</span>
+
+<div class="en">
+
+You probably know Excel well. It's perfect for:
+
+- Quick calculations
+- Simple tables and charts
+- Small datasets (hundreds of rows)
+
+**Could we build accumulation curves in Excel?** Yes! For a small example:
+
+</div>
+
+<div class="de">
+
+Du kennst wahrscheinlich Excel gut. Es ist perfekt für:
+
+- Schnelle Berechnungen
+- Einfache Tabellen und Diagramme
+- Kleine Datensätze (Hunderte von Zeilen)
+
+**Könnten wir Akkumulationskurven in Excel bauen?** Ja! Für ein kleines Beispiel:
+
+</div>
+
+```{r excel-example, fig.height=3.5}
+# Simulating what you'd do in Excel
+excel_data <- data.frame(
+  A = c("Plot", 1, 2, 3, 4, 5),
+  B = c("Species Found", "Rose, Daisy, Grass", "Clover, Grass, Fern", "Rose, Clover, Moss", "Daisy, Fern, Lily", "Grass, Rose, Daisy"),
+  C = c("New Species", 3, 2, 1, 1, 0),
+  D = c("Cumulative", 3, 5, 6, 7, 7)
+)
+
+# Make it look like Excel
+library(ggplot2)
+ggplot() +
+  annotate("rect", xmin = 0, xmax = 4, ymin = 0, ymax = 6, fill = "white", color = "gray70") +
+  # Column headers (gray background)
+  annotate("rect", xmin = 0, xmax = 1, ymin = 5, ymax = 6, fill = "#E8E8E8") +
+  annotate("rect", xmin = 1, xmax = 2, ymin = 5, ymax = 6, fill = "#E8E8E8") +
+  annotate("rect", xmin = 2, xmax = 3, ymin = 5, ymax = 6, fill = "#E8E8E8") +
+  annotate("rect", xmin = 3, xmax = 4, ymin = 5, ymax = 6, fill = "#E8E8E8") +
+  # Grid lines
+
+  annotate("segment", x = rep(0:4, each = 2), xend = rep(0:4, each = 2),
+           y = rep(c(0, 6), 5), yend = rep(c(6, 0), 5), color = "gray80") +
+  annotate("segment", x = rep(c(0, 4), 7), xend = rep(c(4, 0), 7),
+           y = rep(0:6, each = 2), yend = rep(0:6, each = 2), color = "gray80") +
+  # Headers
+  annotate("text", x = 0.5, y = 5.5, label = "A\nPlot", size = 3, fontface = "bold") +
+  annotate("text", x = 1.5, y = 5.5, label = "B\nSpecies", size = 3, fontface = "bold") +
+  annotate("text", x = 2.5, y = 5.5, label = "C\nNew", size = 3, fontface = "bold") +
+  annotate("text", x = 3.5, y = 5.5, label = "D\nTotal", size = 3, fontface = "bold") +
+  # Data rows
+  annotate("text", x = 0.5, y = 4.5, label = "1", size = 3) +
+  annotate("text", x = 1.5, y = 4.5, label = "Rose, Daisy...", size = 2.5) +
+  annotate("text", x = 2.5, y = 4.5, label = "3", size = 3) +
+  annotate("text", x = 3.5, y = 4.5, label = "=C2", size = 3, color = "blue") +
+
+  annotate("text", x = 0.5, y = 3.5, label = "2", size = 3) +
+  annotate("text", x = 1.5, y = 3.5, label = "Clover, Grass...", size = 2.5) +
+  annotate("text", x = 2.5, y = 3.5, label = "2", size = 3) +
+  annotate("text", x = 3.5, y = 3.5, label = "=D2+C3", size = 3, color = "blue") +
+
+  annotate("text", x = 0.5, y = 2.5, label = "3", size = 3) +
+  annotate("text", x = 1.5, y = 2.5, label = "Rose, Clover...", size = 2.5) +
+  annotate("text", x = 2.5, y = 2.5, label = "1", size = 3) +
+  annotate("text", x = 3.5, y = 2.5, label = "=D3+C4", size = 3, color = "blue") +
+
+  annotate("text", x = 0.5, y = 1.5, label = "...", size = 3) +
+  annotate("text", x = 1.5, y = 1.5, label = "...", size = 3) +
+  annotate("text", x = 2.5, y = 1.5, label = "...", size = 3) +
+  annotate("text", x = 3.5, y = 1.5, label = "...", size = 3) +
+
+  labs(title = "Excel: Manual formulas for each row") +
+  theme_void() +
+  theme(plot.title = element_text(hjust = 0.5, size = 12, face = "bold")) +
+  coord_fixed(ratio = 0.8)
+```
+
+<div class="en">
+
+This works fine for 5 plots. But what about **52,000 plots**?
+
+</div>
+
+<div class="de">
+
+Das funktioniert für 5 Plots. Aber was ist mit **52.000 Plots**?
+
+</div>
+
+---
+
+## <span class="en">But Real Research Needs More</span><span class="de">Aber echte Forschung braucht mehr</span>
+
+<div class="en">
+
+Our Austrian dataset has **52,000 plots** and **850,000 species observations**.
+
+| Task | Excel | R |
+|------|-------|---|
+| Load 850,000 rows | Crashes or freezes | 2 seconds |
+| Repeat analysis 100 times | Click 100 times | One loop |
+| Share exact method | "I clicked here, then there..." | Share the code |
+| Find a bug | Where did I click wrong? | Read line 47 |
+| Update with new data | Start over | Re-run script |
+
+</div>
+
+<div class="de">
+
+Unser österreichischer Datensatz hat **52.000 Plots** und **850.000 Artenbeobachtungen**.
+
+| Aufgabe | Excel | R |
+|---------|-------|---|
+| 850.000 Zeilen laden | Stürzt ab oder friert ein | 2 Sekunden |
+| Analyse 100x wiederholen | 100x klicken | Eine Schleife |
+| Exakte Methode teilen | "Ich habe hier geklickt, dann dort..." | Code teilen |
+| Fehler finden | Wo habe ich falsch geklickt? | Zeile 47 lesen |
+| Mit neuen Daten aktualisieren | Von vorne anfangen | Skript erneut ausführen |
+
+</div>
+
+---
+
+## <span class="en">Reproducibility: The Key Difference</span><span class="de">Reproduzierbarkeit: Der Schlüsselunterschied</span>
+
+<div class="en">
+
+In science, others must be able to **reproduce** your results.
+
+With Excel:
+> "I sorted column B, then filtered for values > 10, then made a chart, then... I think I also removed some outliers?"
+
+With R:
+```r
+data %>%
+  filter(value > 10) %>%
+  ggplot(aes(x, y)) +
+  geom_line()
+```
+
+**The code IS the method.** Anyone can run it and get the same result.
+
+</div>
+
+<div class="de">
+
+In der Wissenschaft müssen andere deine Ergebnisse **reproduzieren** können.
+
+Mit Excel:
+> "Ich habe Spalte B sortiert, dann nach Werten > 10 gefiltert, dann ein Diagramm erstellt, dann... ich glaube, ich habe auch einige Ausreißer entfernt?"
+
+Mit R:
+```r
+data %>%
+  filter(value > 10) %>%
+  ggplot(aes(x, y)) +
+  geom_line()
+```
+
+**Der Code IST die Methode.** Jeder kann ihn ausführen und das gleiche Ergebnis erhalten.
+
+</div>
+
+---
+
 # <span class="en">Summary</span><span class="de">Zusammenfassung</span>
 
 ## <span class="en">Key Concepts</span><span class="de">Schlüsselkonzepte</span>
@@ -513,6 +980,27 @@ Unser Datensatz unterscheidet zwischen:
 ---
 
 ## <span class="en">Preview: Day 2</span><span class="de">Vorschau: Tag 2</span>
+
+```{r preview-graph, fig.height=4}
+preview_data <- data.frame(
+  plots = rep(1:30, 2),
+  species = c(
+    cumsum(c(30, 15, 10, 8, 6, 5, 4, 3, 3, 2, rep(2, 10), rep(1, 10))),
+    cumsum(c(5, 4, 4, 3, 3, 3, 3, 2, 2, 2, rep(2, 10), rep(1, 10)))
+  ),
+  type = rep(c("Native / Heimisch", "Alien / Neophyten"), each = 30)
+)
+
+ggplot(preview_data, aes(x = plots, y = species, color = type)) +
+  geom_line(linewidth = 2) +
+  scale_color_manual(values = c("Native / Heimisch" = "#2E7D32", "Alien / Neophyten" = "#D32F2F")) +
+  labs(title = "What Might We Find? / Was könnten wir finden?",
+       x = "Plots Sampled / Untersuchte Plots",
+       y = "Species Found / Gefundene Arten",
+       color = "") +
+  theme_minimal(base_size = 14) +
+  theme(legend.position = "bottom")
+```
 
 <div class="en">
 

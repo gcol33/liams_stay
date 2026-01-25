@@ -97,6 +97,16 @@ body.lang-de #TOC .de { display: inline; }
 #TOC .de { display: none; }
 #TOC .en { display: inline; }
 
+/* Math formula display fix */
+.MathJax, .MathJax_Display, .mjx-chtml {
+  overflow: visible !important;
+  padding: 5px 0 !important;
+}
+p:has(.MathJax) {
+  overflow: visible;
+  line-height: 2.5;
+}
+
 @media print {
   .tocify, .lang-toggle { display: none; }
 }
@@ -446,14 +456,14 @@ So können wir die **Form** der Akkumulation vergleichen, nicht nur die Gesamtza
    - Recent introduction = no time to cluster
 
 2. **What are the limitations of our analysis?**
-   - Sample size (we only used 100 plots)
-   - Geographic bias in sampling
+   - Geographic bias in sampling (some regions better covered)
    - Detection probability differs by species
+   - Single time snapshot (no temporal dynamics)
 
-3. **What would you do differently with more time?**
-   - Use all 52,000 Austrian plots
-   - Compare different habitat types
-   - Look at temporal changes
+3. **What could be explored further?**
+   - Compare different habitat types (forests vs. grasslands)
+   - Look at temporal changes (are aliens spreading?)
+   - Test in other countries
 
 </div>
 
@@ -465,14 +475,14 @@ So können wir die **Form** der Akkumulation vergleichen, nicht nur die Gesamtza
    - Kürzliche Einführung = keine Zeit zum Clustern
 
 2. **Was sind die Einschränkungen unserer Analyse?**
-   - Stichprobengröße (wir haben nur 100 Plots verwendet)
-   - Geografische Verzerrung in der Beprobung
+   - Geografische Verzerrung (manche Regionen besser beprobt)
    - Nachweiswahrscheinlichkeit unterscheidet sich zwischen Arten
+   - Einzelne Zeitmomentaufnahme (keine zeitliche Dynamik)
 
-3. **Was würdest du mit mehr Zeit anders machen?**
-   - Alle 52.000 österreichischen Plots verwenden
-   - Verschiedene Habitattypen vergleichen
-   - Zeitliche Veränderungen betrachten
+3. **Was könnte weiter untersucht werden?**
+   - Verschiedene Habitattypen vergleichen (Wald vs. Wiese)
+   - Zeitliche Veränderungen (breiten sich Aliens aus?)
+   - In anderen Ländern testen
 
 </div>
 

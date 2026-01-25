@@ -1895,6 +1895,287 @@ ganzen Vektoren gleichzeitig</li>
 vernünftige Standardwerte</li>
 </ol>
 </div>
+<style>
+.build-steps { background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; margin: 1em 0; }
+.build-step { padding: 15px; border-bottom: 1px solid #dee2e6; }
+.build-step:last-child { border-bottom: none; }
+.step-header { font-weight: bold; color: #2E7D32; cursor: pointer; display: flex; align-items: center; }
+.step-header::before { content: "▶ "; margin-right: 8px; transition: transform 0.2s; }
+.step-header.open::before { transform: rotate(90deg); }
+.step-num { background: #4CAF50; color: white; padding: 2px 8px; border-radius: 12px; margin-right: 10px; font-size: 0.85em; }
+.step-content { display: none; margin-top: 10px; padding: 10px; background: white; border-radius: 4px; }
+.step-content.show { display: block; }
+.step-problem { background: #fff3cd; padding: 8px 12px; border-radius: 4px; margin: 8px 0; border-left: 3px solid #ffc107; }
+.step-solution { background: #d4edda; padding: 8px 12px; border-radius: 4px; margin: 8px 0; border-left: 3px solid #28a745; }
+</style>
+
+<script>
+function toggleStep(el) {
+  el.classList.toggle('open');
+  el.nextElementSibling.classList.toggle('show');
+}
+</script>
+
+<h4>🔨 Building the Functions Step-by-Step</h4>
+<p class="en">Click each step to see how we build up from simple to complete:</p>
+<p class="de">Klicke jeden Schritt um zu sehen wie wir von einfach zu vollständig aufbauen:</p>
+
+<!-- FUNCTION 1: calc_distance -->
+<div class="build-steps">
+<div class="build-step">
+  <div class="step-header" onclick="toggleStep(this)">
+    <span class="step-num">1</span>
+    <span class="en">calc_distance: Start with the math formula</span>
+    <span class="de">calc_distance: Starte mit der Mathe-Formel</span>
+  </div>
+  <div class="step-content">
+    <p class="en"><strong>Goal:</strong> Calculate distance between two points.</p>
+    <p class="de"><strong>Ziel:</strong> Berechne Distanz zwischen zwei Punkten.</p>
+
+    <p class="en">Remember Pythagoras? For two points (x1,y1) and (x2,y2):</p>
+    <p class="de">Erinnerst du dich an Pythagoras? Für zwei Punkte (x1,y1) und (x2,y2):</p>
+    <pre><code>distance = sqrt((x2-x1)² + (y2-y1)²)</code></pre>
+
+    <p class="en">In R, we just wrap this in a function:</p>
+    <p class="de">In R wickeln wir das einfach in eine Funktion:</p>
+    <pre><code>calc_distance &lt;- function(x1, y1, x2, y2) {
+  sqrt((x2 - x1)^2 + (y2 - y1)^2)
+}</code></pre>
+
+    <div class="step-solution">
+      <span class="en">✨ <strong>Bonus:</strong> This automatically works with vectors! If x2,y2 are vectors of 100 points, you get 100 distances back!</span>
+      <span class="de">✨ <strong>Bonus:</strong> Das funktioniert automatisch mit Vektoren! Wenn x2,y2 Vektoren mit 100 Punkten sind, bekommst du 100 Distanzen zurück!</span>
+    </div>
+  </div>
+</div>
+
+<!-- FUNCTION 2: nn_walk -->
+<div class="build-step">
+  <div class="step-header" onclick="toggleStep(this)">
+    <span class="step-num">2</span>
+    <span class="en">nn_walk: First, think about what we need to track</span>
+    <span class="de">nn_walk: Zuerst überlegen was wir verfolgen müssen</span>
+  </div>
+  <div class="step-content">
+    <p class="en"><strong>Goal:</strong> Visit all plots, always going to the nearest unvisited one.</p>
+    <p class="de"><strong>Ziel:</strong> Besuche alle Plots, gehe immer zum nächsten unbesuchten.</p>
+
+    <p class="en">What do we need to keep track of?</p>
+    <p class="de">Was müssen wir verfolgen?</p>
+    <ul>
+      <li class="en">Which plots have we already visited? → <code>visited</code> (TRUE/FALSE for each)</li>
+      <li class="de">Welche Plots haben wir schon besucht? → <code>visited</code> (TRUE/FALSE für jeden)</li>
+      <li class="en">What order did we visit them? → <code>visit_order</code> (list of plot IDs)</li>
+      <li class="de">In welcher Reihenfolge haben wir sie besucht? → <code>visit_order</code> (Liste der Plot-IDs)</li>
+      <li class="en">Where are we now? → <code>current</code> (index of current plot)</li>
+      <li class="de">Wo sind wir jetzt? → <code>current</code> (Index des aktuellen Plots)</li>
+    </ul>
+
+    <pre><code># Setup our tracking variables
+n &lt;- nrow(header_data)           # total number of plots
+visited &lt;- rep(FALSE, n)         # all start as unvisited
+visit_order &lt;- numeric(n)        # empty vector to fill
+current &lt;- 1                     # start at plot 1</code></pre>
+  </div>
+</div>
+
+<div class="build-step">
+  <div class="step-header" onclick="toggleStep(this)">
+    <span class="step-num">3</span>
+    <span class="en">nn_walk: Build the main loop</span>
+    <span class="de">nn_walk: Baue die Hauptschleife</span>
+  </div>
+  <div class="step-content">
+    <p class="en">Now we loop through, visiting one plot at a time:</p>
+    <p class="de">Jetzt schleifen wir durch und besuchen einen Plot nach dem anderen:</p>
+
+    <pre><code>for (i in 1:n) {
+  # 1. Mark current plot as visited
+  visited[current] &lt;- TRUE
+
+  # 2. Record which plot we visited
+  visit_order[i] &lt;- header_data$PlotObservationID[current]
+
+  # 3. Find the next plot (closest unvisited)
+  # ... but how?
+}</code></pre>
+
+    <div class="step-problem">
+      <span class="en">🤔 <strong>Problem:</strong> How do we find the closest UNVISITED plot?</span>
+      <span class="de">🤔 <strong>Problem:</strong> Wie finden wir den nächsten UNBESUCHTEN Plot?</span>
+    </div>
+  </div>
+</div>
+
+<div class="build-step">
+  <div class="step-header" onclick="toggleStep(this)">
+    <span class="step-num">4</span>
+    <span class="en">nn_walk: The &quot;Infinity Trick&quot; for excluding visited plots</span>
+    <span class="de">nn_walk: Der &quot;Unendlich-Trick&quot; zum Ausschließen besuchter Plots</span>
+  </div>
+  <div class="step-content">
+    <p class="en">We calculate distance to ALL plots, then use a clever trick:</p>
+    <p class="de">Wir berechnen die Distanz zu ALLEN Plots, dann nutzen wir einen cleveren Trick:</p>
+
+    <pre><code># Calculate distance from current to ALL plots
+distances &lt;- calc_distance(
+  header_data$Longitude[current], header_data$Latitude[current],
+  header_data$Longitude, header_data$Latitude
+)
+
+# THE TRICK: Set visited plots to Infinity!
+distances[visited] &lt;- Inf
+
+# Now which.min() will never pick a visited plot
+current &lt;- which.min(distances)</code></pre>
+
+    <div class="step-solution">
+      <span class="en">✨ <strong>Why Inf?</strong> Because <code>which.min()</code> finds the smallest value. Infinity can never be smallest, so visited plots are automatically excluded!</span>
+      <span class="de">✨ <strong>Warum Inf?</strong> Weil <code>which.min()</code> den kleinsten Wert findet. Unendlich kann nie der kleinste sein, also werden besuchte Plots automatisch ausgeschlossen!</span>
+    </div>
+  </div>
+</div>
+
+<div class="build-step">
+  <div class="step-header" onclick="toggleStep(this)">
+    <span class="step-num">5</span>
+    <span class="en">nn_walk: Add flexibility with optional start point</span>
+    <span class="de">nn_walk: Flexibilität mit optionalem Startpunkt</span>
+  </div>
+  <div class="step-content">
+    <p class="en">Sometimes we want to control where to start, sometimes random is fine:</p>
+    <p class="de">Manchmal wollen wir kontrollieren wo wir starten, manchmal ist zufällig ok:</p>
+
+    <pre><code>nn_walk &lt;- function(header_data, start_idx = NULL) {
+  # If user didn&#39;t specify, pick random
+  if (is.null(start_idx)) {
+    start_idx &lt;- sample(1:nrow(header_data), 1)
+  }
+  current &lt;- start_idx
+  # ... rest of function
+}</code></pre>
+
+    <div class="step-solution">
+      <span class="en">✨ <strong>Default = NULL</strong> means &quot;not specified&quot;. We check with <code>is.null()</code> and provide our own default behavior.</span>
+      <span class="de">✨ <strong>Standard = NULL</strong> bedeutet &quot;nicht angegeben&quot;. Wir prüfen mit <code>is.null()</code> und liefern unser eigenes Standardverhalten.</span>
+    </div>
+  </div>
+</div>
+
+<!-- FUNCTION 3: build_accumulation -->
+<div class="build-step">
+  <div class="step-header" onclick="toggleStep(this)">
+    <span class="step-num">6</span>
+    <span class="en">build_accumulation: Think about what &quot;accumulation&quot; means</span>
+    <span class="de">build_accumulation: Überlege was &quot;Akkumulation&quot; bedeutet</span>
+  </div>
+  <div class="step-content">
+    <p class="en"><strong>Goal:</strong> Count how many UNIQUE species we&#39;ve found after each plot.</p>
+    <p class="de"><strong>Ziel:</strong> Zähle wie viele EINZIGARTIGE Arten wir nach jedem Plot gefunden haben.</p>
+
+    <p class="en">Let&#39;s think through an example:</p>
+    <p class="de">Denken wir ein Beispiel durch:</p>
+    <pre><code># Plot 1: Oak, Beech         → found = {Oak, Beech}           → count = 2
+# Plot 2: Beech, Pine        → found = {Oak, Beech, Pine}     → count = 3
+# Plot 3: Oak, Oak, Maple    → found = {Oak, Beech, Pine, Maple} → count = 4</code></pre>
+
+    <p class="en">Key insight: We only count NEW species (ones we haven&#39;t seen before)!</p>
+    <p class="de">Schlüsselerkenntnis: Wir zählen nur NEUE Arten (die wir noch nicht gesehen haben)!</p>
+  </div>
+</div>
+
+<div class="build-step">
+  <div class="step-header" onclick="toggleStep(this)">
+    <span class="step-num">7</span>
+    <span class="en">build_accumulation: Use setdiff() to find new species</span>
+    <span class="de">build_accumulation: Nutze setdiff() um neue Arten zu finden</span>
+  </div>
+  <div class="step-content">
+    <p class="en"><code>setdiff(A, B)</code> = &quot;what&#39;s in A but NOT in B&quot;</p>
+    <p class="de"><code>setdiff(A, B)</code> = &quot;was ist in A aber NICHT in B&quot;</p>
+
+    <pre><code>found &lt;- c(&quot;Oak&quot;, &quot;Beech&quot;)           # species we already have
+plot_species &lt;- c(&quot;Beech&quot;, &quot;Pine&quot;)   # species in new plot
+
+setdiff(plot_species, found)         # Returns: &quot;Pine&quot;
+# Only Pine is NEW!</code></pre>
+
+    <p class="en">This becomes our loop:</p>
+    <p class="de">Das wird unsere Schleife:</p>
+    <pre><code>found &lt;- c()  # start empty
+
+for (i in 1:length(plot_order)) {
+  # Get species in this plot
+  plot_spp &lt;- get_species_for_plot(plot_order[i])
+
+  # Find what&#39;s NEW
+  new_spp &lt;- setdiff(plot_spp, found)
+
+  # Add new species to our collection
+  found &lt;- c(found, new_spp)
+
+  # Record the count
+  accum[i] &lt;- length(found)
+}</code></pre>
+  </div>
+</div>
+
+<div class="build-step">
+  <div class="step-header" onclick="toggleStep(this)">
+    <span class="step-num">8</span>
+    <span class="en">build_accumulation: Add optional filtering</span>
+    <span class="de">build_accumulation: Füge optionale Filterung hinzu</span>
+  </div>
+  <div class="step-content">
+    <p class="en">We want ONE function that works for native, alien, or all species:</p>
+    <p class="de">Wir wollen EINE Funktion die für heimische, Alien, oder alle Arten funktioniert:</p>
+
+    <pre><code>build_accumulation &lt;- function(species_data, plot_order, status_filter = NULL) {
+  # If filter provided, apply it FIRST
+  if (!is.null(status_filter)) {
+    species_data &lt;- species_data %&gt;% filter(STATUS == status_filter)
+  }
+  # ... rest of function works on filtered data
+}</code></pre>
+
+    <p class="en">Now we can call it three ways:</p>
+    <p class="de">Jetzt können wir sie auf drei Arten aufrufen:</p>
+    <pre><code>build_accumulation(species, order)           # all species
+build_accumulation(species, order, &quot;nat&quot;)    # only native
+build_accumulation(species, order, &quot;neo&quot;)    # only alien</code></pre>
+  </div>
+</div>
+
+<!-- FUNCTION 4: find_saturation -->
+<div class="build-step">
+  <div class="step-header" onclick="toggleStep(this)">
+    <span class="step-num">9</span>
+    <span class="en">find_saturation: A simple but useful helper</span>
+    <span class="de">find_saturation: Ein einfacher aber nützlicher Helfer</span>
+  </div>
+  <div class="step-content">
+    <p class="en"><strong>Goal:</strong> Find when we&#39;ve discovered 80% of all species.</p>
+    <p class="de"><strong>Ziel:</strong> Finde wann wir 80% aller Arten entdeckt haben.</p>
+
+    <pre><code># If final count is 100 species, target is 80
+target &lt;- max(curve) * 0.8
+
+# Find FIRST position where we reach target
+# curve &gt;= target gives: FALSE FALSE FALSE TRUE TRUE TRUE ...
+# which() gives positions of TRUEs: 4, 5, 6, ...
+# [1] gives first one: 4
+which(curve &gt;= target)[1]</code></pre>
+
+    <div class="step-solution">
+      <span class="en">✨ <strong>Pattern:</strong> <code>which(condition)[1]</code> = &quot;first position where condition is TRUE&quot;</span>
+      <span class="de">✨ <strong>Muster:</strong> <code>which(bedingung)[1]</code> = &quot;erste Position wo Bedingung TRUE ist&quot;</span>
+    </div>
+  </div>
+</div>
+</div>
+
+<p class="en">👆 <em>Click each step above to expand! Now here are the complete functions:</em></p>
+<p class="de">👆 <em>Klicke jeden Schritt oben zum Aufklappen! Hier sind die vollständigen Funktionen:</em></p>
 <pre class="r"><code># ==== FUNCTION 1: calc_distance ====
 # Calculates Euclidean distance. VECTORIZED: x2,y2 can be vectors!
 # Berechnet Euklidische Distanz. VEKTORISIERT: x2,y2 können Vektoren sein!

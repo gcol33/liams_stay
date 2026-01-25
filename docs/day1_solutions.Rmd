@@ -70,71 +70,171 @@ $(document).ready(function() {
 
 ---
 
-# <span class="en">Exercise 1: Variables & Vectors</span><span class="de">Übung 1: Variablen & Vektoren</span>
+# <span class="en">Exercise 1: Your First Variables</span><span class="de">Übung 1: Deine ersten Variablen</span>
+
+### <span class="en">1a: Creating simple variables</span><span class="de">1a: Einfache Variablen erstellen</span>
 
 ```{r}
-# 1a: Store a number in a variable
-my_number <- 42
-my_number
+# Store the number 42
+answer <- 42
+print(answer)
 
-# 1b: Store text (needs quotes!)
+# Store your age
+my_age <- 14
+print(my_age)
+
+# Store a decimal number (height in meters)
+my_height <- 1.65
+print(my_height)
+```
+
+### <span class="en">1b: Text variables</span><span class="de">1b: Text-Variablen</span>
+
+```{r}
+# Store your name
 my_name <- "Liam"
-my_name
+print(my_name)
 
-# 1c: Create a vector with c()
-species_counts <- c(5, 3, 7, 2, 4)
-species_counts
+# Store a species name
+species <- "Oak"
+print(species)
+```
 
-# 1d: Create a vector of 4 tree heights
-tree_heights <- c(15, 22, 18, 25)
-tree_heights
+### <span class="en">1c: Logical variables</span><span class="de">1c: Logische Variablen</span>
 
-# 1e: Get the length of a vector
-length(species_counts)
+```{r}
+# Is it raining?
+is_raining <- FALSE
 
-# 1f: Calculate mean (average)
-mean(species_counts)
+# Is 5 greater than 3?
+five_greater_three <- 5 > 3
+print(five_greater_three)
 
-# 1g: Calculate mean of tree heights
-mean(tree_heights)
+# Is 10 equal to 10?
+ten_equals_ten <- 10 == 10
+print(ten_equals_ten)
+
+# Is "oak" equal to "Oak"?
+oak_equals_Oak <- "oak" == "Oak"
+print(oak_equals_Oak)  # FALSE - R is case-sensitive!
+```
+
+### <span class="en">1d: Basic math</span><span class="de">1d: Grundrechenarten</span>
+
+```{r}
+a <- 10
+b <- 3
+
+# Addition
+sum_ab <- a + b
+print(sum_ab)  # 13
+
+# Subtraction
+diff_ab <- a - b
+print(diff_ab)  # 7
+
+# Multiplication
+prod_ab <- a * b
+print(prod_ab)  # 30
+
+# Division
+div_ab <- a / b
+print(div_ab)  # 3.333...
+
+# Power
+power_ab <- a ^ b
+print(power_ab)  # 1000
+```
+
+### <span class="en">1e: Updating variables</span><span class="de">1e: Variablen aktualisieren</span>
+
+```{r}
+species_count <- 0
+print(species_count)
+
+species_count <- species_count + 5
+print(species_count)  # 5
+
+species_count <- species_count + 3
+print(species_count)  # 8
+
+species_count <- species_count - 2
+print(species_count)  # 6
 ```
 
 ---
 
-# <span class="en">Exercise 2: The Magic of unique()</span><span class="de">Übung 2: Die Magie von unique()</span>
+# <span class="en">Exercise 2: Vectors - Lists of Values</span><span class="de">Übung 2: Vektoren - Listen von Werten</span>
+
+### <span class="en">2a: Creating vectors</span><span class="de">2a: Vektoren erstellen</span>
 
 ```{r}
-# 2a: Observations with repeats
-observations <- c("Oak", "Beech", "Oak", "Pine", "Beech", "Oak", "Maple")
-length(observations)
+species_counts <- c(5, 3, 7, 2, 4)
+print(species_counts)
 
-# 2b: Unique species
-unique(observations)
-length(unique(observations))
+tree_heights <- c(15, 22, 18, 25)
+print(tree_heights)
 
-# 2c: Species from 3 plots
+tree_species <- c("Oak", "Beech", "Pine", "Maple")
+print(tree_species)
+```
+
+### <span class="en">2b: Vector functions</span><span class="de">2b: Vektor-Funktionen</span>
+
+```{r}
+length(species_counts)
+sum(species_counts)
+mean(species_counts)
+mean(tree_heights)
+min(species_counts)
+max(species_counts)
+```
+
+### <span class="en">2c: Combining vectors</span><span class="de">2c: Vektoren kombinieren</span>
+
+```{r}
 plot1 <- c("Oak", "Beech", "Pine")
 plot2 <- c("Beech", "Maple", "Oak")
 plot3 <- c("Birch", "Oak", "Ash")
 
 all_species <- c(plot1, plot2, plot3)
-all_species
-
-# 2d: Total vs unique
+print(all_species)
 length(all_species)
-length(unique(all_species))
-
-# 2e: After plot1 + plot2
-after_two_plots <- c(plot1, plot2)
-length(unique(after_two_plots))
 ```
 
 ---
 
-# <span class="en">Exercise 3: Data Frames</span><span class="de">Übung 3: Data Frames</span>
+# <span class="en">Exercise 3: The Magic of unique()</span><span class="de">Übung 3: Die Magie von unique()</span>
 
 ```{r}
-# 3a: Create a simple data frame
+# 3a: Observations with repeats
+observations <- c("Oak", "Beech", "Oak", "Pine", "Beech", "Oak", "Maple")
+length(observations)
+
+# 3b: Unique species
+unique(observations)
+length(unique(observations))
+
+# 3c: Using plots
+plot1 <- c("Oak", "Beech", "Pine")
+plot2 <- c("Beech", "Maple", "Oak")
+plot3 <- c("Birch", "Oak", "Ash")
+
+all_species <- c(plot1, plot2, plot3)
+length(all_species)           # 9
+length(unique(all_species))   # 6
+
+# 3d: After plot1 + plot2
+after_two_plots <- c(plot1, plot2)
+length(unique(after_two_plots))  # 4
+```
+
+---
+
+# <span class="en">Exercise 4: Data Frames</span><span class="de">Übung 4: Data Frames</span>
+
+```{r}
+# 4a: Create a simple data frame
 my_data <- data.frame(
   species = c("Oak", "Beech", "Pine", "Maple"),
   height = c(20, 18, 25, 15),
@@ -143,27 +243,27 @@ my_data <- data.frame(
 
 my_data
 
-# 3b: How many rows and columns?
+# 4b: How many rows and columns?
 nrow(my_data)
 ncol(my_data)
 
-# 3c: Access a column with $
+# 4c: Access a column with $
 my_data$species
 my_data$height
 
-# 3d: Get the mean height
+# 4d: Get the mean height
 mean(my_data$height)
 
-# 3e: Access a specific row (row 2)
+# 4e: Access a specific row (row 2)
 my_data[2, ]
 
-# 3f: Access a specific cell (row 2, column "height")
+# 4f: Access a specific cell (row 2, column "height")
 my_data[2, "height"]
 ```
 
 ---
 
-# <span class="en">Exercise 4: Loading Real Data</span><span class="de">Übung 4: Echte Daten laden</span>
+# <span class="en">Exercise 5: Loading Real Data</span><span class="de">Übung 5: Echte Daten laden</span>
 
 ```{r}
 library(tidyverse)
@@ -183,31 +283,31 @@ length(unique(species_data$WFO_TAXON))
 
 ---
 
-# <span class="en">Exercise 5: Filtering Data</span><span class="de">Übung 5: Daten filtern</span>
+# <span class="en">Exercise 6: Filtering Data</span><span class="de">Übung 6: Daten filtern</span>
 
 ```{r}
-# 5a: Look at the STATUS column
+# 6a: Look at the STATUS column
 unique(species_data$STATUS)
 
-# 5b: Filter for native species only
+# 6b: Filter for native species only
 native_only <- species_data %>%
   filter(STATUS == "nat")
 
 nrow(native_only)
 
-# 5c: Filter for alien/invasive species
+# 6c: Filter for alien/invasive species
 alien_only <- species_data %>%
   filter(STATUS == "neo")
 
 nrow(alien_only)
 
-# 5d: How many unique native species?
+# 6d: How many unique native species?
 length(unique(native_only$WFO_TAXON))
 
-# 5e: How many unique alien species?
+# 6e: How many unique alien species?
 length(unique(alien_only$WFO_TAXON))
 
-# 5f: Filter for a specific plot
+# 6f: Filter for a specific plot
 first_plot <- unique(species_data$PlotObservationID)[1]
 first_plot
 
@@ -220,7 +320,7 @@ length(unique(one_plot$WFO_TAXON))
 
 ---
 
-# <span class="en">Exercise 6: Building the Accumulation Curve</span><span class="de">Übung 6: Die Akkumulationskurve bauen</span>
+# <span class="en">Exercise 7: Building the Accumulation Curve</span><span class="de">Übung 7: Die Akkumulationskurve bauen</span>
 
 ```{r}
 # Get all unique plots
@@ -248,7 +348,7 @@ accumulation
 
 ---
 
-# <span class="en">Exercise 7: Plot Your Curve!</span><span class="de">Übung 7: Zeichne deine Kurve!</span>
+# <span class="en">Exercise 8: Plot Your Curve!</span><span class="de">Übung 8: Zeichne deine Kurve!</span>
 
 ```{r}
 # Create data frame

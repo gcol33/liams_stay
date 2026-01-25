@@ -184,133 +184,311 @@ $(document).ready(function() {
 
 ---
 
-# <span class="en">Exercise 1: Variables & Vectors</span><span class="de">Übung 1: Variablen & Vektoren</span>
+# <span class="en">Part 1: R Basics - Getting Started</span><span class="de">Teil 1: R Grundlagen - Los geht's</span>
 
 <div class="en">
 
-In R, we store data in **variables**. A **vector** is a list of values.
+Welcome to R! In this section, you'll learn the fundamental building blocks of R programming. Take your time with each exercise - understanding these basics thoroughly will make everything else easier.
+
+**How to use these exercises:**
+
+- Replace each `____` with the correct code
+- Run each chunk to see if it works
+- Read the hints if you get stuck
 
 </div>
 
 <div class="de">
 
-In R speichern wir Daten in **Variablen**. Ein **Vektor** ist eine Liste von Werten.
+Willkommen bei R! In diesem Abschnitt lernst du die grundlegenden Bausteine der R-Programmierung. Nimm dir Zeit für jede Übung - wenn du diese Grundlagen gut verstehst, wird alles andere einfacher.
 
-</div>
+**So verwendest du diese Übungen:**
 
-```{r}
-# 1a: Store a number in a variable
-# 1a: Speichere eine Zahl in einer Variable
+- Ersetze jedes `____` mit dem richtigen Code
+- Führe jeden Chunk aus um zu sehen ob er funktioniert
+- Lies die Hinweise wenn du nicht weiterkommst
 
-my_number <- ___
-my_number
-
-# 1b: Store text (needs quotes!)
-# 1b: Speichere Text (braucht Anführungszeichen!)
-
-my_name <- "___"
-my_name
-
-# 1c: Create a vector with c()
-# 1c: Erstelle einen Vektor mit c()
-
-species_counts <- c(5, 3, 7, 2, 4)
-species_counts
-
-# 1d: Your turn - create a vector of 4 tree heights
-# 1d: Du bist dran - erstelle einen Vektor mit 4 Baumhöhen
-
-tree_heights <- c(___, ___, ___, ___)
-tree_heights
-
-# 1e: Get the length of a vector
-# 1e: Hole die Länge eines Vektors
-
-length(species_counts)
-
-# 1f: Calculate mean (average)
-# 1f: Berechne den Mittelwert (Durchschnitt)
-
-mean(species_counts)
-
-# 1g: Calculate mean of your tree heights
-# 1g: Berechne den Mittelwert deiner Baumhöhen
-
-mean(___)
-```
-
-<div class="hint">
-<span class="en">Hint: `c()` combines values into a vector. Use commas between values!</span>
-<span class="de">Hinweis: `c()` kombiniert Werte zu einem Vektor. Benutze Kommas zwischen den Werten!</span>
 </div>
 
 ---
 
-# <span class="en">Exercise 2: The Magic of unique()</span><span class="de">Übung 2: Die Magie von unique()</span>
+# <span class="en">Exercise 1: Your First Variables</span><span class="de">Übung 1: Deine ersten Variablen</span>
 
 <div class="en">
 
-`unique()` is the **key function** for ecology! It tells us how many *different* species we found.
+**Concept:** Variables are containers that store values. In R, we use `<-` to assign values to variables.
 
 </div>
 
 <div class="de">
 
-`unique()` ist die **Schlüsselfunktion** für Ökologie! Sie sagt uns, wie viele *verschiedene* Arten wir gefunden haben.
+**Konzept:** Variablen sind Behälter, die Werte speichern. In R benutzen wir `<-` um Werte zuzuweisen.
+
+</div>
+
+### <span class="en">1a: Creating simple variables</span><span class="de">1a: Einfache Variablen erstellen</span>
+
+```{r}
+# Store the number 42 in a variable called "answer"
+# Speichere die Zahl 42 in einer Variable namens "answer"
+answer <- ____
+print(answer)
+
+# Store your age in a variable
+# Speichere dein Alter in einer Variable
+my_age <- ____
+print(my_age)
+
+# Store a decimal number (height in meters)
+# Speichere eine Dezimalzahl (Größe in Metern)
+my_height <- ____
+print(my_height)
+```
+
+### <span class="en">1b: Text variables (strings)</span><span class="de">1b: Text-Variablen (Strings)</span>
+
+```{r}
+# Text variables - use quotes!
+# Text-Variablen - benutze Anführungszeichen!
+
+# Store your name (text needs quotes)
+# Speichere deinen Namen (Text braucht Anführungszeichen)
+my_name <- "____"
+print(my_name)
+
+# Store a species name
+# Speichere einen Artnamen
+species <- "____"
+print(species)
+```
+
+### <span class="en">1c: Logical (TRUE/FALSE) variables</span><span class="de">1c: Logische (TRUE/FALSE) Variablen</span>
+
+```{r}
+# Logical variables - TRUE or FALSE
+# Logische Variablen - TRUE oder FALSE
+
+# Is it raining? (answer TRUE or FALSE, no quotes!)
+# Regnet es? (antworte TRUE oder FALSE, keine Anführungszeichen!)
+is_raining <- ____
+
+# Is 5 greater than 3? (R can calculate this!)
+# Ist 5 größer als 3? (R kann das berechnen!)
+five_greater_three <- 5 > 3
+print(five_greater_three)
+
+# Is 10 equal to 10? (use == for comparison)
+# Ist 10 gleich 10? (benutze == für Vergleich)
+ten_equals_ten <- 10 ____ 10
+print(ten_equals_ten)
+
+# Is "oak" equal to "Oak"? (R is case-sensitive!)
+# Ist "oak" gleich "Oak"? (R unterscheidet Groß/Kleinschreibung!)
+oak_equals_Oak <- "oak" == "Oak"
+print(oak_equals_Oak)
+```
+
+### <span class="en">1d: Basic math with variables</span><span class="de">1d: Grundrechenarten mit Variablen</span>
+
+```{r}
+# Create two number variables
+# Erstelle zwei Zahlen-Variablen
+a <- 10
+b <- 3
+
+# Addition
+sum_ab <- a ____ b
+print(sum_ab)  # Should be 13 / Sollte 13 sein
+
+# Subtraction / Subtraktion
+diff_ab <- a ____ b
+print(diff_ab)  # Should be 7 / Sollte 7 sein
+
+# Multiplication / Multiplikation
+prod_ab <- a ____ b
+print(prod_ab)  # Should be 30 / Sollte 30 sein
+
+# Division
+div_ab <- a ____ b
+print(div_ab)  # Should be 3.333... / Sollte 3.333... sein
+
+# Power (10 to the power of 3) / Potenz (10 hoch 3)
+power_ab <- a ____ b
+print(power_ab)  # Should be 1000 / Sollte 1000 sein
+```
+
+### <span class="en">1e: Updating variables</span><span class="de">1e: Variablen aktualisieren</span>
+
+```{r}
+# Variables can change!
+# Variablen können sich ändern!
+
+# Start with a count of species
+# Starte mit einer Artenanzahl
+species_count <- 0
+print(species_count)
+
+# Found 5 species / 5 Arten gefunden
+species_count <- species_count + ____
+print(species_count)  # Should be 5 / Sollte 5 sein
+
+# Found 3 more / 3 weitere gefunden
+species_count <- species_count + ____
+print(species_count)  # Should be 8 / Sollte 8 sein
+
+# Oops, 2 were misidentified (subtract)
+# Ups, 2 waren falsch bestimmt (subtrahieren)
+species_count <- species_count - ____
+print(species_count)  # Should be 6 / Sollte 6 sein
+```
+
+<div class="hint">
+<span class="en">Hint: Math operators are `+` `-` `*` `/` and `^` for power. Use `==` for "equals" comparison!</span>
+<span class="de">Hinweis: Rechenoperatoren sind `+` `-` `*` `/` und `^` für Potenz. Benutze `==` für "gleich" Vergleich!</span>
+</div>
+
+---
+
+# <span class="en">Exercise 2: Vectors - Lists of Values</span><span class="de">Übung 2: Vektoren - Listen von Werten</span>
+
+<div class="en">
+
+**Concept:** A **vector** is a list of values of the same type. We use `c()` to combine values into a vector.
+
+</div>
+
+<div class="de">
+
+**Konzept:** Ein **Vektor** ist eine Liste von Werten des gleichen Typs. Wir benutzen `c()` um Werte zu kombinieren.
+
+</div>
+
+### <span class="en">2a: Creating vectors</span><span class="de">2a: Vektoren erstellen</span>
+
+```{r}
+# Create a vector of numbers
+# Erstelle einen Vektor von Zahlen
+species_counts <- c(5, 3, 7, 2, 4)
+print(species_counts)
+
+# Your turn - create a vector of 4 tree heights
+# Du bist dran - erstelle einen Vektor mit 4 Baumhöhen
+tree_heights <- c(____, ____, ____, ____)
+print(tree_heights)
+
+# Create a vector of species names
+# Erstelle einen Vektor von Artnamen
+tree_species <- c("Oak", "Beech", "Pine", "Maple")
+print(tree_species)
+```
+
+### <span class="en">2b: Vector functions</span><span class="de">2b: Vektor-Funktionen</span>
+
+```{r}
+# How many elements in the vector?
+# Wie viele Elemente im Vektor?
+length(species_counts)
+
+# Calculate the sum
+# Berechne die Summe
+sum(species_counts)
+
+# Calculate the mean (average)
+# Berechne den Mittelwert (Durchschnitt)
+mean(species_counts)
+
+# Your turn - calculate mean of your tree heights
+# Du bist dran - berechne den Mittelwert deiner Baumhöhen
+mean(____)
+
+# Find min and max
+# Finde Minimum und Maximum
+min(species_counts)
+max(species_counts)
+```
+
+### <span class="en">2c: Combining vectors</span><span class="de">2c: Vektoren kombinieren</span>
+
+```{r}
+# Species from different plots
+# Arten von verschiedenen Plots
+plot1 <- c("Oak", "Beech", "Pine")
+plot2 <- c("Beech", "Maple", "Oak")
+plot3 <- c("Birch", "Oak", "Ash")
+
+# Combine all into one vector
+# Kombiniere alle in einen Vektor
+all_species <- c(plot1, plot2, plot3)
+print(all_species)
+
+# How many total observations?
+# Wie viele Beobachtungen insgesamt?
+length(all_species)
+```
+
+<div class="hint">
+<span class="en">Hint: `c()` combines values. `length()` counts elements. `mean()` calculates average.</span>
+<span class="de">Hinweis: `c()` kombiniert Werte. `length()` zählt Elemente. `mean()` berechnet Durchschnitt.</span>
+</div>
+
+---
+
+# <span class="en">Exercise 3: The Magic of unique()</span><span class="de">Übung 3: Die Magie von unique()</span>
+
+<div class="en">
+
+**Concept:** `unique()` is the **key function** for ecology! It tells us how many *different* species we found (not counting duplicates).
+
+</div>
+
+<div class="de">
+
+**Konzept:** `unique()` ist die **Schlüsselfunktion** für Ökologie! Sie sagt uns, wie viele *verschiedene* Arten wir gefunden haben (ohne Duplikate).
 
 </div>
 
 ```{r}
-# 2a: We observed these species (some repeats!)
-# 2a: Wir haben diese Arten beobachtet (einige Wiederholungen!)
+# 3a: We observed these species (some repeats!)
+# 3a: Wir haben diese Arten beobachtet (einige Wiederholungen!)
 
 observations <- c("Oak", "Beech", "Oak", "Pine", "Beech", "Oak", "Maple")
 
 # How many observations total?
 # Wie viele Beobachtungen insgesamt?
-
 length(observations)
 
-# 2b: How many UNIQUE species?
-# 2b: Wie viele EINZIGARTIGE Arten?
-
+# 3b: How many UNIQUE species?
+# 3b: Wie viele EINZIGARTIGE Arten?
 unique(observations)
 length(unique(observations))
 
-# 2c: Species from 3 plots
-# 2c: Arten von 3 Plots
-
+# 3c: Using our plots from before
+# 3c: Benutze unsere Plots von vorher
 plot1 <- c("Oak", "Beech", "Pine")
 plot2 <- c("Beech", "Maple", "Oak")
 plot3 <- c("Birch", "Oak", "Ash")
 
-# Combine all observations
-# Kombiniere alle Beobachtungen
-
 all_species <- c(plot1, plot2, plot3)
-all_species
 
-# 2d: Total observations vs unique species
-# 2d: Gesamte Beobachtungen vs einzigartige Arten
+# Total observations vs unique species
+# Gesamte Beobachtungen vs einzigartige Arten
+length(all_species)           # Total / Gesamt
+length(unique(all_species))   # Unique / Einzigartig
 
-length(all_species)           # Total observations / Gesamte Beobachtungen
-length(unique(all_species))   # Species richness / Artenreichtum
-
-# 2e: Your turn - how many unique species after adding plot1 + plot2?
-# 2e: Du bist dran - wie viele einzigartige Arten nach plot1 + plot2?
-
-after_two_plots <- c(plot1, ___)
+# 3d: Your turn - how many unique species after plot1 + plot2?
+# 3d: Du bist dran - wie viele einzigartige Arten nach plot1 + plot2?
+after_two_plots <- c(plot1, ____)
 length(unique(after_two_plots))
 ```
 
 <div class="hint">
-<span class="en">Hint: Species richness = `length(unique(species_list))`</span>
-<span class="de">Hinweis: Artenreichtum = `length(unique(artenliste))`</span>
+<span class="en">Hint: Species richness = `length(unique(species_list))`. This is THE key formula!</span>
+<span class="de">Hinweis: Artenreichtum = `length(unique(artenliste))`. Das ist DIE Schlüsselformel!</span>
 </div>
 
 ---
 
-# <span class="en">Exercise 3: Data Frames</span><span class="de">Übung 3: Data Frames</span>
+# <span class="en">Exercise 4: Data Frames</span><span class="de">Übung 4: Data Frames</span>
 
 <div class="en">
 
@@ -325,8 +503,8 @@ Ein **Data Frame** ist wie eine Tabelle - er hat Zeilen und Spalten. Üben wir m
 </div>
 
 ```{r}
-# 3a: Create a simple data frame
-# 3a: Erstelle einen einfachen Data Frame
+# 4a: Create a simple data frame
+# 4a: Erstelle einen einfachen Data Frame
 
 my_data <- data.frame(
   species = c("Oak", "Beech", "Pine", "Maple"),
@@ -336,30 +514,30 @@ my_data <- data.frame(
 
 my_data
 
-# 3b: How many rows and columns?
-# 3b: Wie viele Zeilen und Spalten?
+# 4b: How many rows and columns?
+# 4b: Wie viele Zeilen und Spalten?
 
 nrow(my_data)
 ncol(my_data)
 
-# 3c: Access a column with $
-# 3c: Greife auf eine Spalte mit $ zu
+# 4c: Access a column with $
+# 4c: Greife auf eine Spalte mit $ zu
 
 my_data$species
 my_data$height
 
-# 3d: Your turn - get the mean height
-# 3d: Du bist dran - berechne die mittlere Höhe
+# 4d: Your turn - get the mean height
+# 4d: Du bist dran - berechne die mittlere Höhe
 
 mean(my_data$___)
 
-# 3e: Access a specific row (row 2)
-# 3e: Greife auf eine bestimmte Zeile zu (Zeile 2)
+# 4e: Access a specific row (row 2)
+# 4e: Greife auf eine bestimmte Zeile zu (Zeile 2)
 
 my_data[2, ]
 
-# 3f: Access a specific cell (row 2, column "height")
-# 3f: Greife auf eine bestimmte Zelle zu (Zeile 2, Spalte "height")
+# 4f: Access a specific cell (row 2, column "height")
+# 4f: Greife auf eine bestimmte Zelle zu (Zeile 2, Spalte "height")
 
 my_data[2, "height"]
 ```
@@ -371,7 +549,7 @@ my_data[2, "height"]
 
 ---
 
-# <span class="en">Exercise 4: Loading Real Data</span><span class="de">Übung 4: Echte Daten laden</span>
+# <span class="en">Exercise 5: Loading Real Data</span><span class="de">Übung 5: Echte Daten laden</span>
 
 <div class="en">
 
@@ -386,38 +564,38 @@ Jetzt laden wir die **österreichischen Vegetationsdaten**!
 </div>
 
 ```{r}
-# 4a: Load the tidyverse package
-# 4a: Lade das tidyverse Paket
+# 5a: Load the tidyverse package
+# 5a: Lade das tidyverse Paket
 
 library(tidyverse)
 
-# 4b: Load the species data
-# 4b: Lade die Artdaten
+# 5b: Load the species data
+# 5b: Lade die Artdaten
 
 species_data <- read_csv("../data/austria_species.csv")
 
-# 4c: Look at the first few rows
-# 4c: Schau dir die ersten Zeilen an
+# 5c: Look at the first few rows
+# 5c: Schau dir die ersten Zeilen an
 
 head(species_data)
 
-# 4d: How many rows (observations)?
-# 4d: Wie viele Zeilen (Beobachtungen)?
+# 5d: How many rows (observations)?
+# 5d: Wie viele Zeilen (Beobachtungen)?
 
 nrow(species_data)
 
-# 4e: What columns do we have?
-# 4e: Welche Spalten haben wir?
+# 5e: What columns do we have?
+# 5e: Welche Spalten haben wir?
 
 colnames(species_data)
 
-# 4f: How many unique plots?
-# 4f: Wie viele einzigartige Plots?
+# 5f: How many unique plots?
+# 5f: Wie viele einzigartige Plots?
 
 length(unique(species_data$PlotObservationID))
 
-# 4g: How many unique species in the whole dataset?
-# 4g: Wie viele einzigartige Arten im gesamten Datensatz?
+# 5g: How many unique species in the whole dataset?
+# 5g: Wie viele einzigartige Arten im gesamten Datensatz?
 
 length(unique(species_data$___))
 ```
@@ -429,7 +607,7 @@ length(unique(species_data$___))
 
 ---
 
-# <span class="en">Exercise 5: Filtering Data</span><span class="de">Übung 5: Daten filtern</span>
+# <span class="en">Exercise 6: Filtering Data</span><span class="de">Übung 6: Daten filtern</span>
 
 <div class="en">
 
@@ -444,39 +622,39 @@ Oft wollen wir nur einen **Teil** unserer Daten betrachten. Die `filter()` Funkt
 </div>
 
 ```{r}
-# 5a: Look at the STATUS column - what values are there?
-# 5a: Schau dir die STATUS-Spalte an - welche Werte gibt es?
+# 6a: Look at the STATUS column - what values are there?
+# 6a: Schau dir die STATUS-Spalte an - welche Werte gibt es?
 
 unique(species_data$STATUS)
 
-# 5b: Filter for native species only (STATUS == "nat")
-# 5b: Filtere nur heimische Arten (STATUS == "nat")
+# 6b: Filter for native species only (STATUS == "nat")
+# 6b: Filtere nur heimische Arten (STATUS == "nat")
 
 native_only <- species_data %>%
   filter(STATUS == "nat")
 
 nrow(native_only)
 
-# 5c: Filter for alien/invasive species (STATUS == "neo")
-# 5c: Filtere Alien/invasive Arten (STATUS == "neo")
+# 6c: Filter for alien/invasive species (STATUS == "neo")
+# 6c: Filtere Alien/invasive Arten (STATUS == "neo")
 
 alien_only <- species_data %>%
   filter(STATUS == "neo")
 
 nrow(alien_only)
 
-# 5d: How many unique native species?
-# 5d: Wie viele einzigartige heimische Arten?
+# 6d: How many unique native species?
+# 6d: Wie viele einzigartige heimische Arten?
 
 length(unique(native_only$WFO_TAXON))
 
-# 5e: Your turn - how many unique alien species?
-# 5e: Du bist dran - wie viele einzigartige Alien-Arten?
+# 6e: Your turn - how many unique alien species?
+# 6e: Du bist dran - wie viele einzigartige Alien-Arten?
 
 length(unique(___$WFO_TAXON))
 
-# 5f: Filter for a specific plot
-# 5f: Filtere einen bestimmten Plot
+# 6f: Filter for a specific plot
+# 6f: Filtere einen bestimmten Plot
 
 first_plot <- unique(species_data$PlotObservationID)[1]
 first_plot
@@ -497,7 +675,7 @@ length(unique(one_plot$WFO_TAXON))
 
 ---
 
-# <span class="en">Exercise 6: Building the Accumulation Curve</span><span class="de">Übung 6: Die Akkumulationskurve bauen</span>
+# <span class="en">Exercise 7: Building the Accumulation Curve</span><span class="de">Übung 7: Die Akkumulationskurve bauen</span>
 
 <div class="en">
 
@@ -512,27 +690,27 @@ Jetzt der spannende Teil - bauen wir eine Artenakkumulationskurve Schritt für S
 </div>
 
 ```{r}
-# 6a: Get a list of all unique plots
-# 6a: Hole eine Liste aller einzigartigen Plots
+# 7a: Get a list of all unique plots
+# 7a: Hole eine Liste aller einzigartigen Plots
 
 all_plots <- unique(species_data$PlotObservationID)
 head(all_plots)
 
-# 6b: Take a small sample (first 50 plots for speed)
-# 6b: Nimm eine kleine Stichprobe (erste 50 Plots für Geschwindigkeit)
+# 7b: Take a small sample (first 50 plots for speed)
+# 7b: Nimm eine kleine Stichprobe (erste 50 Plots für Geschwindigkeit)
 
 sample_plots <- all_plots[1:50]
 
-# 6c: Initialize our accumulation tracking
-# 6c: Initialisiere unsere Akkumulations-Verfolgung
+# 7c: Initialize our accumulation tracking
+# 7c: Initialisiere unsere Akkumulations-Verfolgung
 
 species_found <- c()           # Empty vector to collect species
                                # Leerer Vektor um Arten zu sammeln
 accumulation <- c()            # Will store species count after each plot
                                # Speichert Artenzahl nach jedem Plot
 
-# 6d: Loop through each plot and count species!
-# 6d: Schleife durch jeden Plot und zähle Arten!
+# 7d: Loop through each plot and count species!
+# 7d: Schleife durch jeden Plot und zähle Arten!
 
 for (i in 1:length(sample_plots)) {
 
@@ -557,15 +735,15 @@ for (i in 1:length(sample_plots)) {
   accumulation <- c(accumulation, total_species)
 }
 
-# 6e: Look at the result!
-# 6e: Schau dir das Ergebnis an!
+# 7e: Look at the result!
+# 7e: Schau dir das Ergebnis an!
 
 accumulation
 ```
 
 ---
 
-# <span class="en">Exercise 7: Plot Your Curve!</span><span class="de">Übung 7: Zeichne deine Kurve!</span>
+# <span class="en">Exercise 8: Plot Your Curve!</span><span class="de">Übung 8: Zeichne deine Kurve!</span>
 
 <div class="en">
 
@@ -580,8 +758,8 @@ Der letzte Schritt - visualisieren wir unsere Akkumulationskurve!
 </div>
 
 ```{r}
-# 7a: Create a data frame for plotting
-# 7a: Erstelle einen Data Frame zum Plotten
+# 8a: Create a data frame for plotting
+# 8a: Erstelle einen Data Frame zum Plotten
 
 curve_data <- data.frame(
   plots = 1:length(accumulation),
@@ -590,8 +768,8 @@ curve_data <- data.frame(
 
 head(curve_data)
 
-# 7b: Make the plot!
-# 7b: Mache den Plot!
+# 8b: Make the plot!
+# 8b: Mache den Plot!
 
 ggplot(curve_data, aes(x = plots, y = species)) +
   geom_line(color = "#2E7D32", linewidth = 2) +
@@ -603,8 +781,8 @@ ggplot(curve_data, aes(x = plots, y = species)) +
   ) +
   theme_minimal(base_size = 14)
 
-# 7c: Make it prettier with a filled area
-# 7c: Mache es schöner mit gefüllter Fläche
+# 8c: Make it prettier with a filled area
+# 8c: Mache es schöner mit gefüllter Fläche
 
 ggplot(curve_data, aes(x = plots, y = species)) +
   geom_area(fill = "#C8E6C9", alpha = 0.5) +

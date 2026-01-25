@@ -230,6 +230,91 @@ ggplot(curve_data, aes(x = plots, y = species)) +
 
 ---
 
+## <span class="en">Why Use Spatial Accumulation Curves?</span><span class="de">Warum räumliche Akkumulationskurven verwenden?</span>
+
+<div class="en">
+
+**The key question:** Why not just count species? Why do we need accumulation curves?
+
+**Answer:** Accumulation curves reveal **where** species are, not just **how many**.
+
+</div>
+
+<div class="de">
+
+**Die Schlüsselfrage:** Warum nicht einfach Arten zählen? Warum brauchen wir Akkumulationskurven?
+
+**Antwort:** Akkumulationskurven zeigen **wo** Arten sind, nicht nur **wie viele**.
+
+</div>
+
+```{r why-curves, fig.height=4}
+# Show two scenarios with same total species but different spatial patterns
+set.seed(123)
+
+# Scenario A: Clustered aliens (introduction point)
+cluster_x <- c(rnorm(15, 5, 0.8), runif(5, 0, 10))
+cluster_y <- c(rnorm(15, 5, 0.8), runif(5, 0, 10))
+
+# Scenario B: Spread aliens (no clear introduction point)
+spread_x <- runif(20, 0, 10)
+spread_y <- runif(20, 0, 10)
+
+scenario_data <- rbind(
+  data.frame(x = cluster_x, y = cluster_y,
+             scenario = "Clustered: Introduction Point Visible"),
+  data.frame(x = spread_x, y = spread_y,
+             scenario = "Spread: No Clear Introduction Point")
+)
+
+ggplot(scenario_data, aes(x = x, y = y)) +
+  geom_point(size = 4, color = "#D32F2F", alpha = 0.7) +
+  geom_point(data = data.frame(x = 5, y = 5, scenario = "Clustered: Introduction Point Visible"),
+             aes(x = x, y = y), size = 12, shape = 1, color = "#D32F2F", stroke = 2) +
+  facet_wrap(~scenario) +
+  labs(title = "Same Number of Alien Species, Different Stories",
+       subtitle = "Left: We can identify WHERE aliens entered | Right: No spatial signal",
+       x = "Longitude", y = "Latitude") +
+  theme_minimal(base_size = 14) +
+  coord_fixed(ratio = 1)
+```
+
+<div class="results-box">
+
+<div class="en">
+
+**Why this matters for invasion biology:**
+
+| What we learn | How it helps |
+|---------------|--------------|
+| **Introduction points** | Where did aliens first arrive? (ports, cities, gardens) |
+| **Spread patterns** | How are they dispersing across the landscape? |
+| **Invasion hotspots** | Which areas have the most alien species? |
+| **Management priorities** | Where should we focus control efforts? |
+
+**The curve shape tells the story:** If aliens accumulate slowly at first then speed up, they're clustered around introduction points. If they accumulate steadily, they've already spread everywhere.
+
+</div>
+
+<div class="de">
+
+**Warum das für Invasionsbiologie wichtig ist:**
+
+| Was wir lernen | Wie es hilft |
+|----------------|--------------|
+| **Einführungspunkte** | Wo kamen Aliens zuerst an? (Häfen, Städte, Gärten) |
+| **Ausbreitungsmuster** | Wie verbreiten sie sich über die Landschaft? |
+| **Invasions-Hotspots** | Welche Gebiete haben die meisten Alien-Arten? |
+| **Management-Prioritäten** | Wo sollten wir Kontrollmaßnahmen fokussieren? |
+
+**Die Kurvenform erzählt die Geschichte:** Wenn Aliens anfangs langsam akkumulieren und dann schneller werden, sind sie um Einführungspunkte geclustert. Wenn sie gleichmäßig akkumulieren, haben sie sich bereits überall verbreitet.
+
+</div>
+
+</div>
+
+---
+
 # <span class="en">The Spatial Algorithm</span><span class="de">Der räumliche Algorithmus</span>
 
 ## <span class="en">Why Does Order Matter?</span><span class="de">Warum ist die Reihenfolge wichtig?</span>

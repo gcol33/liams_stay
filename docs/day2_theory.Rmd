@@ -15,6 +15,8 @@ output:
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, fig.width = 9, fig.height = 5)
 library(tidyverse)
 library(knitr)
+library(sf)
+library(rnaturalearth)
 ```
 
 ```{css, echo=FALSE}
@@ -330,42 +332,25 @@ Wie könnten Hotspot-Karten für Österreich aussehen? Hier ist ein hypothetisch
 </div>
 
 ```{r austria-hotspots, fig.height=8}
-# Simplified Austria outline (approximate polygon)
-austria <- data.frame(
-  x = c(9.5, 10, 11, 12, 13, 14, 15, 16, 17, 17, 16.5, 16, 15, 14, 13, 12, 11, 10, 9.5),
-  y = c(47, 47.5, 47.8, 47.5, 47.8, 48.5, 48.8, 48.5, 48, 47.5, 47, 46.8, 46.5, 46.8, 47, 47.2, 47, 47, 47)
-)
+# Get real Austria outline from Natural Earth
+austria_sf <- ne_countries(scale = "medium", country = "Austria", returnclass = "sf")
 
-# Point-in-polygon test
-point_in_polygon <- function(px, py, poly_x, poly_y) {
-  n <- length(poly_x)
-  inside <- FALSE
-  j <- n
-  for (i in 1:n) {
-    if (((poly_y[i] > py) != (poly_y[j] > py)) &&
-        (px < (poly_x[j] - poly_x[i]) * (py - poly_y[i]) / (poly_y[j] - poly_y[i]) + poly_x[i])) {
-      inside <- !inside
-    }
-    j <- i
-  }
-  inside
-}
-
-# Create grid
-grid_x <- seq(9.5, 17, by = 0.5)
-grid_y <- seq(46.3, 49, by = 0.3)
+# Create grid covering Austria
+grid_x <- seq(9.5, 17, by = 0.25)
+grid_y <- seq(46.3, 49, by = 0.15)
 grid <- expand.grid(x = grid_x, y = grid_y)
-grid$inside <- mapply(point_in_polygon, grid$x, grid$y,
-                      MoreArgs = list(poly_x = austria$x, poly_y = austria$y))
+
+# Convert grid to sf points and test which are inside Austria
+grid_sf <- st_as_sf(grid, coords = c("x", "y"), crs = 4326)
+grid$inside <- st_intersects(grid_sf, austria_sf, sparse = FALSE)[, 1]
 
 # Simulate alien hotspots (clustered around Vienna and Linz - major cities)
 set.seed(2024)
 grid$alien_richness <- ifelse(grid$inside,
-  # Higher near Vienna (16.4, 48.2) and Linz (14.3, 48.3)
   pmax(0,
-    25 * exp(-((grid$x - 16.4)^2 + (grid$y - 48.2)^2) / 2) +  # Vienna
-    15 * exp(-((grid$x - 14.3)^2 + (grid$y - 48.3)^2) / 3) +  # Linz
-    8 * exp(-((grid$x - 13)^2 + (grid$y - 47.8)^2) / 4) +     # Salzburg
+    25 * exp(-((grid$x - 16.4)^2 + (grid$y - 48.2)^2) / 2) +
+    15 * exp(-((grid$x - 14.3)^2 + (grid$y - 48.3)^2) / 3) +
+    8 * exp(-((grid$x - 13)^2 + (grid$y - 47.8)^2) / 4) +
     rnorm(nrow(grid), 3, 2)
   ),
   NA
@@ -375,9 +360,9 @@ grid$alien_richness[grid$alien_richness < 0] <- 0
 # Simulate native hotspots (clustered in Alps and natural areas)
 grid$native_richness <- ifelse(grid$inside,
   pmax(0,
-    40 * exp(-((grid$x - 11)^2 + (grid$y - 47)^2) / 3) +      # Tyrol Alps
-    35 * exp(-((grid$x - 13.5)^2 + (grid$y - 47.2)^2) / 4) +  # Hohe Tauern
-    30 * exp(-((grid$x - 15)^2 + (grid$y - 46.8)^2) / 3) +    # Carinthia
+    40 * exp(-((grid$x - 11)^2 + (grid$y - 47)^2) / 3) +
+    35 * exp(-((grid$x - 13.5)^2 + (grid$y - 47.2)^2) / 4) +
+    30 * exp(-((grid$x - 15)^2 + (grid$y - 46.8)^2) / 3) +
     rnorm(nrow(grid), 15, 5)
   ),
   NA
@@ -388,40 +373,32 @@ grid_inside <- grid[grid$inside, ]
 
 # Alien hotspot map
 p1 <- ggplot() +
-  # Austria outline
-  geom_polygon(data = austria, aes(x, y), fill = "white", color = "#666666", linewidth = 1) +
-  # Grid cells colored by alien richness
+  geom_sf(data = austria_sf, fill = "white", color = "#666666", linewidth = 0.8) +
   geom_tile(data = grid_inside, aes(x = x, y = y, fill = alien_richness),
-            width = 0.5, height = 0.3, alpha = 0.8) +
-  # Austria outline on top
-  geom_polygon(data = austria, aes(x, y), fill = NA, color = "#333333", linewidth = 1.2) +
-  # Grid lines
-  geom_vline(xintercept = grid_x, color = "gray50", linewidth = 0.2, alpha = 0.5) +
-  geom_hline(yintercept = grid_y, color = "gray50", linewidth = 0.2, alpha = 0.5) +
+            width = 0.25, height = 0.15, alpha = 0.85) +
+  geom_sf(data = austria_sf, fill = NA, color = "#333333", linewidth = 1) +
   scale_fill_gradient(low = "white", high = "#D32F2F", na.value = "transparent",
                       name = "Alien\nSpecies") +
   labs(title = "Alien Species Hotspots",
        subtitle = "Clustered around major cities (introduction points)",
        x = "Longitude", y = "Latitude") +
   theme_minimal(base_size = 12) +
-  coord_fixed(ratio = 1.4, xlim = c(9.3, 17.2), ylim = c(46.2, 49.2)) +
+  coord_sf(xlim = c(9.3, 17.2), ylim = c(46.3, 49.1)) +
   theme(legend.position = "right")
 
 # Native hotspot map
 p2 <- ggplot() +
-  geom_polygon(data = austria, aes(x, y), fill = "white", color = "#666666", linewidth = 1) +
+  geom_sf(data = austria_sf, fill = "white", color = "#666666", linewidth = 0.8) +
   geom_tile(data = grid_inside, aes(x = x, y = y, fill = native_richness),
-            width = 0.5, height = 0.3, alpha = 0.8) +
-  geom_polygon(data = austria, aes(x, y), fill = NA, color = "#333333", linewidth = 1.2) +
-  geom_vline(xintercept = grid_x, color = "gray50", linewidth = 0.2, alpha = 0.5) +
-  geom_hline(yintercept = grid_y, color = "gray50", linewidth = 0.2, alpha = 0.5) +
+            width = 0.25, height = 0.15, alpha = 0.85) +
+  geom_sf(data = austria_sf, fill = NA, color = "#333333", linewidth = 1) +
   scale_fill_gradient(low = "white", high = "#2E7D32", na.value = "transparent",
                       name = "Native\nSpecies") +
   labs(title = "Native Species Hotspots",
        subtitle = "Clustered in alpine and natural areas",
        x = "Longitude", y = "Latitude") +
   theme_minimal(base_size = 12) +
-  coord_fixed(ratio = 1.4, xlim = c(9.3, 17.2), ylim = c(46.2, 49.2)) +
+  coord_sf(xlim = c(9.3, 17.2), ylim = c(46.3, 49.1)) +
   theme(legend.position = "right")
 
 # Stack plots

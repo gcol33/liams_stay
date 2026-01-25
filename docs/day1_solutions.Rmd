@@ -1,7 +1,7 @@
 ---
 title: '<span class="en">Day 1: Solutions</span><span class="de">Tag 1: Lösungen</span>'
-subtitle: '<span class="en">From R Basics to Your First Real Analysis</span><span class="de">Von R-Grundlagen zur ersten echten Analyse</span>'
-author: '<span class="en">Complete code with answers</span><span class="de">Vollständiger Code mit Antworten</span>'
+subtitle: '<span class="en">Your First Accumulation Curve!</span><span class="de">Deine erste Akkumulationskurve!</span>'
+author: '<span class="en">Answer Key</span><span class="de">Lösungsschlüssel</span>'
 date: "`r Sys.Date()`"
 output:
   html_document:
@@ -21,1736 +21,235 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height
 h1 { color: #2E7D32 !important; border-bottom: 3px solid #4CAF50; padding-bottom: 10px; }
 h2 { color: #388E3C !important; margin-top: 2em; }
 h3 { color: #43A047 !important; }
-h4 { color: #66BB6A !important; border-left: 4px solid #4CAF50; padding-left: 10px; }
 pre { background-color: #f5f5f5 !important; border-left: 4px solid #4CAF50 !important; padding: 15px; border-radius: 8px; }
 code { background-color: #E8F5E9; padding: 2px 6px; border-radius: 4px; color: #2E7D32; }
 pre code { background-color: transparent; padding: 0; }
 blockquote { border-left: 4px solid #FF9800; background-color: #FFF8E1; padding: 15px 20px; margin: 1em 0; border-radius: 0 8px 8px 0; }
-.de { display: none; }
-.en { display: inline; }
-body.lang-de .de { display: inline; }
-body.lang-de .en { display: none; }
+hr { border: none; height: 3px; background: linear-gradient(to right, #4CAF50, #81C784, #C8E6C9, #81C784, #4CAF50); margin: 2em 0; }
+.tocify { border: none !important; border-radius: 12px !important; background-color: #f1f8e9 !important; }
+.tocify-item.active { background-color: #4CAF50 !important; color: white !important; }
 
-/* ========== MOBILE RESPONSIVE ========== */
+.lang-toggle { position: fixed; top: 10px; right: 20px; z-index: 9999; background: linear-gradient(135deg, #2E7D32, #4CAF50); padding: 8px 12px; border-radius: 25px; }
+.lang-toggle button { background: transparent; border: none; color: #fff; padding: 6px 14px; cursor: pointer; font-weight: bold; border-radius: 20px; font-size: 14px; }
+.lang-toggle button.active { background: white; color: #2E7D32; }
+.de { display: none; } .en { display: inline; }
+body.lang-de .de { display: inline; } body.lang-de .en { display: none; }
+div.de, p.de, li.de, h1.de, h2.de, h3.de, section.de { display: none; }
+div.en, p.en, li.en, h1.en, h2.en, h3.en, section.en { display: block; }
+body.lang-de div.de, body.lang-de p.de, body.lang-de li.de, body.lang-de h1.de, body.lang-de h2.de, body.lang-de h3.de, body.lang-de section.de { display: block; }
+body.lang-de div.en, body.lang-de p.en, body.lang-de li.en, body.lang-de h1.en, body.lang-de h2.en, body.lang-de h3.en, body.lang-de section.en { display: none; }
+body.lang-de #TOC .en { display: none; } body.lang-de #TOC .de { display: inline; }
+#TOC .de { display: none; } #TOC .en { display: inline; }
+
 @media (max-width: 768px) {
-  body { font-size: 14px; line-height: 1.5; }
-  h1 { font-size: 1.5rem; }
-  h2 { font-size: 1.3rem; }
-  h3 { font-size: 1.1rem; }
+  body { font-size: 14px; }
   pre { font-size: 11px; padding: 10px; }
-  code { font-size: 11px; }
-  img, .figure img { max-width: 100%; height: auto; }
 }
 </style>
 ```
 
----
-
-# Part 1: R Basics
-
-## Exercise 1: Your First Variables
-
-### 1a: Creating simple variables
-
-```{r}
-answer <- 42
-print(answer)
-
-my_age <- 25
-print(my_age)
-
-my_height <- 1.75
-print(my_height)
-```
-
-### 1b: Text variables (strings)
-
-```{r}
-my_name <- "Anna"
-print(my_name)
-
-species <- "Quercus robur"
-print(species)
-
-description <- "A tall oak tree in the forest"
-print(description)
-```
-
-### 1c: Logical (TRUE/FALSE) variables
-
-```{r}
-is_raining <- FALSE
-
-five_greater_three <- 5 > 3
-print(five_greater_three)
-
-ten_equals_ten <- 10 == 10
-print(ten_equals_ten)
-
-oak_equals_Oak <- "oak" == "Oak"
-print(oak_equals_Oak)  # FALSE - R is case-sensitive!
-```
-
-### 1d: Basic math with variables
-
-```{r}
-a <- 10
-b <- 3
-
-sum_ab <- a + b
-print(sum_ab)
-
-diff_ab <- a - b
-print(diff_ab)
-
-prod_ab <- a * b
-print(prod_ab)
-
-div_ab <- a / b
-print(div_ab)
-
-power_ab <- a ^ b
-print(power_ab)
-
-mod_ab <- a %% b
-print(mod_ab)
-```
-
-### 1e: Updating variables
-
-```{r}
-species_count <- 0
-print(species_count)
-
-species_count <- species_count + 5
-print(species_count)
-
-species_count <- species_count + 3
-print(species_count)
-
-species_count <- species_count - 2
-print(species_count)
-```
-
-### 1f: Variable naming rules
-
-```{r}
-name1_valid <- TRUE   # my_variable is valid
-name2_valid <- TRUE   # myVariable is valid
-name3_valid <- FALSE  # 2nd_species starts with number - invalid
-name4_valid <- TRUE   # species.count is valid (dots allowed)
-name5_valid <- FALSE  # species-count has hyphen - invalid
-name6_valid <- FALSE  # _hidden starts with underscore - invalid
+```{=html}
+<script>
+$(document).ready(function() {
+  var toggle = $('<div class="lang-toggle"><button id="btn-en" class="active">EN</button><button id="btn-de">DE</button></div>');
+  $('body').append(toggle);
+  var savedLang = localStorage.getItem('workshop-lang');
+  var defaultLang = savedLang || (navigator.language.substring(0, 2) === 'de' ? 'de' : 'en');
+  function setLanguage(lang) {
+    $('body').removeClass('lang-en lang-de').addClass('lang-' + lang);
+    $('#btn-en').toggleClass('active', lang === 'en');
+    $('#btn-de').toggleClass('active', lang === 'de');
+    localStorage.setItem('workshop-lang', lang);
+  }
+  if (defaultLang === 'de') setLanguage('de');
+  $('#btn-en').click(function() { setLanguage('en'); });
+  $('#btn-de').click(function() { setLanguage('de'); });
+});
+</script>
 ```
 
 ---
 
-## Exercise 2: Vectors
-
-### 2a: Creating numeric vectors
+# <span class="en">Exercise 1: Variables & Vectors</span><span class="de">Übung 1: Variablen & Vektoren</span>
 
 ```{r}
-counts <- c(12, 8, 15, 6, 10)
-print(counts)
+# 1a: Store a number in a variable
+my_number <- 42
+my_number
 
-heights <- c(10.5, 15.2, 8.3, 12.7)
-print(heights)
+# 1b: Store text (needs quotes!)
+my_name <- "Liam"
+my_name
 
-favorites <- c(7, 42, 13, 3, 99)
-print(favorites)
+# 1c: Create a vector with c()
+species_counts <- c(5, 3, 7, 2, 4)
+species_counts
 
-one_to_ten <- 1:10
-print(one_to_ten)
+# 1d: Create a vector of 4 tree heights
+tree_heights <- c(15, 22, 18, 25)
+tree_heights
 
-five_to_fifteen <- 5:15
-print(five_to_fifteen)
-```
+# 1e: Get the length of a vector
+length(species_counts)
 
-### 2b: Creating text vectors
+# 1f: Calculate mean (average)
+mean(species_counts)
 
-```{r}
-trees <- c("Oak", "Beech", "Pine", "Maple", "Birch")
-print(trees)
-
-my_plants <- c("Rose", "Tulip", "Daisy", "Lily")
-print(my_plants)
-
-german_trees <- c("Eiche", "Buche", "Kiefer", "Ahorn")
-print(german_trees)
-```
-
-### 2c: Vector length and basic info
-
-```{r}
-species <- c("Oak", "Beech", "Pine", "Maple", "Birch", "Ash", "Elm")
-
-n_species <- length(species)
-print(n_species)
-
-values <- c(23, 45, 12, 67, 89, 34)
-
-n_values <- length(values)
-print(n_values)
-
-class(species)
-class(values)
-class(TRUE)
-```
-
-### 2d: Accessing vector elements
-
-```{r}
-species <- c("Oak", "Beech", "Pine", "Maple", "Birch")
-
-first_species <- species[1]
-print(first_species)
-
-third_species <- species[3]
-print(third_species)
-
-last_species <- species[5]
-print(last_species)
-
-some_species <- species[c(1, 3)]
-print(some_species)
-
-middle_species <- species[2:4]
-print(middle_species)
-
-not_first <- species[-1]
-print(not_first)
-```
-
-### 2e: Vector math
-
-```{r}
-heights <- c(10, 15, 8, 12, 20)
-
-heights_plus_2 <- heights + 2
-print(heights_plus_2)
-
-heights_cm <- heights * 100
-print(heights_cm)
-
-total_height <- sum(heights)
-print(total_height)
-
-avg_height <- mean(heights)
-print(avg_height)
-
-min_height <- min(heights)
-print(min_height)
-
-max_height <- max(heights)
-print(max_height)
-
-height_range <- range(heights)
-print(height_range)
-```
-
-### 2f: Combining vectors
-
-```{r}
-plot1 <- c("Oak", "Beech", "Pine")
-plot2 <- c("Maple", "Birch")
-plot3 <- c("Ash", "Elm", "Oak")
-
-all_species <- c(plot1, plot2, plot3)
-print(all_species)
-
-n_observations <- length(all_species)
-print(n_observations)
-
-counts_morning <- c(3, 5, 2)
-counts_afternoon <- c(4, 1, 6)
-
-all_counts <- c(counts_morning, counts_afternoon)
-print(all_counts)
-
-total <- sum(all_counts)
-print(total)
-```
-
-### 2g: Debug challenge (corrected)
-
-```{r}
-# Bug 1: Missing c() - FIXED
-species <- c("Oak", "Beech", "Pine")
-
-# Bug 2: Wrong brackets - FIXED (use [] not ())
-first <- species[1]
-
-# Bug 3: Missing quotes - FIXED
-trees <- c("Oak", "Beech", "Pine")
-
-# Bug 4: Wrong function - FIXED (use length() not size())
-n <- length(species)
-
-# Bug 5: Missing comma - FIXED
-numbers <- c(1, 2, 3, 4, 5)
+# 1g: Calculate mean of tree heights
+mean(tree_heights)
 ```
 
 ---
 
-## Exercise 3: The Unique Function
-
-### 3a: Basic unique
+# <span class="en">Exercise 2: The Magic of unique()</span><span class="de">Übung 2: Die Magie von unique()</span>
 
 ```{r}
+# 2a: Observations with repeats
 observations <- c("Oak", "Beech", "Oak", "Pine", "Beech", "Oak", "Maple")
+length(observations)
 
-n_obs <- length(observations)
-print(n_obs)
+# 2b: Unique species
+unique(observations)
+length(unique(observations))
 
-unique_species <- unique(observations)
-print(unique_species)
-
-n_unique <- length(unique(observations))
-print(n_unique)
-```
-
-### 3b: Unique with numbers
-
-```{r}
-oak_plots <- c(1, 3, 3, 5, 7, 7, 7, 9, 9)
-
-n_records <- length(oak_plots)
-print(n_records)
-
-n_plots <- length(unique(oak_plots))
-print(n_plots)
-
-which_plots <- unique(oak_plots)
-print(which_plots)
-```
-
-### 3c: Building a species list across plots
-
-```{r}
-plot_A <- c("Oak", "Beech", "Pine", "Fern")
-plot_B <- c("Beech", "Maple", "Oak", "Moss")
-plot_C <- c("Pine", "Birch", "Oak", "Fern")
-
-all_obs <- c(plot_A, plot_B, plot_C)
-print(all_obs)
-
-print(paste("Total observations:", length(all_obs)))
-
-all_unique <- unique(all_obs)
-print(all_unique)
-
-richness <- length(all_unique)
-print(paste("Species richness:", richness))
-```
-
-### 3d: Step-by-step accumulation
-
-```{r}
+# 2c: Species from 3 plots
 plot1 <- c("Oak", "Beech", "Pine")
 plot2 <- c("Beech", "Maple", "Oak")
-plot3 <- c("Pine", "Birch", "Oak")
-plot4 <- c("Ash", "Beech", "Maple")
-plot5 <- c("Elm", "Oak", "Pine")
+plot3 <- c("Birch", "Oak", "Ash")
 
-after_1 <- length(unique(plot1))
-print(paste("After plot 1:", after_1, "species"))
+all_species <- c(plot1, plot2, plot3)
+all_species
 
-after_2 <- length(unique(c(plot1, plot2)))
-print(paste("After plots 1-2:", after_2, "species"))
+# 2d: Total vs unique
+length(all_species)
+length(unique(all_species))
 
-after_3 <- length(unique(c(plot1, plot2, plot3)))
-print(paste("After plots 1-3:", after_3, "species"))
-
-after_4 <- length(unique(c(plot1, plot2, plot3, plot4)))
-print(paste("After plots 1-4:", after_4, "species"))
-
-after_5 <- length(unique(c(plot1, plot2, plot3, plot4, plot5)))
-print(paste("After plots 1-5:", after_5, "species"))
-
-accumulation <- c(after_1, after_2, after_3, after_4, after_5)
-print("Accumulation curve:")
-print(accumulation)
-```
-
-### 3e: Finding new species with setdiff
-
-```{r}
-already_found <- c("Oak", "Beech", "Pine")
-new_plot <- c("Beech", "Maple", "Oak", "Birch")
-
-new_species <- setdiff(new_plot, already_found)
-print(new_species)
-
-n_new <- length(new_species)
-print(paste("New species found:", n_new))
-
-already_found <- c(already_found, new_species)
-print(already_found)
-
-next_plot <- c("Oak", "Fern", "Maple", "Moss")
-new_again <- setdiff(next_plot, already_found)
-print(new_again)
-```
-
-### 3f: Practice with real ecological thinking
-
-```{r}
-morning_birds <- c("Robin", "Sparrow", "Blackbird", "Robin", "Tit", "Sparrow")
-afternoon_birds <- c("Crow", "Sparrow", "Magpie", "Robin", "Finch")
-
-morning_obs <- length(morning_birds)
-print(paste("Morning observations:", morning_obs))
-
-morning_species <- length(unique(morning_birds))
-print(paste("Morning species:", morning_species))
-
-afternoon_unique <- unique(afternoon_birds)
-morning_unique <- unique(morning_birds)
-new_afternoon <- setdiff(afternoon_unique, morning_unique)
-print(paste("New in afternoon:", paste(new_afternoon, collapse = ", ")))
-
-all_birds <- c(morning_birds, afternoon_birds)
-total_species <- length(unique(all_birds))
-print(paste("Total species today:", total_species))
+# 2e: After plot1 + plot2
+after_two_plots <- c(plot1, plot2)
+length(unique(after_two_plots))
 ```
 
 ---
 
-## Exercise 4: Working with Data Frames
-
-### 4a: Creating a data frame
+# <span class="en">Exercise 3: Loading Real Data</span><span class="de">Übung 3: Echte Daten laden</span>
 
 ```{r}
-plants <- data.frame(
-  species = c("Quercus robur", "Fagus sylvatica", "Pinus sylvestris",
-              "Betula pendula", "Acer pseudoplatanus"),
-  common_name = c("Oak", "Beech", "Pine", "Birch", "Maple"),
-  height_m = c(25, 30, 20, 18, 22),
-  native = c(TRUE, TRUE, TRUE, TRUE, TRUE)
-)
+library(tidyverse)
 
-print(plants)
+species_data <- read_csv("../data/austria_species.csv")
 
-animals <- data.frame(
-  name = c("Dog", "Cat", "Bird", "Fish"),
-  legs = c(4, 4, 2, 0),
-  can_fly = c(FALSE, FALSE, TRUE, FALSE)
-)
-print(animals)
-```
+head(species_data)
 
-### 4b: Exploring data frames
+nrow(species_data)
 
-```{r}
-n_rows <- nrow(plants)
-print(paste("Number of rows:", n_rows))
+colnames(species_data)
 
-n_cols <- ncol(plants)
-print(paste("Number of columns:", n_cols))
+length(unique(species_data$PlotObservationID))
 
-dims <- dim(plants)
-print(dims)
-
-col_names <- names(plants)
-print(col_names)
-
-str(plants)
-head(plants)
-tail(plants)
-summary(plants)
-```
-
-### 4c: Accessing columns
-
-```{r}
-species_col <- plants$species
-print(species_col)
-
-heights <- plants$height_m
-print(heights)
-
-mean_height <- mean(plants$height_m)
-print(paste("Mean height:", mean_height))
-
-max_height <- max(plants$height_m)
-print(paste("Tallest:", max_height, "m"))
-
-native_col <- plants[["native"]]
-print(native_col)
-
-common_names <- plants[, "common_name"]
-print(common_names)
-```
-
-### 4d: Accessing rows
-
-```{r}
-first_plant <- plants[1, ]
-print(first_plant)
-
-third_plant <- plants[3, ]
-print(third_plant)
-
-some_plants <- plants[2:4, ]
-print(some_plants)
-
-beech_height <- plants[2, "height_m"]
-print(paste("Beech height:", beech_height))
-
-subset_data <- plants[1:3, c("species", "height_m")]
-print(subset_data)
-```
-
-### 4e: Adding columns
-
-```{r}
-plants$diameter_cm <- c(80, 100, 60, 50, 70)
-print(plants)
-
-plants$height_ft <- plants$height_m * 3.281
-print(plants)
-
-plants$is_tall <- plants$height_m > 22
-print(plants)
-
-plants$size_class <- ifelse(plants$height_m > 24, "large",
-                            ifelse(plants$height_m > 20, "medium", "small"))
-print(plants)
-```
-
-### 4f: Debug challenge (corrected)
-
-```{r}
-df <- data.frame(
-  name = c("Alice", "Bob", "Carol"),
-  age = c(25, 30, 28),
-  city = c("Vienna", "Graz", "Linz")
-)
-
-# Bug 1: Wrong symbol - FIXED (use $ not @)
-ages <- df$age
-
-# Bug 2: Missing comma - FIXED
-first_row <- df[1, ]
-
-# Bug 3: Column name needs quotes - FIXED
-names_col <- df[, "name"]
-
-# Bug 4: Row index out of bounds - FIXED (only 3 rows)
-# fourth_person <- df[4, ]  # This would be NA
-third_person <- df[3, ]
-
-# Bug 5: Wrong function - FIXED (use nrow() not length())
-n_people <- nrow(df)
+length(unique(species_data$WFO_TAXON))
 ```
 
 ---
 
-# Part 2: Loops and Filtering
-
-## Exercise 5: For Loops
-
-### 5a: Basic for loop
+# <span class="en">Exercise 4: Building the Accumulation Curve</span><span class="de">Übung 4: Die Akkumulationskurve bauen</span>
 
 ```{r}
-for (i in 1:5) {
-  print(i)
+# Get all unique plots
+all_plots <- unique(species_data$PlotObservationID)
+
+# Take first 50 for speed
+sample_plots <- all_plots[1:50]
+
+# Initialize
+species_found <- c()
+accumulation <- c()
+
+# Loop through each plot
+for (i in 1:length(sample_plots)) {
+  current_plot <- sample_plots[i]
+  plot_species <- species_data$WFO_TAXON[species_data$PlotObservationID == current_plot]
+  species_found <- c(species_found, plot_species)
+  total_species <- length(unique(species_found))
+  accumulation <- c(accumulation, total_species)
 }
 
-for (i in 1:10) {
-  print(i)
-}
-
-for (i in 1:3) {
-  print(paste("This is iteration number", i))
-}
-
-for (i in 5:1) {
-  print(i)
-}
-```
-
-### 5b: Looping over vectors
-
-```{r}
-species <- c("Oak", "Beech", "Pine", "Maple")
-
-for (sp in species) {
-  print(paste("Found:", sp))
-}
-
-heights <- c(10, 15, 8, 20, 12)
-
-for (h in heights) {
-  height_ft <- h * 3.281
-  print(paste(h, "meters =", round(height_ft, 1), "feet"))
-}
-
-for (i in 1:length(species)) {
-  print(paste("Species", i, "is", species[i]))
-}
-```
-
-### 5c: Building results with loops
-
-```{r}
-squares <- c()
-
-for (i in 1:10) {
-  squares[i] <- i^2
-}
-print(squares)
-
-squares <- numeric(10)
-
-for (i in 1:10) {
-  squares[i] <- i^2
-}
-print(squares)
-
-total <- 0
-for (i in 1:100) {
-  total <- total + i
-}
-print(paste("Sum of 1 to 100:", total))
-```
-
-### 5d: Loops with conditions
-
-```{r}
-numbers <- c(3, 7, 2, 9, 4, 6, 8, 1, 5)
-
-count_above_5 <- 0
-for (n in numbers) {
-  if (n > 5) {
-    count_above_5 <- count_above_5 + 1
-  }
-}
-print(paste("Numbers above 5:", count_above_5))
-
-for (n in numbers) {
-  if (n > 5) {
-    print(paste(n, "is HIGH"))
-  } else {
-    print(paste(n, "is LOW"))
-  }
-}
-
-high_numbers <- c()
-for (n in numbers) {
-  if (n > 5) {
-    high_numbers <- c(high_numbers, n)
-  }
-}
-print(high_numbers)
-```
-
-### 5e: Nested loops
-
-```{r}
-for (i in 1:3) {
-  for (j in 1:3) {
-    result <- i * j
-    print(paste(i, "x", j, "=", result))
-  }
-}
-
-matrix_result <- matrix(0, nrow = 4, ncol = 4)
-
-for (row in 1:4) {
-  for (col in 1:4) {
-    matrix_result[row, col] <- row * col
-  }
-}
-print(matrix_result)
-```
-
-### 5f: Accumulation curve with a loop
-
-```{r}
-plot_species <- list(
-  c("Oak", "Beech", "Pine"),
-  c("Beech", "Maple", "Birch", "Pine"),
-  c("Oak", "Linden", "Beech"),
-  c("Spruce", "Pine", "Oak"),
-  c("Maple", "Ash", "Beech", "Elm")
-)
-
-found_species <- c()
-accumulation <- numeric(5)
-
-for (i in 1:5) {
-  current_species <- plot_species[[i]]
-  new_species <- setdiff(current_species, found_species)
-  found_species <- c(found_species, new_species)
-  accumulation[i] <- length(found_species)
-
-  print(paste("Plot", i,
-              "- New:", length(new_species),
-              "- Total:", accumulation[i]))
-}
-
-print("Final accumulation curve:")
-print(accumulation)
+# Result
+accumulation
 ```
 
 ---
 
-## Exercise 6: Filtering Data
-
-### 6a: Logical comparisons
+# <span class="en">Exercise 5: Plot Your Curve!</span><span class="de">Übung 5: Zeichne deine Kurve!</span>
 
 ```{r}
-x <- 10
-
-x == 10
-x == 5
-
-x != 5
-x != 10  # FALSE
-
-x > 5    # TRUE
-x > 15   # FALSE
-
-x < 15   # TRUE
-x < 5    # FALSE
-
-x >= 10  # TRUE
-x >= 11  # FALSE
-
-x <= 10  # TRUE
-x <= 9   # FALSE
-```
-
-### 6b: Filtering vectors
-
-```{r}
-heights <- c(10, 25, 15, 30, 8, 22, 18)
-
-tall_mask <- heights > 20
-print(tall_mask)
-
-tall_heights <- heights[tall_mask]
-print(tall_heights)
-
-medium_mask <- heights >= 15 & heights <= 25
-medium_heights <- heights[medium_mask]
-print(medium_heights)
-
-n_tall <- sum(heights > 20)
-print(paste("Tall trees:", n_tall))
-```
-
-### 6c: Filtering data frames
-
-```{r}
-flora <- data.frame(
-  species = c("Fagus sylvatica", "Impatiens glandulifera",
-              "Quercus robur", "Solidago canadensis",
-              "Pinus sylvestris", "Reynoutria japonica"),
-  status = c("native", "neo", "native", "neo", "native", "neo"),
-  n_plots = c(450, 120, 380, 95, 200, 45),
-  cover = c(45, 15, 35, 20, 30, 25)
-)
-
-print(flora)
-
-native_only <- flora[flora$status == "native", ]
-print(native_only)
-
-alien_only <- flora[flora$status == "neo", ]
-print(alien_only)
-
-common <- flora[flora$n_plots > 100, ]
-print(common)
-
-rare_aliens <- flora[flora$status == "neo" & flora$n_plots < 100, ]
-print(rare_aliens)
-```
-
-### 6d: Using subset() function
-
-```{r}
-native <- subset(flora, status == "native")
-print(native)
-
-common_aliens <- subset(flora, status == "neo" & n_plots > 50)
-print(common_aliens)
-
-high_cover <- subset(flora, cover >= 25)
-print(high_cover)
-
-names_only <- subset(flora, status == "native", select = c(species, n_plots))
-print(names_only)
-```
-
-### 6e: Counting and summarizing
-
-```{r}
-n_native <- nrow(flora[flora$status == "native", ])
-n_alien <- nrow(flora[flora$status == "neo", ])
-print(paste("Native species:", n_native))
-print(paste("Alien species:", n_alien))
-
-mean_plots_native <- mean(flora$n_plots[flora$status == "native"])
-mean_plots_alien <- mean(flora$n_plots[flora$status == "neo"])
-print(paste("Mean plots (native):", mean_plots_native))
-print(paste("Mean plots (alien):", mean_plots_alien))
-
-status_counts <- table(flora$status)
-print(status_counts)
-
-total_native_plots <- sum(flora$n_plots[flora$status == "native"])
-total_alien_plots <- sum(flora$n_plots[flora$status == "neo"])
-print(paste("Total plot occurrences - Native:", total_native_plots,
-            "Alien:", total_alien_plots))
-```
-
-### 6f: Combining filter conditions
-
-```{r}
-native_and_common <- flora$status == "native" & flora$n_plots > 200
-flora[native_and_common, ]
-
-rare_or_alien <- flora$n_plots < 100 | flora$status == "neo"
-flora[rare_or_alien, ]
-
-complex_filter <- (flora$status == "native" & flora$n_plots > 300) |
-                  (flora$status == "neo" & flora$cover > 20)
-flora[complex_filter, ]
-
-not_native <- flora[!flora$status == "native", ]
-print(not_native)
-
-also_not_native <- flora[flora$status != "native", ]
-print(also_not_native)
-```
-
----
-
-## Exercise 7: Distance Calculations
-
-### 7a: Distance between two points
-
-```{r}
-point_a <- c(x = 0, y = 0)
-point_b <- c(x = 3, y = 4)
-
-x_diff <- point_b["x"] - point_a["x"]
-y_diff <- point_b["y"] - point_a["y"]
-
-x_squared <- x_diff^2
-y_squared <- y_diff^2
-
-sum_squares <- x_squared + y_squared
-distance <- sqrt(sum_squares)
-
-print(paste("Distance:", distance))
-
-distance_oneline <- sqrt((point_b["x"] - point_a["x"])^2 +
-                          (point_b["y"] - point_a["y"])^2)
-print(distance_oneline)
-```
-
-### 7b: Distance to multiple points
-
-```{r}
-current <- c(x = 100, y = 100)
-
-candidates <- data.frame(
-  plot_id = c("A", "B", "C", "D"),
-  x = c(110, 95, 150, 102),
-  y = c(105, 90, 120, 98)
-)
-
-candidates$distance <- sqrt(
-  (candidates$x - current["x"])^2 +
-  (candidates$y - current["y"])^2
-)
-
-print(candidates)
-
-nearest_distance <- min(candidates$distance)
-print(paste("Nearest distance:", round(nearest_distance, 2)))
-```
-
-### 7c: Finding the nearest point
-
-```{r}
-nearest_idx <- which.min(candidates$distance)
-print(paste("Nearest is at position:", nearest_idx))
-
-nearest_plot <- candidates$plot_id[nearest_idx]
-print(paste("Nearest plot:", nearest_plot))
-
-nearest_row <- candidates[nearest_idx, ]
-print(nearest_row)
-
-farthest_idx <- which.max(candidates$distance)
-farthest_plot <- candidates$plot_id[farthest_idx]
-print(paste("Farthest plot:", farthest_plot))
-```
-
-### 7d: Create a distance function
-
-```{r}
-calc_distance <- function(x1, y1, x2, y2) {
-  sqrt((x2 - x1)^2 + (y2 - y1)^2)
-}
-
-d1 <- calc_distance(0, 0, 3, 4)
-print(d1)
-
-d2 <- calc_distance(100, 100, 110, 105)
-print(round(d2, 2))
-
-for (i in 1:nrow(candidates)) {
-  d <- calc_distance(current["x"], current["y"],
-                     candidates$x[i], candidates$y[i])
-  print(paste("Distance to", candidates$plot_id[i], ":", round(d, 2)))
-}
-```
-
-### 7e: Simulating a nearest-neighbour walk
-
-```{r}
-plots <- data.frame(
-  id = 1:6,
-  x = c(0, 5, 3, 8, 10, 7),
-  y = c(0, 2, 6, 1, 5, 8)
-)
-
-visited <- rep(FALSE, 6)
-visit_order <- c()
-
-current_idx <- 1
-
-for (step in 1:6) {
-  visited[current_idx] <- TRUE
-  visit_order <- c(visit_order, plots$id[current_idx])
-
-  print(paste("Step", step, ": Visiting plot", plots$id[current_idx]))
-
-  if (step < 6) {
-    distances <- calc_distance(
-      plots$x[current_idx], plots$y[current_idx],
-      plots$x, plots$y
-    )
-
-    distances[visited] <- Inf
-    current_idx <- which.min(distances)
-  }
-}
-
-print("Visit order:")
-print(visit_order)
-```
-
----
-
-## Exercise 8: Cumulative Sums
-
-### 8a: Basic cumsum
-
-```{r}
-new_per_plot <- c(5, 3, 2, 1, 1)
-
-cumulative <- cumsum(new_per_plot)
-print(cumulative)
-
-daily_finds <- c(10, 5, 3, 2, 2, 1, 1, 0, 1, 0)
-daily_cumulative <- cumsum(daily_finds)
-print(daily_cumulative)
-```
-
-### 8b: Manual cumsum
-
-```{r}
-new_species <- c(15, 8, 5, 3, 2, 2, 1, 1, 0, 1)
-
-cumulative_manual <- numeric(length(new_species))
-running_total <- 0
-
-for (i in 1:length(new_species)) {
-  running_total <- running_total + new_species[i]
-  cumulative_manual[i] <- running_total
-}
-
-print(cumulative_manual)
-print(cumsum(new_species))
-```
-
-### 8c: Analyzing accumulation patterns
-
-```{r}
-new_species <- c(15, 8, 5, 4, 3, 2, 2, 1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0)
-cumulative <- cumsum(new_species)
-
-print("Cumulative curve:")
-print(cumulative)
-
-total <- cumulative[length(cumulative)]
-print(paste("Total species:", total))
-
-after_5 <- cumulative[5]
-print(paste("After 5 plots:", after_5))
-
-after_10 <- cumulative[10]
-print(paste("After 10 plots:", after_10))
-
-new_in_last_5 <- sum(new_species[16:20])
-print(paste("New in last 5 plots:", new_in_last_5))
-
-plot_at_30 <- which(cumulative >= 30)[1]
-print(paste("Reached 30 species at plot:", plot_at_30))
-
-threshold_90 <- total * 0.9
-plot_at_90pct <- which(cumulative >= threshold_90)[1]
-print(paste("Reached 90% at plot:", plot_at_90pct))
-```
-
-### 8d: Compare two accumulation patterns
-
-```{r}
-native_new <- c(20, 12, 8, 6, 5, 4, 3, 2, 2, 1, 1, 1, 0, 1, 0)
-alien_new <- c(5, 3, 3, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1)
-
-native_cumul <- cumsum(native_new)
-alien_cumul <- cumsum(alien_new)
-
-print("Native accumulation:")
-print(native_cumul)
-
-print("Alien accumulation:")
-print(alien_cumul)
-
-print(paste("Native total:", max(native_cumul)))
-print(paste("Alien total:", max(alien_cumul)))
-
-native_pct_5 <- round(100 * native_cumul[5] / max(native_cumul))
-alien_pct_5 <- round(100 * alien_cumul[5] / max(alien_cumul))
-
-print(paste("Native: after 5 plots found", native_pct_5, "% of total"))
-print(paste("Alien: after 5 plots found", alien_pct_5, "% of total"))
-```
-
----
-
-# Part 3: Functions
-
-## Exercise 9: Writing Your First Functions
-
-### 9a: The anatomy of a function
-
-```{r}
-double_it <- function(x) {
-  result <- x * 2
-  return(result)
-}
-
-double_it(5)
-double_it(100)
-
-triple_it <- function(x) {
-  result <- x * 3
-  return(result)
-}
-
-triple_it(5)
-triple_it(7)
-
-add_numbers <- function(a, b) {
-  result <- a + b
-  return(result)
-}
-
-add_numbers(3, 7)
-add_numbers(10, 25)
-```
-
-### 9b: Functions with default arguments
-
-```{r}
-greet <- function(name, language = "en") {
-  if (language == "en") {
-    message <- paste("Hello,", name)
-  } else if (language == "de") {
-    message <- paste("Hallo,", name)
-  } else {
-    message <- paste("Hi,", name)
-  }
-  return(message)
-}
-
-greet("Anna")
-greet("Max", "de")
-greet("Pierre", "fr")
-
-calc_percent <- function(part, total, decimals = 1) {
-  pct <- (part / total) * 100
-  return(round(pct, decimals))
-}
-
-calc_percent(25, 100)
-calc_percent(1, 3)
-calc_percent(1, 3, 0)
-calc_percent(1, 3, 3)
-
-found <- 45
-total_possible <- 120
-richness_pct <- calc_percent(found, total_possible)
-print(paste("Found", richness_pct, "% of species"))
-```
-
-### 9c: Functions returning multiple values
-
-```{r}
-summarize_vector <- function(x) {
-  result <- list(
-    n = length(x),
-    total = sum(x),
-    average = mean(x),
-    minimum = min(x),
-    maximum = max(x)
-  )
-  return(result)
-}
-
-heights <- c(25, 30, 18, 22, 35, 28)
-summary_stats <- summarize_vector(heights)
-
-print(summary_stats$n)
-print(summary_stats$average)
-print(summary_stats$maximum)
-
-summarize_species <- function(species_vector) {
-  return(list(
-    total_observations = length(species_vector),
-    unique_species = length(unique(species_vector)),
-    most_common = names(sort(table(species_vector), decreasing = TRUE)[1])
-  ))
-}
-
-obs <- c("Oak", "Beech", "Oak", "Pine", "Oak", "Beech", "Maple")
-species_summary <- summarize_species(obs)
-
-print(species_summary$total_observations)
-print(species_summary$unique_species)
-print(species_summary$most_common)
-```
-
-### 9d: Functions for accumulation curves
-
-```{r}
-count_unique_species <- function(species_list) {
-  all_species <- unlist(species_list)
-  unique_count <- length(unique(all_species))
-  return(unique_count)
-}
-
-test_plots <- list(
-  c("A", "B", "C"),
-  c("B", "D"),
-  c("A", "E", "F")
-)
-
-count_unique_species(test_plots)
-
-build_simple_accumulation <- function(plot_species_list) {
-  n_plots <- length(plot_species_list)
-  accumulation <- numeric(n_plots)
-  found <- c()
-
-  for (i in 1:n_plots) {
-    current_plot <- plot_species_list[[i]]
-    new_species <- setdiff(current_plot, found)
-    found <- c(found, new_species)
-    accumulation[i] <- length(found)
-  }
-
-  return(accumulation)
-}
-
-curve <- build_simple_accumulation(test_plots)
-print(curve)
-```
-
-### 9e: The distance function (for nearest-neighbour)
-
-```{r}
-calc_distance <- function(x1, y1, x2, y2) {
-  sqrt((x2 - x1)^2 + (y2 - y1)^2)
-}
-
-calc_distance(0, 0, 3, 4)
-calc_distance(0, 0, 1, 1)
-calc_distance(10, 10, 10, 10)
-
-find_nearest <- function(current_x, current_y, all_x, all_y, visited) {
-  distances <- calc_distance(current_x, current_y, all_x, all_y)
-  distances[visited] <- Inf
-  return(which.min(distances))
-}
-
-xs <- c(0, 5, 3, 8, 2)
-ys <- c(0, 2, 6, 1, 1)
-visited <- c(TRUE, FALSE, FALSE, FALSE, FALSE)
-
-find_nearest(0, 0, xs, ys, visited)
-```
-
-### 9f: Debug challenge (corrected)
-
-```{r}
-# Bug 1: FIXED - added return statement
-square <- function(x) {
-  result <- x^2
-  return(result)
-}
-
-# Bug 2: FIXED - use == not =
-is_positive <- function(x) {
-  if (x == 0) {
-    return(FALSE)
-  }
-  return(x > 0)
-}
-
-# Bug 3: FIXED - use correct argument names
-multiply <- function(a, b) {
-  return(a * b)
-}
-
-# Bug 4: FIXED - added function keyword
-add_one <- function(x) {
-  return(x + 1)
-}
-
-# Bug 5: FIXED - added closing brace
-subtract <- function(a, b) {
-  result <- a - b
-  return(result)
-}
-```
-
----
-
-## Exercise 10: Plotting with ggplot2
-
-### 10a: Your first ggplot
-
-```{r}
-library(ggplot2)
-
+# Create data frame
 curve_data <- data.frame(
-  plots = 1:10,
-  species = c(12, 18, 22, 25, 27, 28, 29, 30, 30, 31)
+  plots = 1:length(accumulation),
+  species = accumulation
 )
 
+head(curve_data)
+
+# Basic plot
 ggplot(curve_data, aes(x = plots, y = species)) +
-  geom_point()
-
-ggplot(curve_data, aes(x = plots, y = species)) +
-  geom_line()
-
-ggplot(curve_data, aes(x = plots, y = species)) +
-  geom_line() +
-  geom_point()
-```
-
-### 10b: Customizing appearance
-
-```{r}
-ggplot(curve_data, aes(x = plots, y = species)) +
-  geom_line(color = "darkgreen", linewidth = 1.5)
-
-ggplot(curve_data, aes(x = plots, y = species)) +
-  geom_point(color = "blue", size = 3)
-
-ggplot(curve_data, aes(x = plots, y = species)) +
-  geom_point(shape = 21, fill = "lightgreen", color = "darkgreen", size = 3)
-
-ggplot(curve_data, aes(x = plots, y = species)) +
-  geom_line(color = "darkgreen", linewidth = 1.5) +
-  geom_point(color = "darkgreen", size = 3)
-```
-
-### 10c: Adding labels and titles
-
-```{r}
-ggplot(curve_data, aes(x = plots, y = species)) +
-  geom_line(color = "darkgreen", linewidth = 1.5) +
-  geom_point(color = "darkgreen", size = 2) +
+  geom_line(color = "#2E7D32", linewidth = 2) +
+  geom_point(color = "#2E7D32", size = 2) +
   labs(
-    title = "Species Accumulation Curve",
-    subtitle = "Example data from workshop",
+    title = "My First Species Accumulation Curve!",
     x = "Number of Plots Sampled",
-    y = "Cumulative Species Count",
-    caption = "Data: Workshop example"
-  )
+    y = "Cumulative Species Count"
+  ) +
+  theme_minimal(base_size = 14)
 
+# Pretty version with filled area
 ggplot(curve_data, aes(x = plots, y = species)) +
-  geom_line(color = "darkgreen", linewidth = 1.5) +
+  geom_area(fill = "#C8E6C9", alpha = 0.5) +
+  geom_line(color = "#2E7D32", linewidth = 2) +
   labs(
-    title = "Species Accumulation Curve",
-    x = "Number of Plots",
-    y = "Cumulative Species"
-  ) +
-  theme_minimal()
-```
-
-### 10d: Comparing two groups
-
-```{r}
-comparison <- data.frame(
-  plots = rep(1:10, 2),
-  species = c(
-    c(30, 42, 50, 55, 58, 60, 61, 62, 62, 63),
-    c(8, 12, 15, 17, 18, 19, 20, 20, 21, 21)
-  ),
-  status = rep(c("Native", "Alien"), each = 10)
-)
-
-ggplot(comparison, aes(x = plots, y = species, color = status)) +
-  geom_line(linewidth = 1.2) +
-  labs(
-    title = "Native vs Alien Accumulation",
-    x = "Plots",
-    y = "Species"
-  )
-
-ggplot(comparison, aes(x = plots, y = species, color = status)) +
-  geom_line(linewidth = 1.2) +
-  scale_color_manual(values = c("Native" = "darkgreen", "Alien" = "red")) +
-  labs(
-    title = "Native vs Alien Accumulation",
-    x = "Number of Plots",
-    y = "Cumulative Species",
-    color = "Status"
-  ) +
-  theme_minimal()
-
-ggplot(comparison, aes(x = plots, y = species, color = status)) +
-  geom_line(linewidth = 1.2) +
-  scale_color_manual(values = c("Native" = "darkgreen", "Alien" = "red")) +
-  theme_minimal() +
-  theme(legend.position = "bottom")
-```
-
-### 10e: Saving plots
-
-```{r}
-my_plot <- ggplot(curve_data, aes(x = plots, y = species)) +
-  geom_line(color = "darkgreen", linewidth = 1.5) +
-  geom_point(color = "darkgreen", size = 3) +
-  labs(
-    title = "Species Accumulation",
+    title = "Species Accumulation Curve - Austria",
+    subtitle = paste("Total species found:", max(accumulation)),
     x = "Plots Sampled",
     y = "Cumulative Species"
   ) +
-  theme_minimal()
-
-print(my_plot)
+  theme_minimal(base_size = 14)
 ```
 
 ---
 
-## Exercise 11: Advanced Plotting - Confidence Intervals
-
-### 11a: Adding a ribbon (shaded band)
+# <span class="en">Bonus: Compare Native vs Alien!</span><span class="de">Bonus: Vergleiche Heimisch vs Alien!</span>
 
 ```{r}
-ci_data <- data.frame(
-  plots = 1:15,
-  mean_species = cumsum(c(20, 8, 5, 4, 3, 2, 2, 1, 1, 1, 1, 0, 1, 0, 1)),
-  lower = cumsum(c(18, 6, 4, 3, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0)),
-  upper = cumsum(c(22, 10, 6, 5, 4, 3, 3, 2, 2, 2, 2, 1, 2, 1, 2))
-)
+# Filter for native species only
+native_species <- species_data %>%
+  filter(STATUS == "nat")
 
-ggplot(ci_data, aes(x = plots)) +
-  geom_ribbon(aes(ymin = lower, ymax = upper),
-              fill = "darkgreen", alpha = 0.3) +
-  geom_line(aes(y = mean_species), color = "darkgreen", linewidth = 1.2) +
-  labs(
-    title = "Accumulation Curve with Confidence Interval",
-    x = "Plots Sampled",
-    y = "Cumulative Species"
-  ) +
-  theme_minimal()
-```
-
-### 11b: Two groups with ribbons
-
-```{r}
-native_data <- data.frame(
-  plots = 1:15,
-  mean = cumsum(c(25, 12, 8, 5, 4, 3, 2, 2, 1, 1, 1, 1, 0, 1, 0)),
-  lower = cumsum(c(22, 10, 6, 4, 3, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0)),
-  upper = cumsum(c(28, 14, 10, 6, 5, 4, 3, 3, 2, 2, 2, 2, 1, 2, 1)),
-  status = "Native"
-)
-
-alien_data <- data.frame(
-  plots = 1:15,
-  mean = cumsum(c(6, 4, 3, 2, 2, 2, 1, 1, 1, 1, 1, 1, 0, 1, 0)),
-  lower = cumsum(c(5, 3, 2, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0)),
-  upper = cumsum(c(7, 5, 4, 3, 3, 3, 2, 2, 2, 2, 2, 2, 1, 2, 1)),
-  status = "Alien"
-)
-
-both <- rbind(native_data, alien_data)
-
-ggplot(both, aes(x = plots, fill = status, color = status)) +
-  geom_ribbon(aes(ymin = lower, ymax = upper), alpha = 0.3) +
-  geom_line(aes(y = mean), linewidth = 1.2) +
-  scale_fill_manual(values = c("Native" = "darkgreen", "Alien" = "red")) +
-  scale_color_manual(values = c("Native" = "darkgreen", "Alien" = "red")) +
-  labs(
-    title = "Species Accumulation: Native vs Alien",
-    subtitle = "Shaded area shows 95% confidence interval",
-    x = "Plots Sampled",
-    y = "Cumulative Species"
-  ) +
-  theme_minimal() +
-  theme(legend.position = "bottom")
-```
-
-### 11c: Calculating confidence intervals from multiple runs
-
-```{r}
-set.seed(42)
-n_runs <- 5
-n_plots <- 10
-
-runs <- matrix(NA, nrow = n_runs, ncol = n_plots)
-
-for (r in 1:n_runs) {
-  new_per_plot <- c(20, rpois(n_plots - 1, lambda = 3))
-  runs[r, ] <- cumsum(new_per_plot)
-}
-
-print(runs)
-
-mean_curve <- apply(runs, 2, mean)
-
-lower_curve <- apply(runs, 2, function(x) quantile(x, 0.025))
-upper_curve <- apply(runs, 2, function(x) quantile(x, 0.975))
-
-summary_df <- data.frame(
-  plots = 1:n_plots,
-  mean = mean_curve,
-  lower = lower_curve,
-  upper = upper_curve
-)
-
-print(summary_df)
-
-ggplot(summary_df, aes(x = plots)) +
-  geom_ribbon(aes(ymin = lower, ymax = upper),
-              fill = "steelblue", alpha = 0.3) +
-  geom_line(aes(y = mean), color = "steelblue", linewidth = 1.2) +
-  labs(
-    title = "Mean Accumulation Curve with 95% CI",
-    subtitle = paste("Based on", n_runs, "simulation runs"),
-    x = "Plots",
-    y = "Species"
-  ) +
-  theme_minimal()
-```
-
-### 11d: Faceting - multiple panels
-
-```{r}
-regions_data <- data.frame(
-  plots = rep(1:10, 3),
-  species = c(
-    cumsum(c(25, 10, 6, 4, 3, 2, 2, 1, 1, 1)),
-    cumsum(c(20, 8, 5, 3, 2, 2, 1, 1, 1, 0)),
-    cumsum(c(15, 7, 5, 4, 3, 2, 2, 1, 1, 1))
-  ),
-  region = rep(c("Alps", "Lowland", "Urban"), each = 10)
-)
-
-ggplot(regions_data, aes(x = plots, y = species)) +
-  geom_line(color = "darkgreen", linewidth = 1.2) +
-  facet_wrap(~ region) +
-  labs(
-    title = "Accumulation by Region",
-    x = "Plots",
-    y = "Species"
-  ) +
-  theme_minimal()
-
-ggplot(regions_data, aes(x = plots, y = species)) +
-  geom_line(color = "darkgreen", linewidth = 1.2) +
-  facet_wrap(~ region, scales = "free_y") +
-  theme_minimal()
+length(unique(native_species$WFO_TAXON))
 ```
 
 ---
 
-# Part 4: The Real Research Project
+<div class="en">
 
-```{r load-real-data, eval=FALSE}
-# Load packages and data
-library(dplyr)
-library(ggplot2)
+**Key concepts learned:**
 
-header <- read.csv("../data/austria_header.csv")
-species <- read.csv("../data/austria_species.csv")
-```
+- Variables store data with `<-`
+- `c()` creates vectors
+- `unique()` finds different values
+- `length(unique(x))` = species richness
+- Loops repeat actions for each plot
+- `ggplot()` creates visualizations
 
-## Exercise 12: Loading and Exploring the Data
+</div>
 
-### 12a-d: Data exploration
+<div class="de">
 
-```{r ex12-solutions, eval=FALSE}
-# 12a: Load data
-print("Header dimensions:")
-dim(header)
+**Gelernte Schlüsselkonzepte:**
 
-print("Species dimensions:")
-dim(species)
+- Variablen speichern Daten mit `<-`
+- `c()` erstellt Vektoren
+- `unique()` findet verschiedene Werte
+- `length(unique(x))` = Artenreichtum
+- Schleifen wiederholen Aktionen für jeden Plot
+- `ggplot()` erstellt Visualisierungen
 
-# 12b: Explore header
-names(header)
-head(header)
-
-n_plots <- nrow(header)
-print(paste("Number of plots:", n_plots))
-
-lon_range <- range(header$Longitude)
-lat_range <- range(header$Latitude)
-print(paste("Longitude:", round(lon_range[1], 2), "to", round(lon_range[2], 2)))
-print(paste("Latitude:", round(lat_range[1], 2), "to", round(lat_range[2], 2)))
-
-year_range <- range(header$Year)
-print(paste("Years:", year_range[1], "to", year_range[2]))
-
-# 12c: Explore species
-names(species)
-head(species)
-
-n_records <- nrow(species)
-print(paste("Total species records:", n_records))
-
-table(species$STATUS)
-
-n_species <- length(unique(species$WFO_TAXON))
-print(paste("Unique species:", n_species))
-
-n_plots_with_species <- length(unique(species$PlotObservationID))
-print(paste("Plots with species data:", n_plots_with_species))
-
-# 12d: Native vs alien breakdown
-status_table <- table(species$STATUS)
-print(status_table)
-
-native_species <- species %>%
-  filter(STATUS == "native") %>%
-  pull(WFO_TAXON) %>%
-  unique()
-
-alien_species <- species %>%
-  filter(STATUS == "neo") %>%
-  pull(WFO_TAXON) %>%
-  unique()
-
-n_native <- length(native_species)
-n_alien <- length(alien_species)
-
-print(paste("Native species:", n_native))
-print(paste("Alien (neo) species:", n_alien))
-
-pct_alien_species <- round(100 * n_alien / (n_native + n_alien), 1)
-print(paste("Aliens are", pct_alien_species, "% of all species"))
-
-n_native_records <- sum(species$STATUS == "native")
-n_alien_records <- sum(species$STATUS == "neo")
-pct_alien_records <- round(100 * n_alien_records / nrow(species), 1)
-print(paste("Alien records are", pct_alien_records, "% of all records"))
-```
-
-## Exercise 13: Mapping the Data
-
-```{r ex13-solutions, eval=FALSE}
-# 13a: Basic plot map
-ggplot(header, aes(x = Longitude, y = Latitude)) +
-  geom_point(alpha = 0.3, size = 0.5, color = "darkgreen") +
-  coord_quickmap() +
-  labs(
-    title = "Austrian Vegetation Plot Locations",
-    subtitle = paste(nrow(header), "plots"),
-    x = "Longitude",
-    y = "Latitude"
-  ) +
-  theme_minimal()
-
-# 13b: Map alien richness
-aliens_per_plot <- species %>%
-  filter(STATUS == "neo") %>%
-  group_by(PlotObservationID) %>%
-  summarise(n_aliens = n_distinct(WFO_TAXON), .groups = "drop")
-
-plot_aliens <- merge(header, aliens_per_plot,
-                     by = "PlotObservationID", all.x = TRUE)
-plot_aliens$n_aliens[is.na(plot_aliens$n_aliens)] <- 0
-
-ggplot(plot_aliens, aes(x = Longitude, y = Latitude, color = n_aliens)) +
-  geom_point(alpha = 0.5, size = 1) +
-  scale_color_gradient(low = "lightgray", high = "darkred", name = "Alien\nspecies") +
-  coord_quickmap() +
-  labs(
-    title = "Alien Species Richness Across Austria",
-    subtitle = "Where are the invasion hotspots?"
-  ) +
-  theme_minimal()
-
-plots_with_aliens <- sum(plot_aliens$n_aliens > 0)
-pct_invaded <- round(100 * plots_with_aliens / nrow(plot_aliens), 1)
-print(paste("Plots with at least 1 alien:", plots_with_aliens,
-            "(", pct_invaded, "%)"))
-
-# 13c: Histogram
-ggplot(plot_aliens, aes(x = n_aliens)) +
-  geom_histogram(binwidth = 1, fill = "darkred", alpha = 0.7) +
-  labs(
-    title = "Distribution of Alien Richness",
-    x = "Number of Alien Species per Plot",
-    y = "Number of Plots"
-  ) +
-  theme_minimal()
-
-print(paste("Median aliens per plot:", median(plot_aliens$n_aliens)))
-print(paste("Mean aliens per plot:", round(mean(plot_aliens$n_aliens), 2)))
-print(paste("Max aliens in one plot:", max(plot_aliens$n_aliens)))
-```
-
-## Exercise 14: Building the Nearest-Neighbour Algorithm
-
-```{r ex14-solutions, eval=FALSE}
-# 14a: Distance function
-calc_distance <- function(x1, y1, x2, y2) {
-  sqrt((x2 - x1)^2 + (y2 - y1)^2)
-}
-
-calc_distance(14.0, 47.0, 15.0, 48.0)
-
-# 14b: Nearest-neighbour walk function
-nn_walk <- function(header_data, start_idx = NULL) {
-  n <- nrow(header_data)
-
-  if (is.null(start_idx)) {
-    start_idx <- sample(1:n, 1)
-  }
-
-  visited <- rep(FALSE, n)
-  visit_order <- numeric(n)
-  current <- start_idx
-
-  for (i in 1:n) {
-    visited[current] <- TRUE
-    visit_order[i] <- header_data$PlotObservationID[current]
-
-    if (i < n) {
-      distances <- calc_distance(
-        header_data$Longitude[current],
-        header_data$Latitude[current],
-        header_data$Longitude,
-        header_data$Latitude
-      )
-
-      distances[visited] <- Inf
-      current <- which.min(distances)
-    }
-  }
-
-  return(visit_order)
-}
-
-# 14c: Accumulation function
-build_accumulation <- function(species_data, plot_order, status_filter = NULL) {
-
-  if (!is.null(status_filter)) {
-    species_data <- species_data %>% filter(STATUS == status_filter)
-  }
-
-  found <- c()
-  accum <- numeric(length(plot_order))
-
-  for (i in seq_along(plot_order)) {
-    plot_spp <- species_data %>%
-      filter(PlotObservationID == plot_order[i]) %>%
-      pull(WFO_TAXON) %>%
-      unique()
-
-    new_spp <- setdiff(plot_spp, found)
-    found <- c(found, new_spp)
-    accum[i] <- length(found)
-  }
-
-  return(accum)
-}
-
-# 14d: Test on a small sample
-set.seed(42)
-sample_size <- 100
-
-sample_ids <- sample(unique(header$PlotObservationID), sample_size)
-sample_header <- header %>% filter(PlotObservationID %in% sample_ids)
-sample_species <- species %>% filter(PlotObservationID %in% sample_ids)
-
-nn_order <- nn_walk(sample_header)
-
-all_curve <- build_accumulation(sample_species, nn_order, NULL)
-native_curve <- build_accumulation(sample_species, nn_order, "native")
-alien_curve <- build_accumulation(sample_species, nn_order, "neo")
-
-print(paste("After", sample_size, "plots:"))
-print(paste("  All species:", max(all_curve)))
-print(paste("  Native:", max(native_curve)))
-print(paste("  Alien:", max(alien_curve)))
-```
-
-## Exercise 15: First Comparison Plot
-
-```{r ex15-solutions, eval=FALSE}
-# 15a: Plot native vs alien curves
-comparison <- data.frame(
-  plots = rep(1:sample_size, 2),
-  species = c(native_curve, alien_curve),
-  status = rep(c("Native", "Alien"), each = sample_size)
-)
-
-ggplot(comparison, aes(x = plots, y = species, color = status)) +
-  geom_line(linewidth = 1.2) +
-  scale_color_manual(values = c("Native" = "darkgreen", "Alien" = "red")) +
-  labs(
-    title = "Species Accumulation: Native vs Alien",
-    subtitle = paste("Nearest-neighbour order,", sample_size, "plots"),
-    x = "Number of Plots Visited",
-    y = "Cumulative Species",
-    color = "Status"
-  ) +
-  theme_minimal() +
-  theme(legend.position = "bottom")
-
-# 15b: Calculate saturation metrics
-find_saturation <- function(curve, threshold = 0.8) {
-  total <- max(curve)
-  target <- total * threshold
-  which(curve >= target)[1]
-}
-
-native_sat <- find_saturation(native_curve, 0.8)
-alien_sat <- find_saturation(alien_curve, 0.8)
-
-print(paste("Plots to 80% - Native:", native_sat, "Alien:", alien_sat))
-
-native_pct <- round(100 * native_sat / sample_size)
-alien_pct <- round(100 * alien_sat / sample_size)
-print(paste("Native needs", native_pct, "% of plots for 80% of species"))
-print(paste("Alien needs", alien_pct, "% of plots for 80% of species"))
-```
-
----
+</div>

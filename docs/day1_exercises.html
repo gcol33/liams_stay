@@ -1499,9 +1499,9 @@ border-radius: 0px;
 
 <h1 class="title toc-ignore"><span class="en">Day 1:
 Exercises</span><span class="de">Tag 1: Übungen</span></h1>
-<h3 class="subtitle"><span class="en">From R Basics to Your First Real
-Analysis</span><span class="de">Von R-Grundlagen zur ersten echten
-Analyse</span></h3>
+<h3 class="subtitle"><span class="en">Your First Accumulation
+Curve!</span><span class="de">Deine erste
+Akkumulationskurve!</span></h3>
 <h4 class="author"><span class="en">Fill in the blanks!</span><span class="de">Fülle die Lücken aus!</span></h4>
 <h4 class="date">2026-01-25</h4>
 
@@ -1515,24 +1515,9 @@ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 line-height: 1.7;
 background-color: #fafffe;
 }
-h1 {
-color: #2E7D32 !important;
-border-bottom: 3px solid #4CAF50;
-padding-bottom: 10px;
-}
-h2 {
-color: #388E3C !important;
-margin-top: 2em;
-}
-h3 {
-color: #43A047 !important;
-}
-h4 {
-color: #66BB6A !important;
-border-left: 4px solid #4CAF50;
-padding-left: 10px;
-}
-
+h1 { color: #2E7D32 !important; border-bottom: 3px solid #4CAF50; padding-bottom: 10px; }
+h2 { color: #388E3C !important; margin-top: 2em; }
+h3 { color: #43A047 !important; }
 pre {
 background-color: #f5f5f5 !important;
 border-left: 4px solid #4CAF50 !important;
@@ -1548,11 +1533,7 @@ padding: 2px 6px;
 border-radius: 4px;
 color: #2E7D32;
 }
-pre code {
-background-color: transparent;
-padding: 0;
-}
-
+pre code { background-color: transparent; padding: 0; }
 .copy-btn {
 position: absolute !important;
 top: 8px !important;
@@ -1568,15 +1549,9 @@ opacity: 0;
 transition: opacity 0.2s, background 0.2s;
 z-index: 100;
 }
-pre:hover .copy-btn {
-opacity: 1;
-}
-.copy-btn:hover {
-background: #2E7D32;
-}
-.copy-btn.copied {
-background: #1976D2;
-}
+pre:hover .copy-btn { opacity: 1; }
+.copy-btn:hover { background: #2E7D32; }
+.copy-btn.copied { background: #1976D2; }
 blockquote {
 border-left: 4px solid #FF9800;
 background-color: #FFF8E1;
@@ -1591,17 +1566,8 @@ background: linear-gradient(to right, #4CAF50, #81C784, #C8E6C9, #81C784, #4CAF5
 margin: 2em 0;
 border-radius: 2px;
 }
-.tocify {
-border: none !important;
-border-radius: 12px !important;
-background-color: #f1f8e9 !important;
-box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-.tocify-item.active, .tocify-item.active:hover {
-background-color: #4CAF50 !important;
-color: white !important;
-}
-
+.tocify { border: none !important; border-radius: 12px !important; background-color: #f1f8e9 !important; }
+.tocify-item.active { background-color: #4CAF50 !important; color: white !important; }
 .hint {
 background-color: #E3F2FD;
 border: 1px solid #1976D2;
@@ -1610,113 +1576,44 @@ padding: 10px 15px;
 margin: 1em 0;
 font-size: 0.9em;
 }
-.hint::before {
-content: "💡 ";
-}
-
-.explore {
-background-color: #FFF3E0;
-border: 1px solid #FF9800;
-border-radius: 8px;
-padding: 10px 15px;
-margin: 1em 0;
-font-size: 0.9em;
-}
-.explore::before {
-content: "🔍 ";
-}
-
-.debug {
-background-color: #FFEBEE;
-border: 1px solid #F44336;
-border-radius: 8px;
-padding: 10px 15px;
-margin: 1em 0;
-font-size: 0.9em;
-}
-.debug::before {
-content: "🐛 ";
-}
-
-.predict {
-background-color: #E8F5E9;
-border: 1px solid #4CAF50;
-border-radius: 8px;
-padding: 10px 15px;
-margin: 1em 0;
-font-size: 0.9em;
-}
-.predict::before {
-content: "🤔 ";
-}
+.hint::before { content: "💡 "; }
 
 .lang-toggle {
-position: fixed;
-top: 10px;
-right: 20px;
-z-index: 9999;
+position: fixed; top: 10px; right: 20px; z-index: 9999;
 background: linear-gradient(135deg, #2E7D32, #4CAF50);
-padding: 8px 12px;
-border-radius: 25px;
+padding: 8px 12px; border-radius: 25px;
 box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3);
 }
 .lang-toggle button {
-background: transparent;
-border: none;
-color: #fff;
-padding: 6px 14px;
-cursor: pointer;
-font-weight: bold;
-border-radius: 20px;
-transition: all 0.3s;
-font-size: 14px;
+background: transparent; border: none; color: #fff;
+padding: 6px 14px; cursor: pointer; font-weight: bold;
+border-radius: 20px; transition: all 0.3s; font-size: 14px;
 }
-.lang-toggle button.active {
-background: white;
-color: #2E7D32;
-}
-.lang-toggle button:hover:not(.active) {
-background: rgba(255,255,255,0.2);
-}
+.lang-toggle button.active { background: white; color: #2E7D32; }
+.lang-toggle button:hover:not(.active) { background: rgba(255,255,255,0.2); }
 .de { display: none; }
 .en { display: inline; }
 body.lang-de .de { display: inline; }
 body.lang-de .en { display: none; }
-div.de, p.de, li.de, h1.de, h2.de, h3.de, h4.de, section.de { display: none; }
-div.en, p.en, li.en, h1.en, h2.en, h3.en, h4.en, section.en { display: block; }
+div.de, p.de, li.de, h1.de, h2.de, h3.de, section.de { display: none; }
+div.en, p.en, li.en, h1.en, h2.en, h3.en, section.en { display: block; }
 body.lang-de div.de, body.lang-de p.de, body.lang-de li.de,
-body.lang-de h1.de, body.lang-de h2.de, body.lang-de h3.de,
-body.lang-de h4.de, body.lang-de section.de { display: block; }
+body.lang-de h1.de, body.lang-de h2.de, body.lang-de h3.de, body.lang-de section.de { display: block; }
 body.lang-de div.en, body.lang-de p.en, body.lang-de li.en,
-body.lang-de h1.en, body.lang-de h2.en, body.lang-de h3.en,
-body.lang-de h4.en, body.lang-de section.en { display: none; }
+body.lang-de h1.en, body.lang-de h2.en, body.lang-de h3.en, body.lang-de section.en { display: none; }
 body.lang-de #TOC .en { display: none; }
 body.lang-de #TOC .de { display: inline; }
 #TOC .de { display: none; }
 #TOC .en { display: inline; }
-@media print {
-.tocify, .lang-toggle, .copy-btn { display: none; }
-}
-
 @media (max-width: 768px) {
-body { font-size: 14px; line-height: 1.5; }
-h1 { font-size: 1.5rem; }
-h2 { font-size: 1.3rem; }
-h3 { font-size: 1.1rem; }
+body { font-size: 14px; }
 .lang-toggle { top: 5px; right: 10px; padding: 5px 8px; }
 .lang-toggle button { padding: 4px 10px; font-size: 12px; }
-table { font-size: 12px; display: block; overflow-x: auto; white-space: nowrap; }
-th, td { padding: 6px 8px; }
-blockquote { padding: 10px 15px; margin: 0.5em 0; }
 pre { font-size: 11px; padding: 10px; }
-code { font-size: 11px; }
-img, .figure img { max-width: 100%; height: auto; }
-.code-exercise { padding: 10px; }
 }
 </style>
 <script>
 $(document).ready(function() {
-  // Language toggle
   var toggle = $('<div class="lang-toggle"><button id="btn-en" class="active">EN</button><button id="btn-de">DE</button></div>');
   $('body').append(toggle);
 
@@ -1731,3126 +1628,358 @@ $(document).ready(function() {
     localStorage.setItem('workshop-lang', lang);
   }
 
-  if (defaultLang === 'de') {
-    setLanguage('de');
-  }
+  if (defaultLang === 'de') setLanguage('de');
 
   $('#btn-en').click(function() { setLanguage('en'); });
   $('#btn-de').click(function() { setLanguage('de'); });
 
-  // Copy button for code blocks
   $('pre').each(function() {
     var pre = $(this);
     var btn = $('<button class="copy-btn">Copy</button>');
-
     btn.click(function() {
       var code = pre.find('code');
       var text = code.length ? code.text() : pre.text();
-
-      function showSuccess() {
-        btn.text('Copied!').addClass('copied');
-        setTimeout(function() {
-          btn.text('Copy').removeClass('copied');
-        }, 2000);
-      }
-
-      function fallbackCopy() {
-        var textarea = document.createElement('textarea');
-        textarea.value = text;
-        textarea.style.position = 'fixed';
-        textarea.style.opacity = '0';
-        document.body.appendChild(textarea);
-        textarea.select();
-        try {
-          document.execCommand('copy');
-          showSuccess();
-        } catch(e) {
-          btn.text('Failed');
-        }
-        document.body.removeChild(textarea);
-      }
-
-      // Use clipboard API if available and in secure context, else fallback
       if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(text).then(showSuccess).catch(fallbackCopy);
-      } else {
-        fallbackCopy();
+        navigator.clipboard.writeText(text).then(function() {
+          btn.text('Copied!').addClass('copied');
+          setTimeout(function() { btn.text('Copy').removeClass('copied'); }, 2000);
+        });
       }
     });
-
     pre.css('position', 'relative').append(btn);
   });
 });
 </script>
 <hr />
-<div id="part-1-r-basics---getting-startedteil-1-r-grundlagen---erste-schritte" class="section level1">
-<h1><span class="en">Part 1: R Basics - Getting Started</span><span class="de">Teil 1: R Grundlagen - Erste Schritte</span></h1>
+<div id="exercise-1-variables-vectorsübung-1-variablen-vektoren" class="section level1">
+<h1><span class="en">Exercise 1: Variables &amp; Vectors</span><span class="de">Übung 1: Variablen &amp; Vektoren</span></h1>
 <div class="en">
-<p>Welcome to R! In this section, you’ll learn the fundamental building
-blocks of R programming. Take your time with each exercise -
-understanding these basics thoroughly will make everything else
-easier.</p>
-<p><strong>How to use these exercises:</strong></p>
-<ul>
-<li>Replace each <code>____</code> with the correct code</li>
-<li>Run each chunk to see if it works</li>
-<li>Read the hints if you get stuck</li>
-<li>Try the “Explore” and “Debug” sections to deepen your
-understanding</li>
-</ul>
+<p>In R, we store data in <strong>variables</strong>. A
+<strong>vector</strong> is a list of values.</p>
 </div>
 <div class="de">
-<p>Willkommen bei R! In diesem Abschnitt lernst du die grundlegenden
-Bausteine der R-Programmierung. Nimm dir Zeit für jede Übung - diese
-Grundlagen gut zu verstehen macht alles Weitere einfacher.</p>
-<p><strong>So benutzt du diese Übungen:</strong></p>
-<ul>
-<li>Ersetze jedes <code>____</code> mit dem korrekten Code</li>
-<li>Führe jeden Block aus um zu sehen ob es funktioniert</li>
-<li>Lies die Hinweise wenn du feststeckst</li>
-<li>Probiere die “Erkunden” und “Debug” Abschnitte um dein Verständnis
-zu vertiefen</li>
-</ul>
+<p>In R speichern wir Daten in <strong>Variablen</strong>. Ein
+<strong>Vektor</strong> ist eine Liste von Werten.</p>
 </div>
-<hr />
-<div id="exercise-1-your-first-variablesübung-1-deine-ersten-variablen" class="section level2">
-<h2><span class="en">Exercise 1: Your First Variables</span><span class="de">Übung 1: Deine ersten Variablen</span></h2>
-<div class="en">
-<p><strong>Concept:</strong> Variables are containers that store values.
-In R, we use <code>&lt;-</code> to assign values to variables.</p>
-</div>
-<div class="de">
-<p><strong>Konzept:</strong> Variablen sind Behälter die Werte
-speichern. In R benutzen wir <code>&lt;-</code> um Variablen Werte
-zuzuweisen.</p>
-</div>
-<div id="a-creating-simple-variables1a-einfache-variablen-erstellen" class="section level3">
-<h3><span class="en">1a: Creating simple variables</span><span class="de">1a: Einfache Variablen erstellen</span></h3>
-<pre class="r"><code># 1a: Creating simple variables
-# 1a: Einfache Variablen erstellen
+<pre class="r"><code># 1a: Store a number in a variable
+# 1a: Speichere eine Zahl in einer Variable
 
-# Store the number 42 in a variable called &quot;answer&quot;
-# Speichere die Zahl 42 in einer Variable namens &quot;answer&quot;
-answer &lt;- ____
+my_number &lt;- ___
+my_number
 
-# Print it to see the value
-# Gib sie aus um den Wert zu sehen
-print(answer)
+# 1b: Store text (needs quotes!)
+# 1b: Speichere Text (braucht Anführungszeichen!)
 
-# Store your age in a variable
-# Speichere dein Alter in einer Variable
-my_age &lt;- ____
-print(my_age)
+my_name &lt;- &quot;___&quot;
+my_name
 
-# Store a decimal number (height in meters)
-# Speichere eine Dezimalzahl (Größe in Metern)
-my_height &lt;- ____
-print(my_height)</code></pre>
-</div>
-<div id="b-text-variables-strings1b-text-variablen-strings" class="section level3">
-<h3><span class="en">1b: Text variables (strings)</span><span class="de">1b: Text-Variablen (Strings)</span></h3>
-<pre class="r"><code># 1b: Text variables - use quotes!
-# 1b: Text-Variablen - benutze Anführungszeichen!
+# 1c: Create a vector with c()
+# 1c: Erstelle einen Vektor mit c()
 
-# Store your name (text needs quotes)
-# Speichere deinen Namen (Text braucht Anführungszeichen)
-my_name &lt;- &quot;____&quot;
-print(my_name)
+species_counts &lt;- c(5, 3, 7, 2, 4)
+species_counts
 
-# Store a species name
-# Speichere einen Artnamen
-species &lt;- &quot;____&quot;
-print(species)
+# 1d: Your turn - create a vector of 4 tree heights
+# 1d: Du bist dran - erstelle einen Vektor mit 4 Baumhöhen
 
-# Store a longer text
-# Speichere einen längeren Text
-description &lt;- &quot;____&quot;
-print(description)</code></pre>
-</div>
-<div id="c-logical-truefalse-variables1c-logische-truefalse-variablen" class="section level3">
-<h3><span class="en">1c: Logical (TRUE/FALSE) variables</span><span class="de">1c: Logische (TRUE/FALSE) Variablen</span></h3>
-<pre class="r"><code># 1c: Logical variables - TRUE or FALSE
-# 1c: Logische Variablen - TRUE oder FALSE
+tree_heights &lt;- c(___, ___, ___, ___)
+tree_heights
 
-# Is it raining? (answer TRUE or FALSE, no quotes!)
-# Regnet es? (antworte TRUE oder FALSE, keine Anführungszeichen!)
-is_raining &lt;- ____
+# 1e: Get the length of a vector
+# 1e: Hole die Länge eines Vektors
 
-# Is 5 greater than 3? (R can calculate this!)
-# Ist 5 größer als 3? (R kann das berechnen!)
-five_greater_three &lt;- 5 &gt; 3
-print(five_greater_three)
+length(species_counts)
 
-# Is 10 equal to 10? (use == for comparison)
-# Ist 10 gleich 10? (benutze == für Vergleich)
-ten_equals_ten &lt;- 10 ____ 10
-print(ten_equals_ten)
+# 1f: Calculate mean (average)
+# 1f: Berechne den Mittelwert (Durchschnitt)
 
-# Is &quot;oak&quot; equal to &quot;Oak&quot;? (R is case-sensitive!)
-# Ist &quot;oak&quot; gleich &quot;Oak&quot;? (R unterscheidet Groß/Kleinschreibung!)
-oak_equals_Oak &lt;- &quot;oak&quot; == &quot;Oak&quot;
-print(oak_equals_Oak)</code></pre>
-</div>
-<div id="d-basic-math-with-variables1d-grundlegende-mathematik-mit-variablen" class="section level3">
-<h3><span class="en">1d: Basic math with variables</span><span class="de">1d: Grundlegende Mathematik mit Variablen</span></h3>
-<pre class="r"><code># 1d: Math with variables
-# 1d: Mathematik mit Variablen
+mean(species_counts)
 
-# Create two number variables
-# Erstelle zwei Zahlen-Variablen
-a &lt;- 10
-b &lt;- 3
+# 1g: Calculate mean of your tree heights
+# 1g: Berechne den Mittelwert deiner Baumhöhen
 
-# Addition
-# Addition
-sum_ab &lt;- a ____ b
-print(sum_ab)  # Should be 13 / Sollte 13 sein
-
-# Subtraction
-# Subtraktion
-diff_ab &lt;- a ____ b
-print(diff_ab)  # Should be 7 / Sollte 7 sein
-
-# Multiplication
-# Multiplikation
-prod_ab &lt;- a ____ b
-print(prod_ab)  # Should be 30 / Sollte 30 sein
-
-# Division
-# Division
-div_ab &lt;- a ____ b
-print(div_ab)  # Should be 3.333... / Sollte 3.333... sein
-
-# Power (10 to the power of 3)
-# Potenz (10 hoch 3)
-power_ab &lt;- a ____ b
-print(power_ab)  # Should be 1000 / Sollte 1000 sein
-
-# Modulo (remainder after division)
-# Modulo (Rest nach Division)
-mod_ab &lt;- a %% b
-print(mod_ab)  # Should be 1 / Sollte 1 sein</code></pre>
-</div>
-<div id="e-updating-variables1e-variablen-aktualisieren" class="section level3">
-<h3><span class="en">1e: Updating variables</span><span class="de">1e:
-Variablen aktualisieren</span></h3>
-<pre class="r"><code># 1e: Variables can change!
-# 1e: Variablen können sich ändern!
-
-# Start with a count of species
-# Starte mit einer Artenanzahl
-species_count &lt;- 0
-print(species_count)
-
-# Found 5 species
-# 5 Arten gefunden
-species_count &lt;- species_count + ____
-print(species_count)  # Should be 5 / Sollte 5 sein
-
-# Found 3 more
-# 3 weitere gefunden
-species_count &lt;- species_count + ____
-print(species_count)  # Should be 8 / Sollte 8 sein
-
-# Oops, 2 were misidentified (subtract)
-# Ups, 2 waren falsch bestimmt (subtrahieren)
-species_count &lt;- species_count - ____
-print(species_count)  # Should be 6 / Sollte 6 sein</code></pre>
-<div class="predict">
-<p><span class="en"><strong>Predict:</strong> What will
-<code>species_count</code> be after running all the code above? Write
-your prediction, then run it!</span> <span class="de"><strong>Vorhersage:</strong> Was wird
-<code>species_count</code> sein nach Ausführung des gesamten Codes oben?
-Schreibe deine Vorhersage, dann führe ihn aus!</span></p>
-</div>
-</div>
-<div id="f-variable-naming-rules1f-regeln-für-variablennamen" class="section level3">
-<h3><span class="en">1f: Variable naming rules</span><span class="de">1f: Regeln für Variablennamen</span></h3>
-<pre class="r"><code># 1f: Which variable names are VALID? Mark TRUE or FALSE
-# 1f: Welche Variablennamen sind GÜLTIG? Markiere TRUE oder FALSE
-
-# my_variable &lt;- valid or not?
-# my_variable &lt;- gültig oder nicht?
-name1_valid &lt;- ____  # TRUE or FALSE?
-
-# myVariable &lt;- valid or not?
-# myVariable &lt;- gültig oder nicht?
-name2_valid &lt;- ____
-
-# 2nd_species &lt;- valid or not? (starts with number)
-# 2nd_species &lt;- gültig oder nicht? (beginnt mit Zahl)
-name3_valid &lt;- ____
-
-# species.count &lt;- valid or not?
-# species.count &lt;- gültig oder nicht?
-name4_valid &lt;- ____
-
-# species-count &lt;- valid or not? (has hyphen)
-# species-count &lt;- gültig oder nicht? (hat Bindestrich)
-name5_valid &lt;- ____
-
-# _hidden &lt;- valid or not? (starts with underscore)
-# _hidden &lt;- gültig oder nicht? (beginnt mit Unterstrich)
-name6_valid &lt;- ____</code></pre>
+mean(___)</code></pre>
 <div class="hint">
-<p><span class="en">Variable names: Must start with a letter, can
-contain letters, numbers, underscores, and dots. No spaces or
-hyphens!</span> <span class="de">Variablennamen: Müssen mit einem
-Buchstaben beginnen, können Buchstaben, Zahlen, Unterstriche und Punkte
-enthalten. Keine Leerzeichen oder Bindestriche!</span></p>
+<p><span class="en">Hint: <code>c()</code> combines values into a
+vector. Use commas between values!</span> <span class="de">Hinweis:
+<code>c()</code> kombiniert Werte zu einem Vektor. Benutze Kommas
+zwischen den Werten!</span></p>
 </div>
 <hr />
 </div>
-</div>
-<div id="exercise-2-vectors---collections-of-valuesübung-2-vektoren---sammlungen-von-werten" class="section level2">
-<h2><span class="en">Exercise 2: Vectors - Collections of
-Values</span><span class="de">Übung 2: Vektoren - Sammlungen von
-Werten</span></h2>
+<div id="exercise-2-the-magic-of-uniqueübung-2-die-magie-von-unique" class="section level1">
+<h1><span class="en">Exercise 2: The Magic of unique()</span><span class="de">Übung 2: Die Magie von unique()</span></h1>
 <div class="en">
-<p><strong>Concept:</strong> Vectors are the most basic data structure
-in R. They hold multiple values of the same type. We create them with
-<code>c()</code> (combine).</p>
+<p><code>unique()</code> is the <strong>key function</strong> for
+ecology! It tells us how many <em>different</em> species we found.</p>
 </div>
 <div class="de">
-<p><strong>Konzept:</strong> Vektoren sind die grundlegendste
-Datenstruktur in R. Sie enthalten mehrere Werte desselben Typs. Wir
-erstellen sie mit <code>c()</code> (combine/kombinieren).</p>
+<p><code>unique()</code> ist die <strong>Schlüsselfunktion</strong> für
+Ökologie! Sie sagt uns, wie viele <em>verschiedene</em> Arten wir
+gefunden haben.</p>
 </div>
-<div id="a-creating-numeric-vectors2a-numerische-vektoren-erstellen" class="section level3">
-<h3><span class="en">2a: Creating numeric vectors</span><span class="de">2a: Numerische Vektoren erstellen</span></h3>
-<pre class="r"><code># 2a: Numeric vectors
-# 2a: Numerische Vektoren
+<pre class="r"><code># 2a: We observed these species (some repeats!)
+# 2a: Wir haben diese Arten beobachtet (einige Wiederholungen!)
 
-# Species counts from 5 plots
-# Artenzahlen von 5 Plots
-counts &lt;- c(12, 8, 15, 6, 10)
-print(counts)
-
-# Tree heights in meters
-# Baumhöhen in Metern
-heights &lt;- c(____, ____, ____, ____)
-print(heights)
-
-# Create a vector of your 5 favorite numbers
-# Erstelle einen Vektor mit deinen 5 Lieblingszahlen
-favorites &lt;- c(____, ____, ____, ____, ____)
-print(favorites)
-
-# Sequence from 1 to 10
-# Sequenz von 1 bis 10
-one_to_ten &lt;- 1:10
-print(one_to_ten)
-
-# Sequence from 5 to 15
-# Sequenz von 5 bis 15
-five_to_fifteen &lt;- ____:____
-print(five_to_fifteen)</code></pre>
-</div>
-<div id="b-creating-text-vectors2b-text-vektoren-erstellen" class="section level3">
-<h3><span class="en">2b: Creating text vectors</span><span class="de">2b: Text-Vektoren erstellen</span></h3>
-<pre class="r"><code># 2b: Text (character) vectors
-# 2b: Text (Character) Vektoren
-
-# Common tree species
-# Häufige Baumarten
-trees &lt;- c(&quot;Oak&quot;, &quot;Beech&quot;, &quot;Pine&quot;, &quot;Maple&quot;, &quot;Birch&quot;)
-print(trees)
-
-# Fill in 4 plant species you know
-# Fülle 4 Pflanzenarten ein die du kennst
-my_plants &lt;- c(&quot;____&quot;, &quot;____&quot;, &quot;____&quot;, &quot;____&quot;)
-print(my_plants)
-
-# Fill in the German names
-# Fülle die deutschen Namen ein
-german_trees &lt;- c(&quot;Eiche&quot;, &quot;____&quot;, &quot;____&quot;, &quot;____&quot;)
-print(german_trees)</code></pre>
-</div>
-<div id="c-vector-length-and-basic-info2c-vektorlänge-und-grundinfos" class="section level3">
-<h3><span class="en">2c: Vector length and basic info</span><span class="de">2c: Vektorlänge und Grundinfos</span></h3>
-<pre class="r"><code># 2c: Getting information about vectors
-# 2c: Informationen über Vektoren bekommen
-
-species &lt;- c(&quot;Oak&quot;, &quot;Beech&quot;, &quot;Pine&quot;, &quot;Maple&quot;, &quot;Birch&quot;, &quot;Ash&quot;, &quot;Elm&quot;)
-
-# How many elements?
-# Wie viele Elemente?
-n_species &lt;- ____(species)
-print(n_species)  # Should be 7 / Sollte 7 sein
-
-# Numeric vector
-# Numerischer Vektor
-values &lt;- c(23, 45, 12, 67, 89, 34)
-
-# How many values?
-# Wie viele Werte?
-n_values &lt;- length(____)
-print(n_values)
-
-# What type of data?
-# Welcher Datentyp?
-class(species)   # &quot;character&quot;
-class(values)    # &quot;numeric&quot;
-class(TRUE)      # &quot;logical&quot;</code></pre>
-</div>
-<div id="d-accessing-vector-elements2d-auf-vektorelemente-zugreifen" class="section level3">
-<h3><span class="en">2d: Accessing vector elements</span><span class="de">2d: Auf Vektorelemente zugreifen</span></h3>
-<pre class="r"><code># 2d: Accessing elements by position
-# 2d: Auf Elemente nach Position zugreifen
-
-species &lt;- c(&quot;Oak&quot;, &quot;Beech&quot;, &quot;Pine&quot;, &quot;Maple&quot;, &quot;Birch&quot;)
-
-# Get the FIRST element (position 1)
-# Hole das ERSTE Element (Position 1)
-first_species &lt;- species[____]
-print(first_species)  # &quot;Oak&quot;
-
-# Get the THIRD element
-# Hole das DRITTE Element
-third_species &lt;- species[____]
-print(third_species)  # &quot;Pine&quot;
-
-# Get the LAST element (5th)
-# Hole das LETZTE Element (5.)
-last_species &lt;- species[____]
-print(last_species)  # &quot;Birch&quot;
-
-# Get multiple elements: 1st and 3rd
-# Hole mehrere Elemente: 1. und 3.
-some_species &lt;- species[c(____, ____)]
-print(some_species)  # &quot;Oak&quot; &quot;Pine&quot;
-
-# Get elements 2 through 4
-# Hole Elemente 2 bis 4
-middle_species &lt;- species[____:____]
-print(middle_species)  # &quot;Beech&quot; &quot;Pine&quot; &quot;Maple&quot;
-
-# Get all EXCEPT the first
-# Hole alle AUSSER dem ersten
-not_first &lt;- species[-____]
-print(not_first)</code></pre>
-</div>
-<div id="e-vector-math2e-vektor-mathematik" class="section level3">
-<h3><span class="en">2e: Vector math</span><span class="de">2e:
-Vektor-Mathematik</span></h3>
-<pre class="r"><code># 2e: Math operations on vectors
-# 2e: Mathematische Operationen auf Vektoren
-
-heights &lt;- c(10, 15, 8, 12, 20)
-
-# Add 2 to every element
-# Addiere 2 zu jedem Element
-heights_plus_2 &lt;- heights + ____
-print(heights_plus_2)  # 12 17 10 14 22
-
-# Multiply every element by 100 (convert m to cm)
-# Multipliziere jedes Element mit 100 (m zu cm)
-heights_cm &lt;- heights * ____
-print(heights_cm)
-
-# Sum of all heights
-# Summe aller Höhen
-total_height &lt;- ____(heights)
-print(total_height)  # 65
-
-# Average height
-# Durchschnittliche Höhe
-avg_height &lt;- ____(heights)
-print(avg_height)  # 13
-
-# Smallest height
-# Kleinste Höhe
-min_height &lt;- ____(heights)
-print(min_height)  # 8
-
-# Largest height
-# Größte Höhe
-max_height &lt;- ____(heights)
-print(max_height)  # 20
-
-# Range (min and max together)
-# Bereich (min und max zusammen)
-height_range &lt;- ____(heights)
-print(height_range)  # 8 20</code></pre>
-</div>
-<div id="f-combining-vectors2f-vektoren-kombinieren" class="section level3">
-<h3><span class="en">2f: Combining vectors</span><span class="de">2f:
-Vektoren kombinieren</span></h3>
-<pre class="r"><code># 2f: Combining vectors
-# 2f: Vektoren kombinieren
-
-# Species found in different plots
-# Arten gefunden in verschiedenen Plots
-plot1 &lt;- c(&quot;Oak&quot;, &quot;Beech&quot;, &quot;Pine&quot;)
-plot2 &lt;- c(&quot;Maple&quot;, &quot;Birch&quot;)
-plot3 &lt;- c(&quot;Ash&quot;, &quot;Elm&quot;, &quot;Oak&quot;)
-
-# Combine all into one vector
-# Kombiniere alle zu einem Vektor
-all_species &lt;- c(plot1, ____, ____)
-print(all_species)
-
-# How many total observations?
-# Wie viele Beobachtungen insgesamt?
-n_observations &lt;- ____(all_species)
-print(n_observations)  # 8
-
-# Combine numeric vectors
-# Kombiniere numerische Vektoren
-counts_morning &lt;- c(3, 5, 2)
-counts_afternoon &lt;- c(4, 1, 6)
-
-# All counts together
-# Alle Zählungen zusammen
-all_counts &lt;- c(____, ____)
-print(all_counts)  # 3 5 2 4 1 6
-
-# Total count
-# Gesamtzählung
-total &lt;- sum(____)
-print(total)  # 21</code></pre>
-<div class="explore">
-<p><span class="en"><strong>Explore:</strong> What happens if you try to
-combine numbers and text in one vector? Try:
-<code>c(1, 2, &quot;three&quot;, 4)</code>. What does R do?</span> <span class="de"><strong>Erkunden:</strong> Was passiert wenn du versuchst
-Zahlen und Text in einem Vektor zu kombinieren? Probiere:
-<code>c(1, 2, &quot;three&quot;, 4)</code>. Was macht R?</span></p>
-</div>
-</div>
-<div id="g-debug-challenge2g-debug-herausforderung" class="section level3">
-<h3><span class="en">2g: Debug challenge</span><span class="de">2g:
-Debug-Herausforderung</span></h3>
-<div class="debug">
-<p><span class="en"><strong>Fix the bugs:</strong> Each line has an
-error. Find and fix them!</span> <span class="de"><strong>Behebe die
-Fehler:</strong> Jede Zeile hat einen Fehler. Finde und behebe
-sie!</span></p>
-</div>
-<pre class="r"><code># Debug these lines - they all have errors!
-# Debugge diese Zeilen - sie haben alle Fehler!
-
-# Bug 1: Missing something to create a vector
-# Bug 1: Etwas fehlt um einen Vektor zu erstellen
-species &lt;- (&quot;Oak&quot;, &quot;Beech&quot;, &quot;Pine&quot;)
-
-# Bug 2: Wrong brackets to access element
-# Bug 2: Falsche Klammern um Element abzurufen
-first &lt;- species(1)
-
-# Bug 3: Missing quotes around text
-# Bug 3: Fehlende Anführungszeichen um Text
-trees &lt;- c(Oak, Beech, Pine)
-
-# Bug 4: Using wrong function for length
-# Bug 4: Falsche Funktion für Länge
-n &lt;- size(species)
-
-# Bug 5: Comma in wrong place
-# Bug 5: Komma an falscher Stelle
-numbers &lt;- c(1 2, 3, 4, 5)</code></pre>
-<hr />
-</div>
-</div>
-<div id="exercise-3-the-unique-function---key-to-ecologyübung-3-die-unique-funktion---schlüssel-zur-ökologie" class="section level2">
-<h2><span class="en">Exercise 3: The Unique Function - Key to
-Ecology!</span><span class="de">Übung 3: Die Unique-Funktion - Schlüssel
-zur Ökologie!</span></h2>
-<div class="en">
-<p><strong>Why this matters:</strong> In ecology, we often record
-species at many plots, but the same species appears multiple times.
-<code>unique()</code> helps us count how many <em>different</em> species
-we found - this is called <strong>species richness</strong>.</p>
-</div>
-<div class="de">
-<p><strong>Warum das wichtig ist:</strong> In der Ökologie erfassen wir
-oft Arten an vielen Plots, aber dieselbe Art erscheint mehrfach.
-<code>unique()</code> hilft uns zu zählen wie viele
-<em>verschiedene</em> Arten wir gefunden haben - das nennt man
-<strong>Artenreichtum</strong>.</p>
-</div>
-<div id="a-basic-unique3a-grundlegendes-unique" class="section level3">
-<h3><span class="en">3a: Basic unique</span><span class="de">3a:
-Grundlegendes unique</span></h3>
-<pre class="r"><code># 3a: Getting unique values
-# 3a: Einzigartige Werte bekommen
-
-# We observed these species (with repeats)
-# Wir haben diese Arten beobachtet (mit Wiederholungen)
 observations &lt;- c(&quot;Oak&quot;, &quot;Beech&quot;, &quot;Oak&quot;, &quot;Pine&quot;, &quot;Beech&quot;, &quot;Oak&quot;, &quot;Maple&quot;)
 
-# How many total observations?
+# How many observations total?
 # Wie viele Beobachtungen insgesamt?
-n_obs &lt;- length(____)
-print(n_obs)  # 7
 
-# How many UNIQUE species?
-# Wie viele EINZIGARTIGE Arten?
-unique_species &lt;- ____(observations)
-print(unique_species)  # Oak, Beech, Pine, Maple
+length(observations)
 
-# Count of unique species
-# Anzahl einzigartiger Arten
-n_unique &lt;- length(____(__))
-print(n_unique)  # 4</code></pre>
-</div>
-<div id="b-unique-with-numbers3b-unique-mit-zahlen" class="section level3">
-<h3><span class="en">3b: Unique with numbers</span><span class="de">3b:
-Unique mit Zahlen</span></h3>
-<pre class="r"><code># 3b: Unique works with numbers too
-# 3b: Unique funktioniert auch mit Zahlen
+# 2b: How many UNIQUE species?
+# 2b: Wie viele EINZIGARTIGE Arten?
 
-# Plot IDs where we found a specific species
-# Plot-IDs wo wir eine bestimmte Art gefunden haben
-oak_plots &lt;- c(1, 3, 3, 5, 7, 7, 7, 9, 9)
+unique(observations)
+length(unique(observations))
 
-# How many times was oak recorded?
-# Wie oft wurde Eiche erfasst?
-n_records &lt;- length(oak_plots)
-print(n_records)  # 9
-
-# In how many DIFFERENT plots?
-# In wie vielen VERSCHIEDENEN Plots?
-n_plots &lt;- length(____(__))
-print(n_plots)  # 5
-
-# Which plots?
-# Welche Plots?
-which_plots &lt;- unique(____)
-print(which_plots)  # 1 3 5 7 9</code></pre>
-</div>
-<div id="c-building-a-species-list-across-plots3c-eine-artenliste-über-plots-erstellen" class="section level3">
-<h3><span class="en">3c: Building a species list across
-plots</span><span class="de">3c: Eine Artenliste über Plots
-erstellen</span></h3>
-<pre class="r"><code># 3c: Combining species from multiple plots
-# 3c: Arten von mehreren Plots kombinieren
-
-# Species lists from 3 different plots
-# Artenlisten von 3 verschiedenen Plots
-plot_A &lt;- c(&quot;Oak&quot;, &quot;Beech&quot;, &quot;Pine&quot;, &quot;Fern&quot;)
-plot_B &lt;- c(&quot;Beech&quot;, &quot;Maple&quot;, &quot;Oak&quot;, &quot;Moss&quot;)
-plot_C &lt;- c(&quot;Pine&quot;, &quot;Birch&quot;, &quot;Oak&quot;, &quot;Fern&quot;)
-
-# Combine all observations
-# Kombiniere alle Beobachtungen
-all_obs &lt;- c(____, ____, ____)
-print(all_obs)
-
-# Total observations
-# Gesamte Beobachtungen
-print(paste(&quot;Total observations:&quot;, length(____)))
-
-# Unique species across all plots
-# Einzigartige Arten über alle Plots
-all_unique &lt;- unique(____)
-print(all_unique)
-
-# Species richness (total unique species)
-# Artenreichtum (gesamte einzigartige Arten)
-richness &lt;- length(____)
-print(paste(&quot;Species richness:&quot;, richness))</code></pre>
-</div>
-<div id="d-step-by-step-accumulation-the-core-concept3d-schrittweise-akkumulation-das-kernkonzept" class="section level3">
-<h3><span class="en">3d: Step-by-step accumulation (the core
-concept!)</span><span class="de">3d: Schrittweise Akkumulation (das
-Kernkonzept!)</span></h3>
-<pre class="r"><code># 3d: How species accumulate as we add plots
-# 3d: Wie Arten akkumulieren wenn wir Plots hinzufügen
+# 2c: Species from 3 plots
+# 2c: Arten von 3 Plots
 
 plot1 &lt;- c(&quot;Oak&quot;, &quot;Beech&quot;, &quot;Pine&quot;)
 plot2 &lt;- c(&quot;Beech&quot;, &quot;Maple&quot;, &quot;Oak&quot;)
-plot3 &lt;- c(&quot;Pine&quot;, &quot;Birch&quot;, &quot;Oak&quot;)
-plot4 &lt;- c(&quot;Ash&quot;, &quot;Beech&quot;, &quot;Maple&quot;)
-plot5 &lt;- c(&quot;Elm&quot;, &quot;Oak&quot;, &quot;Pine&quot;)
+plot3 &lt;- c(&quot;Birch&quot;, &quot;Oak&quot;, &quot;Ash&quot;)
 
-# After plot 1: how many unique species?
-# Nach Plot 1: wie viele einzigartige Arten?
-after_1 &lt;- length(unique(____))
-print(paste(&quot;After plot 1:&quot;, after_1, &quot;species&quot;))
+# Combine all observations
+# Kombiniere alle Beobachtungen
 
-# After plots 1+2
-# Nach Plots 1+2
-after_2 &lt;- length(unique(c(____, ____)))
-print(paste(&quot;After plots 1-2:&quot;, after_2, &quot;species&quot;))
+all_species &lt;- c(plot1, plot2, plot3)
+all_species
 
-# After plots 1+2+3
-# Nach Plots 1+2+3
-after_3 &lt;- length(unique(c(____, ____, ____)))
-print(paste(&quot;After plots 1-3:&quot;, after_3, &quot;species&quot;))
+# 2d: Total observations vs unique species
+# 2d: Gesamte Beobachtungen vs einzigartige Arten
 
-# After plots 1+2+3+4
-# Nach Plots 1+2+3+4
-after_4 &lt;- length(unique(c(____, ____, ____, ____)))
-print(paste(&quot;After plots 1-4:&quot;, after_4, &quot;species&quot;))
+length(all_species)           # Total observations / Gesamte Beobachtungen
+length(unique(all_species))   # Species richness / Artenreichtum
 
-# After all 5 plots
-# Nach allen 5 Plots
-after_5 &lt;- length(unique(c(____, ____, ____, ____, ____)))
-print(paste(&quot;After plots 1-5:&quot;, after_5, &quot;species&quot;))
+# 2e: Your turn - how many unique species after adding plot1 + plot2?
+# 2e: Du bist dran - wie viele einzigartige Arten nach plot1 + plot2?
 
-# The accumulation curve!
-# Die Akkumulationskurve!
-accumulation &lt;- c(after_1, after_2, after_3, after_4, after_5)
-print(&quot;Accumulation curve:&quot;)
-print(accumulation)</code></pre>
-<div class="predict">
-<p><span class="en"><strong>Predict:</strong> Before running, guess the
-accumulation values. Does it go up by the same amount each time? Why or
-why not?</span> <span class="de"><strong>Vorhersage:</strong> Vor dem
-Ausführen, schätze die Akkumulationswerte. Steigt es jedes Mal um
-denselben Betrag? Warum oder warum nicht?</span></p>
-</div>
-</div>
-<div id="e-finding-new-species-with-setdiff3e-neue-arten-finden-mit-setdiff" class="section level3">
-<h3><span class="en">3e: Finding new species with setdiff</span><span class="de">3e: Neue Arten finden mit setdiff</span></h3>
-<pre class="r"><code># 3e: setdiff finds what&#39;s in A but not in B
-# 3e: setdiff findet was in A aber nicht in B ist
-
-# Species we already found
-# Arten die wir bereits gefunden haben
-already_found &lt;- c(&quot;Oak&quot;, &quot;Beech&quot;, &quot;Pine&quot;)
-
-# Species in the new plot
-# Arten im neuen Plot
-new_plot &lt;- c(&quot;Beech&quot;, &quot;Maple&quot;, &quot;Oak&quot;, &quot;Birch&quot;)
-
-# Which species in new_plot are NEW (not in already_found)?
-# Welche Arten im new_plot sind NEU (nicht in already_found)?
-new_species &lt;- setdiff(____, ____)
-print(new_species)  # Maple, Birch
-
-# How many new species?
-# Wie viele neue Arten?
-n_new &lt;- length(____)
-print(paste(&quot;New species found:&quot;, n_new))
-
-# Now update our found list
-# Jetzt aktualisiere unsere Fundliste
-already_found &lt;- c(already_found, ____)
-print(already_found)
-
-# Check: another new plot
-# Prüfen: ein weiterer neuer Plot
-next_plot &lt;- c(&quot;Oak&quot;, &quot;Fern&quot;, &quot;Maple&quot;, &quot;Moss&quot;)
-
-# What&#39;s new this time?
-# Was ist diesmal neu?
-new_again &lt;- setdiff(____, ____)
-print(new_again)</code></pre>
+after_two_plots &lt;- c(plot1, ___)
+length(unique(after_two_plots))</code></pre>
 <div class="hint">
-<p><span class="en"><code>setdiff(A, B)</code> returns elements that are
-in A but NOT in B. Think: “What’s the difference from A’s
-perspective?”</span> <span class="de"><code>setdiff(A, B)</code> gibt
-Elemente zurück die in A aber NICHT in B sind. Denke: “Was ist der
-Unterschied aus A’s Perspektive?”</span></p>
-</div>
-</div>
-<div id="f-practice-with-real-ecological-thinking3f-übung-mit-echtem-ökologischem-denken" class="section level3">
-<h3><span class="en">3f: Practice with real ecological
-thinking</span><span class="de">3f: Übung mit echtem ökologischem
-Denken</span></h3>
-<pre class="r"><code># 3f: Ecological scenario
-# 3f: Ökologisches Szenario
-
-# Morning survey results
-# Morgen-Erhebungsergebnisse
-morning_birds &lt;- c(&quot;Robin&quot;, &quot;Sparrow&quot;, &quot;Blackbird&quot;, &quot;Robin&quot;, &quot;Tit&quot;, &quot;Sparrow&quot;)
-
-# Afternoon survey results
-# Nachmittag-Erhebungsergebnisse
-afternoon_birds &lt;- c(&quot;Crow&quot;, &quot;Sparrow&quot;, &quot;Magpie&quot;, &quot;Robin&quot;, &quot;Finch&quot;)
-
-# 1. How many bird observations in the morning?
-# 1. Wie viele Vogelbeobachtungen am Morgen?
-morning_obs &lt;- length(____)
-print(paste(&quot;Morning observations:&quot;, morning_obs))
-
-# 2. How many unique species in the morning?
-# 2. Wie viele einzigartige Arten am Morgen?
-morning_species &lt;- length(unique(____))
-print(paste(&quot;Morning species:&quot;, morning_species))
-
-# 3. What new species did we see in the afternoon (not seen in morning)?
-# 3. Welche neuen Arten sahen wir am Nachmittag (nicht am Morgen gesehen)?
-afternoon_unique &lt;- unique(____)
-morning_unique &lt;- unique(____)
-new_afternoon &lt;- setdiff(____, ____)
-print(paste(&quot;New in afternoon:&quot;, paste(new_afternoon, collapse = &quot;, &quot;)))
-
-# 4. Total species for the whole day
-# 4. Gesamte Arten für den ganzen Tag
-all_birds &lt;- c(____, ____)
-total_species &lt;- length(unique(____))
-print(paste(&quot;Total species today:&quot;, total_species))</code></pre>
-<div class="explore">
-<p><span class="en"><strong>Explore:</strong> What if we surveyed in
-reverse order (afternoon first)? Would <code>setdiff</code> give the
-same “new” species? Try it!</span> <span class="de"><strong>Erkunden:</strong> Was wenn wir in umgekehrter
-Reihenfolge erhoben hätten (Nachmittag zuerst)? Würde
-<code>setdiff</code> dieselben “neuen” Arten geben? Probiere
-es!</span></p>
+<p><span class="en">Hint: Species richness =
+<code>length(unique(species_list))</code></span> <span class="de">Hinweis: Artenreichtum =
+<code>length(unique(artenliste))</code></span></p>
 </div>
 <hr />
 </div>
-</div>
-<div id="exercise-4-working-with-data-framesübung-4-mit-data-frames-arbeiten" class="section level2">
-<h2><span class="en">Exercise 4: Working with Data Frames</span><span class="de">Übung 4: Mit Data Frames arbeiten</span></h2>
+<div id="exercise-3-loading-real-dataübung-3-echte-daten-laden" class="section level1">
+<h1><span class="en">Exercise 3: Loading Real Data</span><span class="de">Übung 3: Echte Daten laden</span></h1>
 <div class="en">
-<p><strong>Concept:</strong> Data frames are tables with rows and
-columns - like a spreadsheet. Each column can hold different types of
-data. This is how real ecological data is usually organized.</p>
+<p>Now let’s load the <strong>Austrian vegetation data</strong>!</p>
 </div>
 <div class="de">
-<p><strong>Konzept:</strong> Data Frames sind Tabellen mit Zeilen und
-Spalten - wie eine Tabellenkalkulation. Jede Spalte kann verschiedene
-Datentypen enthalten. So sind echte ökologische Daten normalerweise
-organisiert.</p>
+<p>Jetzt laden wir die <strong>österreichischen
+Vegetationsdaten</strong>!</p>
 </div>
-<div id="a-creating-a-data-frame4a-einen-data-frame-erstellen" class="section level3">
-<h3><span class="en">4a: Creating a data frame</span><span class="de">4a: Einen Data Frame erstellen</span></h3>
-<pre class="r"><code># 4a: Creating data frames
-# 4a: Data Frames erstellen
+<pre class="r"><code># 3a: Load the tidyverse package
+# 3a: Lade das tidyverse Paket
 
-# Create a simple data frame
-# Erstelle einen einfachen Data Frame
-plants &lt;- data.frame(
-  species = c(&quot;Quercus robur&quot;, &quot;Fagus sylvatica&quot;, &quot;Pinus sylvestris&quot;,
-              &quot;Betula pendula&quot;, &quot;Acer pseudoplatanus&quot;),
-  common_name = c(&quot;Oak&quot;, &quot;Beech&quot;, &quot;Pine&quot;, &quot;Birch&quot;, &quot;Maple&quot;),
-  height_m = c(25, 30, 20, 18, 22),
-  native = c(TRUE, TRUE, TRUE, TRUE, TRUE)
-)
+library(tidyverse)
 
-# View the data frame
-# Zeige den Data Frame an
-print(plants)
+# 3b: Load the species data
+# 3b: Lade die Artdaten
 
-# Create your own data frame with 4 animals
-# Erstelle deinen eigenen Data Frame mit 4 Tieren
-animals &lt;- data.frame(
-  name = c(&quot;____&quot;, &quot;____&quot;, &quot;____&quot;, &quot;____&quot;),
-  legs = c(____, ____, ____, ____),
-  can_fly = c(____, ____, ____, ____)
-)
-print(animals)</code></pre>
-</div>
-<div id="b-exploring-data-frames4b-data-frames-erkunden" class="section level3">
-<h3><span class="en">4b: Exploring data frames</span><span class="de">4b: Data Frames erkunden</span></h3>
-<pre class="r"><code># 4b: Getting information about data frames
-# 4b: Informationen über Data Frames bekommen
+species_data &lt;- read_csv(&quot;../data/austria_species.csv&quot;)
 
-# How many rows (observations)?
-# Wie viele Zeilen (Beobachtungen)?
-n_rows &lt;- ____(plants)
-print(paste(&quot;Number of rows:&quot;, n_rows))
+# 3c: Look at the first few rows
+# 3c: Schau dir die ersten Zeilen an
 
-# How many columns (variables)?
-# Wie viele Spalten (Variablen)?
-n_cols &lt;- ____(plants)
-print(paste(&quot;Number of columns:&quot;, n_cols))
+head(species_data)
 
-# Dimensions (rows x columns)
-# Dimensionen (Zeilen x Spalten)
-dims &lt;- ____(plants)
-print(dims)
+# 3d: How many rows (observations)?
+# 3d: Wie viele Zeilen (Beobachtungen)?
 
-# Column names
-# Spaltennamen
-col_names &lt;- ____(plants)
-print(col_names)
+nrow(species_data)
 
-# Structure - shows type of each column
-# Struktur - zeigt Typ jeder Spalte
-____(plants)
+# 3e: What columns do we have?
+# 3e: Welche Spalten haben wir?
 
-# First few rows
-# Erste paar Zeilen
-____(plants)
+colnames(species_data)
 
-# Last few rows
-# Letzte paar Zeilen
-____(plants)
+# 3f: How many unique plots?
+# 3f: Wie viele einzigartige Plots?
 
-# Summary statistics
-# Zusammenfassende Statistiken
-____(plants)</code></pre>
-</div>
-<div id="c-accessing-columns4c-auf-spalten-zugreifen" class="section level3">
-<h3><span class="en">4c: Accessing columns</span><span class="de">4c:
-Auf Spalten zugreifen</span></h3>
-<pre class="r"><code># 4c: Getting specific columns
-# 4c: Bestimmte Spalten abrufen
+length(unique(species_data$PlotObservationID))
 
-# Get the species column (using $)
-# Hole die species Spalte (mit $)
-species_col &lt;- plants$____
-print(species_col)
+# 3g: How many unique species in the whole dataset?
+# 3g: Wie viele einzigartige Arten im gesamten Datensatz?
 
-# Get the height column
-# Hole die height Spalte
-heights &lt;- plants$____
-print(heights)
-
-# Calculate mean height
-# Berechne mittlere Höhe
-mean_height &lt;- mean(plants$____)
-print(paste(&quot;Mean height:&quot;, mean_height))
-
-# Tallest tree
-# Höchster Baum
-max_height &lt;- max(plants$____)
-print(paste(&quot;Tallest:&quot;, max_height, &quot;m&quot;))
-
-# Alternative: using [[&quot;column_name&quot;]]
-# Alternative: mit [[&quot;column_name&quot;]]
-native_col &lt;- plants[[&quot;____&quot;]]
-print(native_col)
-
-# Alternative: using [, &quot;column_name&quot;]
-# Alternative: mit [, &quot;column_name&quot;]
-common_names &lt;- plants[, &quot;____&quot;]
-print(common_names)</code></pre>
-</div>
-<div id="d-accessing-rows4d-auf-zeilen-zugreifen" class="section level3">
-<h3><span class="en">4d: Accessing rows</span><span class="de">4d: Auf
-Zeilen zugreifen</span></h3>
-<pre class="r"><code># 4d: Getting specific rows
-# 4d: Bestimmte Zeilen abrufen
-
-# Get first row
-# Hole erste Zeile
-first_plant &lt;- plants[____, ]
-print(first_plant)
-
-# Get third row
-# Hole dritte Zeile
-third_plant &lt;- plants[____, ]
-print(third_plant)
-
-# Get rows 2 to 4
-# Hole Zeilen 2 bis 4
-some_plants &lt;- plants[____:____, ]
-print(some_plants)
-
-# Get specific cell: row 2, column &quot;height_m&quot;
-# Hole bestimmte Zelle: Zeile 2, Spalte &quot;height_m&quot;
-beech_height &lt;- plants[2, &quot;____&quot;]
-print(paste(&quot;Beech height:&quot;, beech_height))
-
-# Get multiple rows and specific columns
-# Hole mehrere Zeilen und bestimmte Spalten
-subset_data &lt;- plants[1:3, c(&quot;species&quot;, &quot;height_m&quot;)]
-print(subset_data)</code></pre>
-</div>
-<div id="e-adding-columns4e-spalten-hinzufügen" class="section level3">
-<h3><span class="en">4e: Adding columns</span><span class="de">4e:
-Spalten hinzufügen</span></h3>
-<pre class="r"><code># 4e: Adding new columns
-# 4e: Neue Spalten hinzufügen
-
-# Add a column for diameter (made up values)
-# Füge eine Spalte für Durchmesser hinzu (erfundene Werte)
-plants$diameter_cm &lt;- c(80, 100, 60, 50, 70)
-print(plants)
-
-# Add a calculated column: height in feet (1 m = 3.281 feet)
-# Füge eine berechnete Spalte hinzu: Höhe in Fuß (1 m = 3.281 Fuß)
-plants$height_ft &lt;- plants$____ * 3.281
-print(plants)
-
-# Add a column: is the tree tall? (height &gt; 22)
-# Füge eine Spalte hinzu: ist der Baum hoch? (Höhe &gt; 22)
-plants$is_tall &lt;- plants$height_m &gt; ____
-print(plants)
-
-# Add a column based on condition
-# Füge eine Spalte basierend auf Bedingung hinzu
-plants$size_class &lt;- ifelse(plants$height_m &gt; 24, &quot;large&quot;,
-                            ifelse(plants$height_m &gt; 20, &quot;medium&quot;, &quot;small&quot;))
-print(plants)</code></pre>
-</div>
-<div id="f-debug-challenge4f-debug-herausforderung" class="section level3">
-<h3><span class="en">4f: Debug challenge</span><span class="de">4f:
-Debug-Herausforderung</span></h3>
-<div class="debug">
-<p><span class="en"><strong>Fix the bugs:</strong> Each line has an
-error when accessing the data frame!</span> <span class="de"><strong>Behebe die Fehler:</strong> Jede Zeile hat einen
-Fehler beim Zugriff auf den Data Frame!</span></p>
-</div>
-<pre class="r"><code># Sample data frame
-df &lt;- data.frame(
-  name = c(&quot;Alice&quot;, &quot;Bob&quot;, &quot;Carol&quot;),
-  age = c(25, 30, 28),
-  city = c(&quot;Vienna&quot;, &quot;Graz&quot;, &quot;Linz&quot;)
-)
-
-# Bug 1: Wrong symbol to access column
-ages &lt;- df@age
-
-# Bug 2: Missing comma for row access
-first_row &lt;- df[1]
-
-# Bug 3: Column name without quotes in brackets
-names_col &lt;- df[, name]
-
-# Bug 4: Row index out of bounds
-fourth_person &lt;- df[4, ]
-
-# Bug 5: Wrong function to count rows
-n_people &lt;- length(df)</code></pre>
-<hr />
-</div>
-</div>
-</div>
-<div id="part-2-loops-and-filteringteil-2-schleifen-und-filtern" class="section level1">
-<h1><span class="en">Part 2: Loops and Filtering</span><span class="de">Teil 2: Schleifen und Filtern</span></h1>
-<div id="exercise-5-for-loops---repeating-actionsübung-5-for-schleifen---aktionen-wiederholen" class="section level2">
-<h2><span class="en">Exercise 5: For Loops - Repeating
-Actions</span><span class="de">Übung 5: For-Schleifen - Aktionen
-wiederholen</span></h2>
-<div class="en">
-<p><strong>Concept:</strong> Loops let us repeat code many times. This
-is essential for building accumulation curves - we need to repeat the
-“add a plot, count species” action for each plot.</p>
-</div>
-<div class="de">
-<p><strong>Konzept:</strong> Schleifen lassen uns Code oft wiederholen.
-Das ist essentiell für Akkumulationskurven - wir müssen die “füge Plot
-hinzu, zähle Arten”-Aktion für jeden Plot wiederholen.</p>
-</div>
-<div id="a-basic-for-loop5a-grundlegende-for-schleife" class="section level3">
-<h3><span class="en">5a: Basic for loop</span><span class="de">5a:
-Grundlegende for-Schleife</span></h3>
-<pre class="r"><code># 5a: Simple loops
-# 5a: Einfache Schleifen
-
-# Print numbers 1 to 5
-# Gib Zahlen 1 bis 5 aus
-for (i in 1:5) {
-  print(i)
-}
-
-# Print numbers 1 to 10
-# Gib Zahlen 1 bis 10 aus
-for (i in ____:____) {
-  print(____)
-}
-
-# Print with a message
-# Gib mit einer Nachricht aus
-for (i in 1:3) {
-  print(paste(&quot;This is iteration number&quot;, ____))
-}
-
-# Count backwards from 5 to 1
-# Zähle rückwärts von 5 bis 1
-for (i in ____:____) {
-  print(i)
-}</code></pre>
-</div>
-<div id="b-looping-over-vectors5b-über-vektoren-schleifen" class="section level3">
-<h3><span class="en">5b: Looping over vectors</span><span class="de">5b:
-Über Vektoren schleifen</span></h3>
-<pre class="r"><code># 5b: Loop over vector elements
-# 5b: Über Vektorelemente schleifen
-
-species &lt;- c(&quot;Oak&quot;, &quot;Beech&quot;, &quot;Pine&quot;, &quot;Maple&quot;)
-
-# Print each species
-# Gib jede Art aus
-for (sp in ____) {
-  print(paste(&quot;Found:&quot;, sp))
-}
-
-# Numbers with calculation
-# Zahlen mit Berechnung
-heights &lt;- c(10, 15, 8, 20, 12)
-
-for (h in ____) {
-  height_ft &lt;- h * 3.281
-  print(paste(h, &quot;meters =&quot;, round(height_ft, 1), &quot;feet&quot;))
-}
-
-# Loop with index AND value
-# Schleife mit Index UND Wert
-for (i in 1:length(species)) {
-  print(paste(&quot;Species&quot;, i, &quot;is&quot;, species[____]))
-}</code></pre>
-</div>
-<div id="c-building-results-with-loops5c-ergebnisse-mit-schleifen-aufbauen" class="section level3">
-<h3><span class="en">5c: Building results with loops</span><span class="de">5c: Ergebnisse mit Schleifen aufbauen</span></h3>
-<pre class="r"><code># 5c: Collecting results in a loop
-# 5c: Ergebnisse in einer Schleife sammeln
-
-# Create empty vector to store results
-# Erstelle leeren Vektor um Ergebnisse zu speichern
-squares &lt;- c()
-
-# Calculate squares of 1 to 10
-# Berechne Quadrate von 1 bis 10
-for (i in 1:10) {
-  squares[i] &lt;- i^____
-}
-print(squares)
-
-# Better: pre-allocate the vector
-# Besser: Vektor vorallokieren
-squares &lt;- numeric(10)  # Creates vector of 10 zeros
-
-for (i in 1:10) {
-  squares[____] &lt;- i^2
-}
-print(squares)
-
-# Sum numbers 1 to 100 using a loop
-# Summiere Zahlen 1 bis 100 mit einer Schleife
-total &lt;- 0
-for (i in 1:100) {
-  total &lt;- total + ____
-}
-print(paste(&quot;Sum of 1 to 100:&quot;, total))  # Should be 5050</code></pre>
-</div>
-<div id="d-loops-with-conditions5d-schleifen-mit-bedingungen" class="section level3">
-<h3><span class="en">5d: Loops with conditions</span><span class="de">5d: Schleifen mit Bedingungen</span></h3>
-<pre class="r"><code># 5d: Using if inside loops
-# 5d: if innerhalb von Schleifen benutzen
-
-numbers &lt;- c(3, 7, 2, 9, 4, 6, 8, 1, 5)
-
-# Count how many are greater than 5
-# Zähle wie viele größer als 5 sind
-count_above_5 &lt;- 0
-for (n in numbers) {
-  if (n ____ 5) {
-    count_above_5 &lt;- count_above_5 + ____
-  }
-}
-print(paste(&quot;Numbers above 5:&quot;, count_above_5))
-
-# Classify each number
-# Klassifiziere jede Zahl
-for (n in numbers) {
-  if (n &gt; 5) {
-    print(paste(n, &quot;is HIGH&quot;))
-  } else {
-    print(paste(n, &quot;is LOW&quot;))
-  }
-}
-
-# Collect only the high numbers
-# Sammle nur die hohen Zahlen
-high_numbers &lt;- c()
-for (n in ____) {
-  if (n &gt; 5) {
-    high_numbers &lt;- c(high_numbers, ____)
-  }
-}
-print(high_numbers)</code></pre>
-</div>
-<div id="e-nested-loops5e-verschachtelte-schleifen" class="section level3">
-<h3><span class="en">5e: Nested loops</span><span class="de">5e:
-Verschachtelte Schleifen</span></h3>
-<pre class="r"><code># 5e: Loop inside a loop
-# 5e: Schleife in einer Schleife
-
-# Print a small multiplication table
-# Gib eine kleine Multiplikationstabelle aus
-for (i in 1:3) {
-  for (j in 1:3) {
-    result &lt;- i * j
-    print(paste(i, &quot;x&quot;, j, &quot;=&quot;, ____))
-  }
-}
-
-# Create a matrix using nested loops
-# Erstelle eine Matrix mit verschachtelten Schleifen
-matrix_result &lt;- matrix(0, nrow = 4, ncol = 4)
-
-for (row in 1:4) {
-  for (col in 1:4) {
-    matrix_result[____, ____] &lt;- row * col
-  }
-}
-print(matrix_result)</code></pre>
-</div>
-<div id="f-accumulation-curve-with-a-loop5f-akkumulationskurve-mit-einer-schleife" class="section level3">
-<h3><span class="en">5f: Accumulation curve with a loop!</span><span class="de">5f: Akkumulationskurve mit einer Schleife!</span></h3>
-<pre class="r"><code># 5f: Build an accumulation curve step by step
-# 5f: Baue eine Akkumulationskurve Schritt für Schritt
-
-# Species lists for 5 plots
-# Artenlisten für 5 Plots
-plot_species &lt;- list(
-  c(&quot;Oak&quot;, &quot;Beech&quot;, &quot;Pine&quot;),
-  c(&quot;Beech&quot;, &quot;Maple&quot;, &quot;Birch&quot;, &quot;Pine&quot;),
-  c(&quot;Oak&quot;, &quot;Linden&quot;, &quot;Beech&quot;),
-  c(&quot;Spruce&quot;, &quot;Pine&quot;, &quot;Oak&quot;),
-  c(&quot;Maple&quot;, &quot;Ash&quot;, &quot;Beech&quot;, &quot;Elm&quot;)
-)
-
-# Initialize
-# Initialisieren
-found_species &lt;- c()
-accumulation &lt;- numeric(5)
-
-# Loop through each plot
-# Schleife durch jeden Plot
-for (i in 1:5) {
-  # Get species from this plot
-  # Hole Arten von diesem Plot
-  current_species &lt;- plot_species[[____]]
-
-  # Find NEW species (not seen before)
-  # Finde NEUE Arten (noch nicht gesehen)
-  new_species &lt;- setdiff(____, ____)
-
-  # Add to our found list
-  # Füge zu unserer Fundliste hinzu
-  found_species &lt;- c(found_species, ____)
-
-  # Record cumulative count
-  # Erfasse kumulative Zählung
-  accumulation[____] &lt;- length(found_species)
-
-  # Print progress
-  # Gib Fortschritt aus
-  print(paste(&quot;Plot&quot;, i,
-              &quot;- New:&quot;, length(new_species),
-              &quot;- Total:&quot;, accumulation[i]))
-}
-
-print(&quot;Final accumulation curve:&quot;)
-print(accumulation)</code></pre>
-<div class="predict">
-<p><span class="en"><strong>Predict:</strong> What will the final
-accumulation values be? Think about overlaps between plots!</span> <span class="de"><strong>Vorhersage:</strong> Was werden die finalen
-Akkumulationswerte sein? Denke über Überlappungen zwischen Plots
-nach!</span></p>
-</div>
-<hr />
-</div>
-</div>
-<div id="exercise-6-filtering-dataübung-6-daten-filtern" class="section level2">
-<h2><span class="en">Exercise 6: Filtering Data</span><span class="de">Übung 6: Daten filtern</span></h2>
-<div class="en">
-<p><strong>Why this matters:</strong> We need to separate native and
-alien species to compare their accumulation patterns. Filtering is how
-we do this!</p>
-</div>
-<div class="de">
-<p><strong>Warum das wichtig ist:</strong> Wir müssen heimische und
-Alien-Arten trennen um ihre Akkumulationsmuster zu vergleichen. Filtern
-ist wie wir das machen!</p>
-</div>
-<div id="a-logical-comparisons6a-logische-vergleiche" class="section level3">
-<h3><span class="en">6a: Logical comparisons</span><span class="de">6a:
-Logische Vergleiche</span></h3>
-<pre class="r"><code># 6a: Comparison operators
-# 6a: Vergleichsoperatoren
-
-x &lt;- 10
-
-# Equal to
-# Gleich
-x == 10   # TRUE
-x == 5    # FALSE
-
-# Not equal to
-# Nicht gleich
-x != 5    # TRUE
-x ____ 10  # FALSE - fill in the &quot;not equal&quot; operator
-
-# Greater than
-# Größer als
-x &gt; 5     # ____  (TRUE or FALSE?)
-x &gt; 15    # ____
-
-# Less than
-# Kleiner als
-x &lt; 15    # ____
-x &lt; 5     # ____
-
-# Greater than or equal
-# Größer oder gleich
-x &gt;= 10   # ____
-x &gt;= 11   # ____
-
-# Less than or equal
-# Kleiner oder gleich
-x &lt;= 10   # ____
-x &lt;= 9    # ____</code></pre>
-</div>
-<div id="b-filtering-vectors6b-vektoren-filtern" class="section level3">
-<h3><span class="en">6b: Filtering vectors</span><span class="de">6b:
-Vektoren filtern</span></h3>
-<pre class="r"><code># 6b: Using logical vectors to filter
-# 6b: Logische Vektoren zum Filtern benutzen
-
-heights &lt;- c(10, 25, 15, 30, 8, 22, 18)
-
-# Which are greater than 20?
-# Welche sind größer als 20?
-tall_mask &lt;- heights &gt; 20
-print(tall_mask)  # TRUE/FALSE for each
-
-# Get only the tall values
-# Hole nur die hohen Werte
-tall_heights &lt;- heights[____]
-print(tall_heights)
-
-# Get heights between 15 and 25
-# Hole Höhen zwischen 15 und 25
-medium_mask &lt;- heights &gt;= 15 &amp; heights &lt;= 25
-medium_heights &lt;- heights[____]
-print(medium_heights)
-
-# Count how many are tall
-# Zähle wie viele hoch sind
-n_tall &lt;- sum(heights ____ 20)  # sum() counts TRUEs
-print(paste(&quot;Tall trees:&quot;, n_tall))</code></pre>
-</div>
-<div id="c-filtering-data-frames6c-data-frames-filtern" class="section level3">
-<h3><span class="en">6c: Filtering data frames</span><span class="de">6c: Data Frames filtern</span></h3>
-<pre class="r"><code># 6c: Filtering rows in data frames
-# 6c: Zeilen in Data Frames filtern
-
-# Create ecological data
-# Erstelle ökologische Daten
-flora &lt;- data.frame(
-  species = c(&quot;Fagus sylvatica&quot;, &quot;Impatiens glandulifera&quot;,
-              &quot;Quercus robur&quot;, &quot;Solidago canadensis&quot;,
-              &quot;Pinus sylvestris&quot;, &quot;Reynoutria japonica&quot;),
-  status = c(&quot;native&quot;, &quot;neo&quot;, &quot;native&quot;, &quot;neo&quot;, &quot;native&quot;, &quot;neo&quot;),
-  n_plots = c(450, 120, 380, 95, 200, 45),
-  cover = c(45, 15, 35, 20, 30, 25)
-)
-
-print(flora)
-
-# Filter only native species
-# Filtere nur heimische Arten
-native_only &lt;- flora[flora$status == ____, ]
-print(native_only)
-
-# Filter only alien (neo) species
-# Filtere nur Alien- (neo) Arten
-alien_only &lt;- flora[flora$____ == &quot;neo&quot;, ]
-print(alien_only)
-
-# Filter species found in more than 100 plots
-# Filtere Arten die in mehr als 100 Plots gefunden wurden
-common &lt;- flora[flora$n_plots ____ 100, ]
-print(common)
-
-# Filter rare aliens (neo AND less than 100 plots)
-# Filtere seltene Aliens (neo UND weniger als 100 Plots)
-rare_aliens &lt;- flora[flora$status == &quot;neo&quot; ____ flora$n_plots &lt; 100, ]
-print(rare_aliens)</code></pre>
-</div>
-<div id="d-using-subset-function6d-die-subset-funktion-benutzen" class="section level3">
-<h3><span class="en">6d: Using subset() function</span><span class="de">6d: Die subset() Funktion benutzen</span></h3>
-<pre class="r"><code># 6d: subset() is often easier to read
-# 6d: subset() ist oft leichter zu lesen
-
-# Native species using subset
-# Heimische Arten mit subset
-native &lt;- subset(flora, status == ____)
-print(native)
-
-# Common aliens (neo with &gt; 50 plots)
-# Häufige Aliens (neo mit &gt; 50 Plots)
-common_aliens &lt;- subset(flora, status == ____ &amp; n_plots &gt; ____)
-print(common_aliens)
-
-# High cover species (any status)
-# Arten mit hoher Deckung (jeder Status)
-high_cover &lt;- subset(flora, cover ____ 25)
-print(high_cover)
-
-# Select specific columns too
-# Wähle auch bestimmte Spalten
-names_only &lt;- subset(flora, status == &quot;native&quot;, select = c(species, n_plots))
-print(names_only)</code></pre>
-</div>
-<div id="e-counting-and-summarizing6e-zählen-und-zusammenfassen" class="section level3">
-<h3><span class="en">6e: Counting and summarizing</span><span class="de">6e: Zählen und zusammenfassen</span></h3>
-<pre class="r"><code># 6e: Summary statistics by group
-# 6e: Zusammenfassende Statistiken nach Gruppe
-
-# How many species per status?
-# Wie viele Arten pro Status?
-n_native &lt;- nrow(flora[flora$status == ____, ])
-n_alien &lt;- nrow(flora[flora$status == ____, ])
-print(paste(&quot;Native species:&quot;, n_native))
-print(paste(&quot;Alien species:&quot;, n_alien))
-
-# Mean plots for each group
-# Mittlere Plots für jede Gruppe
-mean_plots_native &lt;- mean(flora$n_plots[flora$status == ____])
-mean_plots_alien &lt;- mean(flora$n_plots[flora$status == ____])
-print(paste(&quot;Mean plots (native):&quot;, mean_plots_native))
-print(paste(&quot;Mean plots (alien):&quot;, mean_plots_alien))
-
-# Using table() for quick counts
-# table() für schnelle Zählungen
-status_counts &lt;- table(flora$____)
-print(status_counts)
-
-# Total plots occupied by each group
-# Gesamte Plots besetzt von jeder Gruppe
-total_native_plots &lt;- sum(flora$n_plots[flora$status == &quot;native&quot;])
-total_alien_plots &lt;- sum(flora$n_plots[flora$status == ____])
-print(paste(&quot;Total plot occurrences - Native:&quot;, total_native_plots,
-            &quot;Alien:&quot;, total_alien_plots))</code></pre>
-</div>
-<div id="f-combining-filter-conditions6f-filterbedingungen-kombinieren" class="section level3">
-<h3><span class="en">6f: Combining filter conditions</span><span class="de">6f: Filterbedingungen kombinieren</span></h3>
-<pre class="r"><code># 6f: AND (&amp;) vs OR (|)
-# 6f: UND (&amp;) vs ODER (|)
-
-# AND: both conditions must be true
-# UND: beide Bedingungen müssen wahr sein
-native_and_common &lt;- flora$status == &quot;native&quot; &amp; flora$n_plots &gt; 200
-flora[native_and_common, ]
-
-# OR: at least one condition must be true
-# ODER: mindestens eine Bedingung muss wahr sein
-rare_or_alien &lt;- flora$n_plots &lt; 100 | flora$status == &quot;neo&quot;
-flora[____, ]
-
-# Complex: (native AND common) OR (alien AND high cover)
-# Komplex: (heimisch UND häufig) ODER (alien UND hohe Deckung)
-complex_filter &lt;- (flora$status == &quot;native&quot; &amp; flora$n_plots &gt; 300) |
-                  (flora$status == &quot;neo&quot; &amp; flora$cover &gt; 20)
-flora[____, ]
-
-# NOT: use ! to negate
-# NICHT: benutze ! zum Negieren
-not_native &lt;- flora[!flora$status == &quot;native&quot;, ]
-print(not_native)  # Same as alien
-
-# Another way: using !=
-# Andere Art: mit !=
-also_not_native &lt;- flora[flora$status ____ &quot;native&quot;, ]
-print(also_not_native)</code></pre>
-<div class="explore">
-<p><span class="en"><strong>Explore:</strong> What’s the difference
-between <code>flora$n_plots &gt; 100</code> and
-<code>flora[flora$n_plots &gt; 100, ]</code>? Try both!</span> <span class="de"><strong>Erkunden:</strong> Was ist der Unterschied zwischen
-<code>flora$n_plots &gt; 100</code> und
-<code>flora[flora$n_plots &gt; 100, ]</code>? Probiere
-beides!</span></p>
-</div>
-<hr />
-</div>
-</div>
-<div id="exercise-7-distance-calculationsübung-7-distanzberechnungen" class="section level2">
-<h2><span class="en">Exercise 7: Distance Calculations</span><span class="de">Übung 7: Distanzberechnungen</span></h2>
-<div class="en">
-<p><strong>Why this matters:</strong> The nearest-neighbour algorithm
-needs to find the closest unvisited plot. We calculate distances using
-the Euclidean formula:</p>
-<p><span class="math display">\[d = \sqrt{(x_2-x_1)^2 +
-(y_2-y_1)^2}\]</span></p>
-</div>
-<div class="de">
-<p><strong>Warum das wichtig ist:</strong> Der
-Nearest-Neighbour-Algorithmus muss den nächsten unbesuchten Plot finden.
-Wir berechnen Distanzen mit der euklidischen Formel:</p>
-<p><span class="math display">\[d = \sqrt{(x_2-x_1)^2 +
-(y_2-y_1)^2}\]</span></p>
-</div>
-<div id="a-distance-between-two-points7a-distanz-zwischen-zwei-punkten" class="section level3">
-<h3><span class="en">7a: Distance between two points</span><span class="de">7a: Distanz zwischen zwei Punkten</span></h3>
-<pre class="r"><code># 7a: Basic distance calculation
-# 7a: Grundlegende Distanzberechnung
-
-# Two points
-# Zwei Punkte
-point_a &lt;- c(x = 0, y = 0)
-point_b &lt;- c(x = 3, y = 4)
-
-# Step by step calculation
-# Schritt für Schritt Berechnung
-x_diff &lt;- point_b[&quot;x&quot;] - point_a[&quot;x&quot;]  # 3 - 0 = 3
-y_diff &lt;- point_b[&quot;y&quot;] - point_a[&quot;y&quot;]  # 4 - 0 = 4
-
-x_squared &lt;- x_diff^____  # 9
-y_squared &lt;- y_diff^____  # 16
-
-sum_squares &lt;- x_squared + ____  # 25
-distance &lt;- sqrt(____)  # 5
-
-print(paste(&quot;Distance:&quot;, distance))
-
-# All in one line
-# Alles in einer Zeile
-distance_oneline &lt;- sqrt((point_b[&quot;x&quot;] - point_a[&quot;x&quot;])^2 +
-                          (point_b[&quot;y&quot;] - point_a[&quot;y&quot;])^____)
-print(distance_oneline)</code></pre>
-</div>
-<div id="b-distance-to-multiple-points7b-distanz-zu-mehreren-punkten" class="section level3">
-<h3><span class="en">7b: Distance to multiple points</span><span class="de">7b: Distanz zu mehreren Punkten</span></h3>
-<pre class="r"><code># 7b: Find distance from one point to many
-# 7b: Finde Distanz von einem Punkt zu vielen
-
-current &lt;- c(x = 100, y = 100)
-
-candidates &lt;- data.frame(
-  plot_id = c(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;),
-  x = c(110, 95, 150, 102),
-  y = c(105, 90, 120, 98)
-)
-
-# Calculate distance to each candidate
-# Berechne Distanz zu jedem Kandidaten
-candidates$distance &lt;- sqrt(
-  (candidates$x - current[&quot;x&quot;])^____ +
-  (candidates$y - current[&quot;y&quot;])^____
-)
-
-print(candidates)
-
-# Which is nearest?
-# Welcher ist am nächsten?
-nearest_distance &lt;- min(candidates$____)
-print(paste(&quot;Nearest distance:&quot;, round(nearest_distance, 2)))</code></pre>
-</div>
-<div id="c-finding-the-nearest-point7c-den-nächsten-punkt-finden" class="section level3">
-<h3><span class="en">7c: Finding the nearest point</span><span class="de">7c: Den nächsten Punkt finden</span></h3>
-<pre class="r"><code># 7c: which.min() finds the INDEX of the minimum
-# 7c: which.min() findet den INDEX des Minimums
-
-# Index of nearest plot
-# Index des nächsten Plots
-nearest_idx &lt;- which.____(candidates$distance)
-print(paste(&quot;Nearest is at position:&quot;, nearest_idx))
-
-# Get the plot ID
-# Hole die Plot-ID
-nearest_plot &lt;- candidates$plot_id[____]
-print(paste(&quot;Nearest plot:&quot;, nearest_plot))
-
-# Get the full row
-# Hole die ganze Zeile
-nearest_row &lt;- candidates[____, ]
-print(nearest_row)
-
-# What about the FARTHEST?
-# Was ist mit dem WEITESTEN?
-farthest_idx &lt;- which.____(candidates$distance)
-farthest_plot &lt;- candidates$plot_id[____]
-print(paste(&quot;Farthest plot:&quot;, farthest_plot))</code></pre>
-</div>
-<div id="d-create-a-distance-function7d-eine-distanzfunktion-erstellen" class="section level3">
-<h3><span class="en">7d: Create a distance function</span><span class="de">7d: Eine Distanzfunktion erstellen</span></h3>
-<pre class="r"><code># 7d: Make it reusable as a function
-# 7d: Mache es als Funktion wiederverwendbar
-
-# Define the function
-# Definiere die Funktion
-calc_distance &lt;- function(x1, y1, x2, y2) {
-  sqrt((x2 - x1)^2 + (y2 - y1)^____)
-}
-
-# Test it
-# Teste sie
-d1 &lt;- calc_distance(0, 0, 3, 4)
-print(d1)  # Should be 5
-
-d2 &lt;- calc_distance(100, 100, 110, 105)
-print(round(d2, 2))  # About 11.18
-
-# Use it in a loop
-# Benutze sie in einer Schleife
-for (i in 1:nrow(candidates)) {
-  d &lt;- calc_distance(current[&quot;x&quot;], current[&quot;y&quot;],
-                     candidates$x[i], candidates$y[i])
-  print(paste(&quot;Distance to&quot;, candidates$plot_id[i], &quot;:&quot;, round(d, 2)))
-}</code></pre>
-</div>
-<div id="e-simulating-a-nearest-neighbour-walk7e-einen-nearest-neighbour-weg-simulieren" class="section level3">
-<h3><span class="en">7e: Simulating a nearest-neighbour walk</span><span class="de">7e: Einen Nearest-Neighbour-Weg simulieren</span></h3>
-<pre class="r"><code># 7e: Walk to nearest unvisited neighbor
-# 7e: Gehe zum nächsten unbesuchten Nachbarn
-
-# Create simple plot data
-# Erstelle einfache Plot-Daten
-plots &lt;- data.frame(
-  id = 1:6,
-  x = c(0, 5, 3, 8, 10, 7),
-  y = c(0, 2, 6, 1, 5, 8)
-)
-
-# Track visited plots
-# Verfolge besuchte Plots
-visited &lt;- rep(FALSE, 6)  # All start as not visited
-visit_order &lt;- c()
-
-# Start at plot 1
-# Starte bei Plot 1
-current_idx &lt;- 1
-
-for (step in 1:6) {
-  # Mark current as visited
-  # Markiere aktuellen als besucht
-  visited[current_idx] &lt;- TRUE
-  visit_order &lt;- c(visit_order, plots$id[____])
-
-  print(paste(&quot;Step&quot;, step, &quot;: Visiting plot&quot;, plots$id[current_idx]))
-
-  # Find next (if not done)
-  # Finde nächsten (wenn nicht fertig)
-  if (step &lt; 6) {
-    # Calculate distances to all plots
-    # Berechne Distanzen zu allen Plots
-    distances &lt;- calc_distance(
-      plots$x[current_idx], plots$y[current_idx],
-      plots$x, plots$y
-    )
-
-    # Set visited plots to Inf (won&#39;t be chosen)
-    # Setze besuchte Plots auf Inf (werden nicht gewählt)
-    distances[____] &lt;- Inf
-
-    # Move to nearest
-    # Gehe zum nächsten
-    current_idx &lt;- which.min(____)
-  }
-}
-
-print(&quot;Visit order:&quot;)
-print(visit_order)</code></pre>
-<div class="predict">
-<p><span class="en"><strong>Predict:</strong> Starting from plot 1 at
-(0,0), which plot will be visited second? Sketch it on paper
-first!</span> <span class="de"><strong>Vorhersage:</strong> Startend von
-Plot 1 bei (0,0), welcher Plot wird als zweites besucht? Skizziere es
-zuerst auf Papier!</span></p>
-</div>
-<hr />
-</div>
-</div>
-<div id="exercise-8-cumulative-sumsübung-8-kumulative-summen" class="section level2">
-<h2><span class="en">Exercise 8: Cumulative Sums</span><span class="de">Übung 8: Kumulative Summen</span></h2>
-<div class="en">
-<p><strong>Concept:</strong> <code>cumsum()</code> calculates running
-totals. If we find 5, then 3, then 2 new species, cumsum gives us 5, 8,
-10 - the total species at each step. This IS the accumulation curve!</p>
-</div>
-<div class="de">
-<p><strong>Konzept:</strong> <code>cumsum()</code> berechnet laufende
-Summen. Wenn wir 5, dann 3, dann 2 neue Arten finden, gibt uns cumsum 5,
-8, 10 - die Gesamtarten bei jedem Schritt. Das IST die
-Akkumulationskurve!</p>
-</div>
-<div id="a-basic-cumsum8a-grundlegendes-cumsum" class="section level3">
-<h3><span class="en">8a: Basic cumsum</span><span class="de">8a:
-Grundlegendes cumsum</span></h3>
-<pre class="r"><code># 8a: How cumsum works
-# 8a: Wie cumsum funktioniert
-
-# New species found per plot
-# Neue Arten gefunden pro Plot
-new_per_plot &lt;- c(5, 3, 2, 1, 1)
-
-# Cumulative sum (running total)
-# Kumulative Summe (laufende Summe)
-cumulative &lt;- ____(new_per_plot)
-print(cumulative)  # 5, 8, 10, 11, 12
-
-# Step by step explanation:
-# Schritt für Schritt Erklärung:
-# After plot 1: 5 total
-# Nach Plot 1: 5 gesamt
-# After plot 2: 5 + 3 = 8 total
-# Nach Plot 2: 5 + 3 = 8 gesamt
-# After plot 3: 8 + 2 = 10 total
-# Nach Plot 3: 8 + 2 = 10 gesamt
-# And so on...
-# Und so weiter...
-
-# Another example
-# Noch ein Beispiel
-daily_finds &lt;- c(10, 5, 3, 2, 2, 1, 1, 0, 1, 0)
-daily_cumulative &lt;- cumsum(____)
-print(daily_cumulative)</code></pre>
-</div>
-<div id="b-manual-cumsum-understand-the-logic8b-manuelles-cumsum-die-logik-verstehen" class="section level3">
-<h3><span class="en">8b: Manual cumsum (understand the
-logic)</span><span class="de">8b: Manuelles cumsum (die Logik
-verstehen)</span></h3>
-<pre class="r"><code># 8b: Build cumsum manually with a loop
-# 8b: Baue cumsum manuell mit einer Schleife
-
-new_species &lt;- c(15, 8, 5, 3, 2, 2, 1, 1, 0, 1)
-
-# Create storage for cumulative values
-# Erstelle Speicher für kumulative Werte
-cumulative_manual &lt;- numeric(length(new_species))
-running_total &lt;- ____
-
-for (i in 1:length(new_species)) {
-  running_total &lt;- running_total + new_species[____]
-  cumulative_manual[i] &lt;- ____
-}
-
-print(cumulative_manual)
-
-# Verify it matches cumsum
-# Überprüfe ob es mit cumsum übereinstimmt
-print(cumsum(new_species))</code></pre>
-</div>
-<div id="c-analyzing-accumulation-patterns8c-akkumulationsmuster-analysieren" class="section level3">
-<h3><span class="en">8c: Analyzing accumulation patterns</span><span class="de">8c: Akkumulationsmuster analysieren</span></h3>
-<pre class="r"><code># 8c: Extract information from cumulative curves
-# 8c: Informationen aus kumulativen Kurven extrahieren
-
-new_species &lt;- c(15, 8, 5, 4, 3, 2, 2, 1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0)
-cumulative &lt;- cumsum(new_species)
-
-print(&quot;Cumulative curve:&quot;)
-print(cumulative)
-
-# Total species at the end
-# Gesamte Arten am Ende
-total &lt;- cumulative[length(cumulative)]
-print(paste(&quot;Total species:&quot;, ____))
-
-# Species after 5 plots
-# Arten nach 5 Plots
-after_5 &lt;- cumulative[____]
-print(paste(&quot;After 5 plots:&quot;, after_5))
-
-# Species after 10 plots
-# Arten nach 10 Plots
-after_10 &lt;- cumulative[____]
-print(paste(&quot;After 10 plots:&quot;, after_10))
-
-# How many NEW species in last 5 plots?
-# Wie viele NEUE Arten in den letzten 5 Plots?
-new_in_last_5 &lt;- sum(new_species[16:____])
-print(paste(&quot;New in last 5 plots:&quot;, new_in_last_5))
-
-# At which plot did we first reach 30 species?
-# Bei welchem Plot erreichten wir erstmals 30 Arten?
-plot_at_30 &lt;- which(cumulative &gt;= ____)[1]
-print(paste(&quot;Reached 30 species at plot:&quot;, plot_at_30))
-
-# At which plot did we reach 90% of final total?
-# Bei welchem Plot erreichten wir 90% des Endtotals?
-threshold_90 &lt;- total * ____
-plot_at_90pct &lt;- which(cumulative &gt;= threshold_90)[1]
-print(paste(&quot;Reached 90% at plot:&quot;, plot_at_90pct))</code></pre>
-</div>
-<div id="d-compare-two-accumulation-patterns8d-zwei-akkumulationsmuster-vergleichen" class="section level3">
-<h3><span class="en">8d: Compare two accumulation patterns</span><span class="de">8d: Zwei Akkumulationsmuster vergleichen</span></h3>
-<pre class="r"><code># 8d: Native vs alien accumulation patterns
-# 8d: Heimische vs Alien-Akkumulationsmuster
-
-# New species per plot (simulated data)
-# Neue Arten pro Plot (simulierte Daten)
-native_new &lt;- c(20, 12, 8, 6, 5, 4, 3, 2, 2, 1, 1, 1, 0, 1, 0)
-alien_new &lt;- c(5, 3, 3, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1)
-
-# Calculate cumulative
-# Berechne kumulativ
-native_cumul &lt;- cumsum(____)
-alien_cumul &lt;- cumsum(____)
-
-print(&quot;Native accumulation:&quot;)
-print(native_cumul)
-
-print(&quot;Alien accumulation:&quot;)
-print(alien_cumul)
-
-# Compare totals
-# Vergleiche Totals
-print(paste(&quot;Native total:&quot;, max(native_cumul)))
-print(paste(&quot;Alien total:&quot;, max(____)))
-
-# Compare rates: what percent of total is found after 5 plots?
-# Vergleiche Raten: welcher Prozentsatz des Totals ist nach 5 Plots gefunden?
-native_pct_5 &lt;- round(100 * native_cumul[5] / max(native_cumul))
-alien_pct_5 &lt;- round(100 * alien_cumul[5] / max(____))
-
-print(paste(&quot;Native: after 5 plots found&quot;, native_pct_5, &quot;% of total&quot;))
-print(paste(&quot;Alien: after 5 plots found&quot;, alien_pct_5, &quot;% of total&quot;))</code></pre>
+length(unique(species_data$___))</code></pre>
 <div class="hint">
-<p><span class="en">Steeper initial rise followed by flattening =
-species are evenly spread (easy to find). Steady rise = species are
-patchy (keep finding new ones).</span> <span class="de">Steilerer
-anfänglicher Anstieg gefolgt von Abflachung = Arten sind gleichmäßig
-verteilt (leicht zu finden). Stetiger Anstieg = Arten sind fleckenhaft
-(findet immer neue).</span></p>
+<p><span class="en">Hint: Use <code>$</code> to access a column,
+e.g. <code>data$column_name</code></span> <span class="de">Hinweis:
+Benutze <code>$</code> um auf eine Spalte zuzugreifen, z.B.
+<code>data$spaltenname</code></span></p>
 </div>
 <hr />
 </div>
-</div>
-</div>
-<div id="part-3-functions---reusable-codeteil-3-funktionen---wiederverwendbarer-code" class="section level1">
-<h1><span class="en">Part 3: Functions - Reusable Code</span><span class="de">Teil 3: Funktionen - Wiederverwendbarer Code</span></h1>
+<div id="exercise-4-building-the-accumulation-curveübung-4-die-akkumulationskurve-bauen" class="section level1">
+<h1><span class="en">Exercise 4: Building the Accumulation
+Curve</span><span class="de">Übung 4: Die Akkumulationskurve
+bauen</span></h1>
 <div class="en">
-<p>Functions let us package code so we can reuse it without copying and
-pasting. This is essential for the accumulation curve analysis - we’ll
-write the algorithm once, then run it many times with different
-parameters.</p>
+<p>Now the exciting part - let’s build a species accumulation curve step
+by step!</p>
 </div>
 <div class="de">
-<p>Funktionen lassen uns Code verpacken, damit wir ihn wiederverwenden
-können ohne kopieren und einfügen. Das ist essentiell für die
-Akkumulationskurven-Analyse - wir schreiben den Algorithmus einmal, dann
-führen wir ihn oft mit verschiedenen Parametern aus.</p>
+<p>Jetzt der spannende Teil - bauen wir eine Artenakkumulationskurve
+Schritt für Schritt!</p>
 </div>
-<hr />
-<div id="exercise-9-writing-your-first-functionsübung-9-deine-ersten-funktionen-schreiben" class="section level2">
-<h2><span class="en">Exercise 9: Writing Your First
-Functions</span><span class="de">Übung 9: Deine ersten Funktionen
-schreiben</span></h2>
-<div id="a-the-anatomy-of-a-function9a-die-anatomie-einer-funktion" class="section level3">
-<h3><span class="en">9a: The anatomy of a function</span><span class="de">9a: Die Anatomie einer Funktion</span></h3>
-<pre class="r"><code># 9a: Basic function structure
-# 9a: Grundlegende Funktionsstruktur
+<pre class="r"><code># 4a: Get a list of all unique plots
+# 4a: Hole eine Liste aller einzigartigen Plots
 
-# A function has: name, arguments, body, and return value
-# Eine Funktion hat: Name, Argumente, Körper und Rückgabewert
+all_plots &lt;- unique(species_data$PlotObservationID)
+head(all_plots)
 
-# Simple function: double a number
-# Einfache Funktion: verdopple eine Zahl
-double_it &lt;- function(x) {
-  result &lt;- x * 2
-  return(result)
+# 4b: Take a small sample (first 50 plots for speed)
+# 4b: Nimm eine kleine Stichprobe (erste 50 Plots für Geschwindigkeit)
+
+sample_plots &lt;- all_plots[1:50]
+
+# 4c: Initialize our accumulation tracking
+# 4c: Initialisiere unsere Akkumulations-Verfolgung
+
+species_found &lt;- c()           # Empty vector to collect species
+                               # Leerer Vektor um Arten zu sammeln
+accumulation &lt;- c()            # Will store species count after each plot
+                               # Speichert Artenzahl nach jedem Plot
+
+# 4d: Loop through each plot and count species!
+# 4d: Schleife durch jeden Plot und zähle Arten!
+
+for (i in 1:length(sample_plots)) {
+
+  # Get current plot ID
+  # Hole aktuelle Plot-ID
+  current_plot &lt;- sample_plots[i]
+
+  # Get species in this plot
+  # Hole Arten in diesem Plot
+  plot_species &lt;- species_data$WFO_TAXON[species_data$PlotObservationID == current_plot]
+
+  # Add to our collection
+  # Füge zu unserer Sammlung hinzu
+  species_found &lt;- c(species_found, plot_species)
+
+  # Count unique species so far
+  # Zähle einzigartige Arten bisher
+  total_species &lt;- length(unique(species_found))
+
+  # Store in accumulation vector
+  # Speichere im Akkumulationsvektor
+  accumulation &lt;- c(accumulation, total_species)
 }
 
-# Call the function
-# Rufe die Funktion auf
-double_it(5)   # 10
-double_it(100) # 200
+# 4e: Look at the result!
+# 4e: Schau dir das Ergebnis an!
 
-# Your turn: triple a number
-# Du bist dran: verdreifache eine Zahl
-triple_it &lt;- function(x) {
-  result &lt;- x * ____
-  return(____)
-}
-
-triple_it(5)   # Should be 15
-triple_it(7)   # Should be 21
-
-# Function to add two numbers
-# Funktion um zwei Zahlen zu addieren
-add_numbers &lt;- function(a, b) {
-  result &lt;- ____ + ____
-  return(result)
-}
-
-add_numbers(3, 7)   # Should be 10
-add_numbers(10, 25) # Should be 35</code></pre>
-</div>
-<div id="b-functions-with-default-arguments9b-funktionen-mit-standardargumenten" class="section level3">
-<h3><span class="en">9b: Functions with default arguments</span><span class="de">9b: Funktionen mit Standardargumenten</span></h3>
-<pre class="r"><code># 9b: Default arguments
-# 9b: Standardargumente
-
-# Greet someone - default to English
-# Begrüße jemanden - Standard ist Englisch
-greet &lt;- function(name, language = &quot;en&quot;) {
-  if (language == &quot;en&quot;) {
-    message &lt;- paste(&quot;Hello,&quot;, name)
-  } else if (language == &quot;de&quot;) {
-    message &lt;- paste(&quot;Hallo,&quot;, ____)
-  } else {
-    message &lt;- paste(&quot;Hi,&quot;, name)
-  }
-  return(message)
-}
-
-# Test it
-# Teste es
-greet(&quot;Anna&quot;)           # Uses default: &quot;Hello, Anna&quot;
-greet(&quot;Max&quot;, &quot;de&quot;)      # &quot;Hallo, Max&quot;
-greet(&quot;Pierre&quot;, &quot;fr&quot;)   # &quot;Hi, Pierre&quot;
-
-# Calculate percentage with rounding (default: 1 decimal)
-# Berechne Prozent mit Runden (Standard: 1 Dezimalstelle)
-calc_percent &lt;- function(part, total, decimals = 1) {
-  pct &lt;- (part / ____) * 100
-  return(round(pct, ____))
-}
-
-calc_percent(25, 100)       # 25.0
-calc_percent(1, 3)          # 33.3
-calc_percent(1, 3, 0)       # 33 (no decimals)
-calc_percent(1, 3, 3)       # 33.333 (3 decimals)
-
-# Species richness as percentage of total
-# Artenreichtum als Prozent des Gesamten
-found &lt;- 45
-total_possible &lt;- 120
-richness_pct &lt;- calc_percent(____, ____)
-print(paste(&quot;Found&quot;, richness_pct, &quot;% of species&quot;))</code></pre>
-</div>
-<div id="c-functions-returning-multiple-values9c-funktionen-die-mehrere-werte-zurückgeben" class="section level3">
-<h3><span class="en">9c: Functions returning multiple values</span><span class="de">9c: Funktionen die mehrere Werte zurückgeben</span></h3>
-<pre class="r"><code># 9c: Return multiple values with a list
-# 9c: Mehrere Werte mit einer Liste zurückgeben
-
-# Summarize a numeric vector
-# Fasse einen numerischen Vektor zusammen
-summarize_vector &lt;- function(x) {
-  result &lt;- list(
-    n = length(____),
-    total = sum(____),
-    average = mean(____),
-    minimum = min(____),
-    maximum = max(____)
-  )
-  return(result)
-}
-
-# Test with heights
-# Teste mit Höhen
-heights &lt;- c(25, 30, 18, 22, 35, 28)
-summary_stats &lt;- summarize_vector(heights)
-
-print(summary_stats$n)        # 6
-print(summary_stats$average)  # 26.33
-print(summary_stats$maximum)  # 35
-
-# Summarize species data
-# Fasse Artendaten zusammen
-summarize_species &lt;- function(species_vector) {
-  return(list(
-    total_observations = length(species_vector),
-    unique_species = length(____(__)),
-    most_common = names(sort(table(species_vector), decreasing = TRUE)[1])
-  ))
-}
-
-obs &lt;- c(&quot;Oak&quot;, &quot;Beech&quot;, &quot;Oak&quot;, &quot;Pine&quot;, &quot;Oak&quot;, &quot;Beech&quot;, &quot;Maple&quot;)
-species_summary &lt;- summarize_species(obs)
-
-print(species_summary$total_observations)  # 7
-print(species_summary$unique_species)       # 4
-print(species_summary$most_common)          # &quot;Oak&quot;</code></pre>
-</div>
-<div id="d-functions-for-accumulation-curves9d-funktionen-für-akkumulationskurven" class="section level3">
-<h3><span class="en">9d: Functions for accumulation curves</span><span class="de">9d: Funktionen für Akkumulationskurven</span></h3>
-<pre class="r"><code># 9d: Build a reusable accumulation function
-# 9d: Baue eine wiederverwendbare Akkumulationsfunktion
-
-# Count unique species found so far
-# Zähle einzigartige Arten die bisher gefunden wurden
-count_unique_species &lt;- function(species_list) {
-  all_species &lt;- unlist(species_list)
-  unique_count &lt;- length(____(__))
-  return(unique_count)
-}
-
-# Test data
-# Testdaten
-test_plots &lt;- list(
-  c(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;),
-  c(&quot;B&quot;, &quot;D&quot;),
-  c(&quot;A&quot;, &quot;E&quot;, &quot;F&quot;)
-)
-
-count_unique_species(test_plots)  # Should be 6
-
-# Build accumulation curve from list of plots
-# Baue Akkumulationskurve aus Liste von Plots
-build_simple_accumulation &lt;- function(plot_species_list) {
-  n_plots &lt;- length(plot_species_list)
-  accumulation &lt;- numeric(n_plots)
-  found &lt;- c()
-
-  for (i in 1:n_plots) {
-    current_plot &lt;- plot_species_list[[____]]
-    new_species &lt;- setdiff(current_plot, ____)
-    found &lt;- c(found, new_species)
-    accumulation[i] &lt;- length(____)
-  }
-
-  return(accumulation)
-}
-
-# Test it
-# Teste sie
-curve &lt;- build_simple_accumulation(test_plots)
-print(curve)  # 3, 4, 6</code></pre>
-<div class="predict">
-<p><span class="en"><strong>Predict:</strong> If the plots were visited
-in reverse order (3, 2, 1), would the final total be different? Would
-the curve shape be different?</span> <span class="de"><strong>Vorhersage:</strong> Wenn die Plots in umgekehrter
-Reihenfolge besucht würden (3, 2, 1), wäre das Endtotal anders? Wäre die
-Kurvenform anders?</span></p>
-</div>
-</div>
-<div id="e-the-distance-function-for-nearest-neighbour9e-die-distanzfunktion-für-nearest-neighbour" class="section level3">
-<h3><span class="en">9e: The distance function (for
-nearest-neighbour)</span><span class="de">9e: Die Distanzfunktion (für
-Nearest-Neighbour)</span></h3>
-<pre class="r"><code># 9e: Euclidean distance function
-# 9e: Euklidische Distanzfunktion
-
-# Calculate distance between two points
-# Berechne Distanz zwischen zwei Punkten
-calc_distance &lt;- function(x1, y1, x2, y2) {
-  sqrt((x2 - ____)^2 + (y2 - ____)^2)
-}
-
-# Test it
-# Teste sie
-calc_distance(0, 0, 3, 4)    # Should be 5
-calc_distance(0, 0, 1, 1)    # Should be ~1.41
-calc_distance(10, 10, 10, 10) # Should be 0
-
-# Find nearest point from current location
-# Finde nächsten Punkt von aktueller Position
-find_nearest &lt;- function(current_x, current_y, all_x, all_y, visited) {
-  # Calculate distances to all points
-  # Berechne Distanzen zu allen Punkten
-  distances &lt;- calc_distance(current_x, current_y, ____, ____)
-
-  # Set visited points to infinity (so they won&#39;t be chosen)
-  # Setze besuchte Punkte auf unendlich (damit sie nicht gewählt werden)
-  distances[____] &lt;- Inf
-
-  # Return index of nearest
-  # Gib Index des nächsten zurück
-  return(which.____(distances))
-}
-
-# Test
-# Test
-xs &lt;- c(0, 5, 3, 8, 2)
-ys &lt;- c(0, 2, 6, 1, 1)
-visited &lt;- c(TRUE, FALSE, FALSE, FALSE, FALSE)  # Only first is visited
-
-find_nearest(0, 0, xs, ys, visited)  # Should be 5 (point at 2,1)</code></pre>
-</div>
-<div id="f-debug-challenge9f-debug-herausforderung" class="section level3">
-<h3><span class="en">9f: Debug challenge</span><span class="de">9f:
-Debug-Herausforderung</span></h3>
-<div class="debug">
-<p><span class="en"><strong>Fix the bugs:</strong> Each function has an
-error!</span> <span class="de"><strong>Behebe die Fehler:</strong> Jede
-Funktion hat einen Fehler!</span></p>
-</div>
-<pre class="r"><code># Bug 1: Missing return statement
-# Bug 1: Fehlendes return Statement
-square &lt;- function(x) {
-  result &lt;- x^2
-}
-
-# Bug 2: Using = instead of == in condition
-# Bug 2: = statt == in Bedingung
-is_positive &lt;- function(x) {
-  if (x = 0) {
-    return(FALSE)
-  }
-  return(x &gt; 0)
-}
-
-# Bug 3: Wrong argument name used
-# Bug 3: Falscher Argumentname verwendet
-multiply &lt;- function(a, b) {
-  return(x * y)
-}
-
-# Bug 4: Forgetting to use function keyword
-# Bug 4: Vergessen das function Schlüsselwort zu benutzen
-add_one &lt;- (x) {
-  return(x + 1)
-}
-
-# Bug 5: Missing closing brace
-# Bug 5: Fehlende schließende Klammer
-subtract &lt;- function(a, b) {
-  result &lt;- a - b
-  return(result)</code></pre>
+accumulation</code></pre>
 <hr />
 </div>
-</div>
-<div id="exercise-10-plotting-with-ggplot2---basicsübung-10-plotten-mit-ggplot2---grundlagen" class="section level2">
-<h2><span class="en">Exercise 10: Plotting with ggplot2 -
-Basics</span><span class="de">Übung 10: Plotten mit ggplot2 -
-Grundlagen</span></h2>
+<div id="exercise-5-plot-your-curveübung-5-zeichne-deine-kurve" class="section level1">
+<h1><span class="en">Exercise 5: Plot Your Curve!</span><span class="de">Übung 5: Zeichne deine Kurve!</span></h1>
 <div class="en">
-<p>ggplot2 is R’s most powerful plotting package. It builds plots layer
-by layer: first the data, then the aesthetic mappings (what goes on x/y
-axes), then the geometry (points, lines, bars).</p>
+<p>The final step - let’s visualize our accumulation curve!</p>
 </div>
 <div class="de">
-<p>ggplot2 ist Rs mächtigstes Plot-Paket. Es baut Plots Schicht für
-Schicht auf: erst die Daten, dann die ästhetischen Zuordnungen (was auf
-x/y-Achsen kommt), dann die Geometrie (Punkte, Linien, Balken).</p>
+<p>Der letzte Schritt - visualisieren wir unsere Akkumulationskurve!</p>
 </div>
-<div id="a-your-first-ggplot10a-dein-erster-ggplot" class="section level3">
-<h3><span class="en">10a: Your first ggplot</span><span class="de">10a:
-Dein erster ggplot</span></h3>
-<pre class="r"><code># 10a: Basic ggplot structure
-# 10a: Grundlegende ggplot-Struktur
+<pre class="r"><code># 5a: Create a data frame for plotting
+# 5a: Erstelle einen Data Frame zum Plotten
 
-library(ggplot2)
-
-# Sample data
-# Beispieldaten
 curve_data &lt;- data.frame(
-  plots = 1:10,
-  species = c(12, 18, 22, 25, 27, 28, 29, 30, 30, 31)
+  plots = 1:length(accumulation),
+  species = accumulation
 )
 
-# The basic template:
-# Das grundlegende Muster:
-# ggplot(data, aes(x = ..., y = ...)) + geom_...()
+head(curve_data)
 
-# Simple scatter plot
-# Einfaches Streudiagramm
-ggplot(curve_data, aes(x = plots, y = species)) +
-  geom_point()
-
-# Your turn: change x and y
-# Du bist dran: ändere x und y
-ggplot(curve_data, aes(x = ____, y = ____)) +
-  geom_point()
-
-# Simple line plot
-# Einfaches Liniendiagramm
-ggplot(curve_data, aes(x = plots, y = species)) +
-  geom_line()
-
-# Both points AND lines
-# Sowohl Punkte ALS AUCH Linien
-ggplot(curve_data, aes(x = plots, y = species)) +
-  geom_line() +
-  geom____()</code></pre>
-</div>
-<div id="b-customizing-appearance10b-erscheinungsbild-anpassen" class="section level3">
-<h3><span class="en">10b: Customizing appearance</span><span class="de">10b: Erscheinungsbild anpassen</span></h3>
-<pre class="r"><code># 10b: Colors, sizes, and styles
-# 10b: Farben, Größen und Stile
-
-# Line with custom color and width
-# Linie mit benutzerdefinierter Farbe und Breite
-ggplot(curve_data, aes(x = plots, y = species)) +
-  geom_line(color = &quot;darkgreen&quot;, linewidth = 1.5)
-
-# Points with custom color and size
-# Punkte mit benutzerdefinierter Farbe und Größe
-ggplot(curve_data, aes(x = plots, y = species)) +
-  geom_point(color = &quot;____&quot;, size = ____)
-
-# Different point shapes (shape 21 = filled circle with border)
-# Verschiedene Punktformen (shape 21 = gefüllter Kreis mit Rand)
-ggplot(curve_data, aes(x = plots, y = species)) +
-  geom_point(shape = 21, fill = &quot;lightgreen&quot;, color = &quot;darkgreen&quot;, size = 3)
-
-# Combine line and points with different colors
-# Kombiniere Linie und Punkte mit verschiedenen Farben
-ggplot(curve_data, aes(x = plots, y = species)) +
-  geom_line(color = &quot;____&quot;, linewidth = ____) +
-  geom_point(color = &quot;____&quot;, size = ____)
-
-# Try these colors: &quot;darkgreen&quot;, &quot;forestgreen&quot;, &quot;red&quot;, &quot;blue&quot;, &quot;orange&quot;
-# Probiere diese Farben: &quot;darkgreen&quot;, &quot;forestgreen&quot;, &quot;red&quot;, &quot;blue&quot;, &quot;orange&quot;</code></pre>
-</div>
-<div id="c-adding-labels-and-titles10c-beschriftungen-und-titel-hinzufügen" class="section level3">
-<h3><span class="en">10c: Adding labels and titles</span><span class="de">10c: Beschriftungen und Titel hinzufügen</span></h3>
-<pre class="r"><code># 10c: Professional labeling
-# 10c: Professionelle Beschriftung
+# 5b: Make the plot!
+# 5b: Mache den Plot!
 
 ggplot(curve_data, aes(x = plots, y = species)) +
-  geom_line(color = &quot;darkgreen&quot;, linewidth = 1.5) +
-  geom_point(color = &quot;darkgreen&quot;, size = 2) +
+  geom_line(color = &quot;#2E7D32&quot;, linewidth = 2) +
+  geom_point(color = &quot;#2E7D32&quot;, size = 2) +
   labs(
-    title = &quot;____&quot;,
-    subtitle = &quot;____&quot;,
-    x = &quot;____&quot;,
-    y = &quot;____&quot;,
-    caption = &quot;Data: Workshop example&quot;
-  )
-
-# With a theme
-# Mit einem Theme
-ggplot(curve_data, aes(x = plots, y = species)) +
-  geom_line(color = &quot;darkgreen&quot;, linewidth = 1.5) +
-  labs(
-    title = &quot;Species Accumulation Curve&quot;,
-    x = &quot;Number of Plots&quot;,
-    y = &quot;Cumulative Species&quot;
+    title = &quot;My First Species Accumulation Curve!&quot;,
+    x = &quot;Number of Plots Sampled&quot;,
+    y = &quot;Cumulative Species Count&quot;
   ) +
-  theme_minimal()
+  theme_minimal(base_size = 14)
 
-# Try different themes:
-# Probiere verschiedene Themes:
-# theme_minimal(), theme_classic(), theme_bw(), theme_light()</code></pre>
-</div>
-<div id="d-comparing-two-groups10d-zwei-gruppen-vergleichen" class="section level3">
-<h3><span class="en">10d: Comparing two groups</span><span class="de">10d: Zwei Gruppen vergleichen</span></h3>
-<pre class="r"><code># 10d: Multiple lines with color mapping
-# 10d: Mehrere Linien mit Farbzuordnung
+# 5c: Make it prettier with a filled area
+# 5c: Mache es schöner mit gefüllter Fläche
 
-# Create comparison data
-# Erstelle Vergleichsdaten
-comparison &lt;- data.frame(
-  plots = rep(1:10, 2),
-  species = c(
-    c(30, 42, 50, 55, 58, 60, 61, 62, 62, 63),  # Native
-    c(8, 12, 15, 17, 18, 19, 20, 20, 21, 21)    # Alien
-  ),
-  status = rep(c(&quot;Native&quot;, &quot;Alien&quot;), each = 10)
-)
-
-# Map color to status
-# Ordne Farbe dem Status zu
-ggplot(comparison, aes(x = plots, y = species, color = ____)) +
-  geom_line(linewidth = 1.2) +
+ggplot(curve_data, aes(x = plots, y = species)) +
+  geom_area(fill = &quot;#C8E6C9&quot;, alpha = 0.5) +
+  geom_line(color = &quot;#2E7D32&quot;, linewidth = 2) +
   labs(
-    title = &quot;Native vs Alien Accumulation&quot;,
-    x = &quot;Plots&quot;,
-    y = &quot;Species&quot;
-  )
-
-# Custom colors
-# Benutzerdefinierte Farben
-ggplot(comparison, aes(x = plots, y = species, color = status)) +
-  geom_line(linewidth = 1.2) +
-  scale_color_manual(values = c(&quot;Native&quot; = &quot;____&quot;, &quot;Alien&quot; = &quot;____&quot;)) +
-  labs(
-    title = &quot;Native vs Alien Accumulation&quot;,
-    x = &quot;Number of Plots&quot;,
-    y = &quot;Cumulative Species&quot;,
-    color = &quot;Status&quot;
-  ) +
-  theme_minimal()
-
-# Move legend to bottom
-# Legende nach unten verschieben
-ggplot(comparison, aes(x = plots, y = species, color = status)) +
-  geom_line(linewidth = 1.2) +
-  scale_color_manual(values = c(&quot;Native&quot; = &quot;darkgreen&quot;, &quot;Alien&quot; = &quot;red&quot;)) +
-  theme_minimal() +
-  theme(legend.position = &quot;____&quot;)  # &quot;bottom&quot;, &quot;top&quot;, &quot;left&quot;, &quot;right&quot;, &quot;none&quot;</code></pre>
-</div>
-<div id="e-saving-plots10e-plots-speichern" class="section level3">
-<h3><span class="en">10e: Saving plots</span><span class="de">10e: Plots
-speichern</span></h3>
-<pre class="r"><code># 10e: Save your plots
-# 10e: Speichere deine Plots
-
-# First, create and store the plot
-# Zuerst, erstelle und speichere den Plot
-my_plot &lt;- ggplot(curve_data, aes(x = plots, y = species)) +
-  geom_line(color = &quot;darkgreen&quot;, linewidth = 1.5) +
-  geom_point(color = &quot;darkgreen&quot;, size = 3) +
-  labs(
-    title = &quot;Species Accumulation&quot;,
+    title = &quot;Species Accumulation Curve - Austria&quot;,
+    subtitle = paste(&quot;Total species found:&quot;, max(accumulation)),
     x = &quot;Plots Sampled&quot;,
     y = &quot;Cumulative Species&quot;
   ) +
-  theme_minimal()
-
-# Display it
-# Zeige ihn an
-print(my_plot)
-
-# Save to file (uncomment to run)
-# Speichere in Datei (entkommentieren zum Ausführen)
-# ggsave(&quot;my_accumulation_curve.png&quot;, my_plot, width = 8, height = 6, dpi = 300)
-
-# Different formats
-# Verschiedene Formate
-# ggsave(&quot;plot.pdf&quot;, my_plot)
-# ggsave(&quot;plot.svg&quot;, my_plot)</code></pre>
-<div class="explore">
-<p><span class="en"><strong>Explore:</strong> What happens if you put
-<code>color = &quot;darkgreen&quot;</code> inside <code>aes()</code> instead of
-inside <code>geom_line()</code>? Try it!</span> <span class="de"><strong>Erkunden:</strong> Was passiert wenn du
-<code>color = &quot;darkgreen&quot;</code> in <code>aes()</code> statt in
-<code>geom_line()</code> schreibst? Probiere es!</span></p>
-</div>
-<hr />
-</div>
-</div>
-<div id="exercise-11-advanced-plotting---confidence-intervalsübung-11-fortgeschrittenes-plotten---konfidenzintervalle" class="section level2">
-<h2><span class="en">Exercise 11: Advanced Plotting - Confidence
-Intervals</span><span class="de">Übung 11: Fortgeschrittenes Plotten -
-Konfidenzintervalle</span></h2>
-<div class="en">
-<p>When we run the analysis multiple times (different random starts), we
-get variation. We show this uncertainty with shaded bands around the
-mean line.</p>
-</div>
-<div class="de">
-<p>Wenn wir die Analyse mehrmals ausführen (verschiedene zufällige
-Starts), bekommen wir Variation. Wir zeigen diese Unsicherheit mit
-schattierten Bändern um die mittlere Linie.</p>
-</div>
-<div id="a-adding-a-ribbon-shaded-band11a-ein-ribbon-schattiertes-band-hinzufügen" class="section level3">
-<h3><span class="en">11a: Adding a ribbon (shaded band)</span><span class="de">11a: Ein Ribbon (schattiertes Band) hinzufügen</span></h3>
-<pre class="r"><code># 11a: geom_ribbon for confidence intervals
-# 11a: geom_ribbon für Konfidenzintervalle
-
-# Data with mean and confidence bounds
-# Daten mit Mittelwert und Konfidenzgrenzen
-ci_data &lt;- data.frame(
-  plots = 1:15,
-  mean_species = cumsum(c(20, 8, 5, 4, 3, 2, 2, 1, 1, 1, 1, 0, 1, 0, 1)),
-  lower = cumsum(c(18, 6, 4, 3, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0)),
-  upper = cumsum(c(22, 10, 6, 5, 4, 3, 3, 2, 2, 2, 2, 1, 2, 1, 2))
-)
-
-# Plot with ribbon FIRST, then line on top
-# Plotte Ribbon ZUERST, dann Linie darauf
-ggplot(ci_data, aes(x = plots)) +
-  geom_ribbon(aes(ymin = ____, ymax = ____),
-              fill = &quot;darkgreen&quot;, alpha = 0.3) +
-  geom_line(aes(y = ____), color = &quot;darkgreen&quot;, linewidth = 1.2) +
-  labs(
-    title = &quot;Accumulation Curve with Confidence Interval&quot;,
-    x = &quot;Plots Sampled&quot;,
-    y = &quot;Cumulative Species&quot;
-  ) +
-  theme_minimal()</code></pre>
-</div>
-<div id="b-two-groups-with-ribbons11b-zwei-gruppen-mit-ribbons" class="section level3">
-<h3><span class="en">11b: Two groups with ribbons</span><span class="de">11b: Zwei Gruppen mit Ribbons</span></h3>
-<pre class="r"><code># 11b: Compare native vs alien with uncertainty
-# 11b: Vergleiche heimisch vs alien mit Unsicherheit
-
-# Create example data
-# Erstelle Beispieldaten
-native_data &lt;- data.frame(
-  plots = 1:15,
-  mean = cumsum(c(25, 12, 8, 5, 4, 3, 2, 2, 1, 1, 1, 1, 0, 1, 0)),
-  lower = cumsum(c(22, 10, 6, 4, 3, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0)),
-  upper = cumsum(c(28, 14, 10, 6, 5, 4, 3, 3, 2, 2, 2, 2, 1, 2, 1)),
-  status = &quot;Native&quot;
-)
-
-alien_data &lt;- data.frame(
-  plots = 1:15,
-  mean = cumsum(c(6, 4, 3, 2, 2, 2, 1, 1, 1, 1, 1, 1, 0, 1, 0)),
-  lower = cumsum(c(5, 3, 2, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0)),
-  upper = cumsum(c(7, 5, 4, 3, 3, 3, 2, 2, 2, 2, 2, 2, 1, 2, 1)),
-  status = &quot;Alien&quot;
-)
-
-both &lt;- rbind(native_data, alien_data)
-
-# Plot both
-# Plotte beide
-ggplot(both, aes(x = plots, fill = status, color = status)) +
-  geom_ribbon(aes(ymin = lower, ymax = upper), alpha = ____) +
-  geom_line(aes(y = mean), linewidth = 1.2) +
-  scale_fill_manual(values = c(&quot;Native&quot; = &quot;____&quot;, &quot;Alien&quot; = &quot;____&quot;)) +
-  scale_color_manual(values = c(&quot;Native&quot; = &quot;____&quot;, &quot;Alien&quot; = &quot;____&quot;)) +
-  labs(
-    title = &quot;Species Accumulation: Native vs Alien&quot;,
-    subtitle = &quot;Shaded area shows 95% confidence interval&quot;,
-    x = &quot;Plots Sampled&quot;,
-    y = &quot;Cumulative Species&quot;
-  ) +
-  theme_minimal() +
-  theme(legend.position = &quot;bottom&quot;)</code></pre>
-</div>
-<div id="c-calculating-confidence-intervals-from-multiple-runs11c-konfidenzintervalle-aus-mehreren-durchläufen-berechnen" class="section level3">
-<h3><span class="en">11c: Calculating confidence intervals from multiple
-runs</span><span class="de">11c: Konfidenzintervalle aus mehreren
-Durchläufen berechnen</span></h3>
-<pre class="r"><code># 11c: Summarize multiple simulation runs
-# 11c: Fasse mehrere Simulationsläufe zusammen
-
-# Simulate 5 runs with slight variation
-# Simuliere 5 Läufe mit leichter Variation
-set.seed(42)
-n_runs &lt;- 5
-n_plots &lt;- 10
-
-# Store runs in a matrix (rows = runs, columns = plots)
-# Speichere Läufe in einer Matrix (Zeilen = Läufe, Spalten = Plots)
-runs &lt;- matrix(NA, nrow = n_runs, ncol = n_plots)
-
-for (r in 1:n_runs) {
-  new_per_plot &lt;- c(20, rpois(n_plots - 1, lambda = 3))  # Random variation
-  runs[r, ] &lt;- cumsum(new_per_plot)
-}
-
-# Look at the runs
-# Schau dir die Läufe an
-print(runs)
-
-# Calculate mean across runs (for each plot position)
-# Berechne Mittelwert über Läufe (für jede Plot-Position)
-mean_curve &lt;- apply(runs, 2, ____)
-
-# Calculate 2.5% and 97.5% quantiles (95% CI)
-# Berechne 2.5% und 97.5% Quantile (95% KI)
-lower_curve &lt;- apply(runs, 2, function(x) quantile(x, 0.025))
-upper_curve &lt;- apply(runs, 2, function(x) quantile(x, ____))
-
-# Create summary data frame
-# Erstelle zusammenfassenden Data Frame
-summary_df &lt;- data.frame(
-  plots = 1:n_plots,
-  mean = mean_curve,
-  lower = lower_curve,
-  upper = upper_curve
-)
-
-print(summary_df)
-
-# Plot it
-# Plotte es
-ggplot(summary_df, aes(x = plots)) +
-  geom_ribbon(aes(ymin = ____, ymax = ____),
-              fill = &quot;steelblue&quot;, alpha = 0.3) +
-  geom_line(aes(y = mean), color = &quot;steelblue&quot;, linewidth = 1.2) +
-  labs(
-    title = &quot;Mean Accumulation Curve with 95% CI&quot;,
-    subtitle = paste(&quot;Based on&quot;, n_runs, &quot;simulation runs&quot;),
-    x = &quot;Plots&quot;,
-    y = &quot;Species&quot;
-  ) +
-  theme_minimal()</code></pre>
+  theme_minimal(base_size = 14)</code></pre>
 <div class="hint">
-<p><span class="en"><code>apply(matrix, 2, function)</code> applies the
-function to each COLUMN. Use <code>1</code> for rows.</span> <span class="de"><code>apply(matrix, 2, function)</code> wendet die Funktion
-auf jede SPALTE an. Benutze <code>1</code> für Zeilen.</span></p>
+<p><span class="en">Hint: The curve flattens because we find fewer NEW
+species as we sample more plots!</span> <span class="de">Hinweis: Die
+Kurve flacht ab, weil wir weniger NEUE Arten finden, je mehr Plots wir
+untersuchen!</span></p>
 </div>
-</div>
-<div id="d-faceting---multiple-panels11d-faceting---mehrere-panels" class="section level3">
-<h3><span class="en">11d: Faceting - multiple panels</span><span class="de">11d: Faceting - mehrere Panels</span></h3>
-<pre class="r"><code># 11d: Split into multiple plots
-# 11d: In mehrere Plots aufteilen
-
-# Create data for 3 regions
-# Erstelle Daten für 3 Regionen
-regions_data &lt;- data.frame(
-  plots = rep(1:10, 3),
-  species = c(
-    cumsum(c(25, 10, 6, 4, 3, 2, 2, 1, 1, 1)),  # Alps
-    cumsum(c(20, 8, 5, 3, 2, 2, 1, 1, 1, 0)),   # Lowland
-    cumsum(c(15, 7, 5, 4, 3, 2, 2, 1, 1, 1))    # Urban
-  ),
-  region = rep(c(&quot;Alps&quot;, &quot;Lowland&quot;, &quot;Urban&quot;), each = 10)
-)
-
-# Separate panels for each region
-# Separate Panels für jede Region
-ggplot(regions_data, aes(x = plots, y = species)) +
-  geom_line(color = &quot;darkgreen&quot;, linewidth = 1.2) +
-  facet_wrap(~ ____) +  # Create panels by region
-  labs(
-    title = &quot;Accumulation by Region&quot;,
-    x = &quot;Plots&quot;,
-    y = &quot;Species&quot;
-  ) +
-  theme_minimal()
-
-# With free y-axes (different scales per panel)
-# Mit freien y-Achsen (verschiedene Skalen pro Panel)
-ggplot(regions_data, aes(x = plots, y = species)) +
-  geom_line(color = &quot;darkgreen&quot;, linewidth = 1.2) +
-  facet_wrap(~ region, scales = &quot;____&quot;) +  # &quot;free&quot;, &quot;free_y&quot;, &quot;free_x&quot;
-  theme_minimal()</code></pre>
 <hr />
 </div>
-</div>
-</div>
-<div id="part-4-the-real-research-projectteil-4-das-echte-forschungsprojekt" class="section level1">
-<h1><span class="en">Part 4: The Real Research Project</span><span class="de">Teil 4: Das echte Forschungsprojekt</span></h1>
-<div id="our-hypothesisunsere-hypothese" class="section level2">
-<h2><span class="en">Our Hypothesis</span><span class="de">Unsere
-Hypothese</span></h2>
+<div id="bonus-compare-native-vs-alienbonus-vergleiche-heimisch-vs-alien" class="section level1">
+<h1><span class="en">Bonus: Compare Native vs Alien!</span><span class="de">Bonus: Vergleiche Heimisch vs Alien!</span></h1>
 <div class="en">
-<p><strong>Do alien and native plant species accumulate differently
-across space?</strong></p>
-<p>We suspect that:</p>
-<ul>
-<li><strong>Natives</strong> might <strong>saturate faster</strong> -
-their species pool is already well-represented locally, so nearby plots
-share many species</li>
-<li><strong>Aliens</strong> might <strong>accumulate more
-steadily</strong> - they tend to be patchy, concentrated in disturbed
-hotspots (roads, cities, agriculture), so you keep finding new ones as
-you expand spatially</li>
-</ul>
-<p>To test this, we’ll: 1. Load real Austrian vegetation data 2. Build
-accumulation curves using nearest-neighbour sampling 3. Run from
-multiple starting points to assess uncertainty 4. Compare the patterns
-between native and alien species</p>
-<p><strong>The shape of the curve tells the story:</strong> A curve that
-rises steeply then flattens = species are evenly distributed. A curve
-that rises steadily = species are patchy.</p>
+<p>If you finish early, try comparing native and alien species!</p>
 </div>
 <div class="de">
-<p><strong>Akkumulieren Alien- und heimische Pflanzenarten
-unterschiedlich über den Raum?</strong></p>
-<p>Wir vermuten:</p>
-<ul>
-<li><strong>Heimische</strong> könnten <strong>schneller
-saturieren</strong> - ihr Artenpool ist lokal bereits gut vertreten,
-benachbarte Plots teilen viele Arten</li>
-<li><strong>Aliens</strong> könnten <strong>gleichmäßiger
-akkumulieren</strong> - sie sind fleckenhaft, konzentriert in gestörten
-Hotspots (Straßen, Städte, Landwirtschaft), man findet immer neue beim
-räumlichen Expandieren</li>
-</ul>
-<p>Um dies zu testen: 1. Lade echte österreichische Vegetationsdaten 2.
-Baue Akkumulationskurven mit Nearest-Neighbour-Sampling 3. Starte von
-mehreren Punkten um Unsicherheit zu bewerten 4. Vergleiche die Muster
-zwischen heimischen und Alien-Arten</p>
-<p><strong>Die Form der Kurve erzählt die Geschichte:</strong> Eine
-Kurve die steil steigt dann abflacht = Arten sind gleichmäßig verteilt.
-Eine Kurve die stetig steigt = Arten sind fleckenhaft.</p>
+<p>Wenn du früh fertig bist, versuche heimische und Alien-Arten zu
+vergleichen!</p>
 </div>
+<pre class="r"><code># The species_data already has a STATUS column!
+# Die species_data hat bereits eine STATUS-Spalte!
+
+# Filter for native species only
+# Filtere nur heimische Arten
+
+native_species &lt;- species_data %&gt;%
+  filter(STATUS == &quot;nat&quot;)
+
+# How many native species?
+# Wie viele heimische Arten?
+
+length(unique(native_species$WFO_TAXON))
+
+# How many alien species?
+# Wie viele Alien-Arten?
+
+alien_species &lt;- species_data %&gt;%
+  filter(STATUS == &quot;neo&quot;)
+
+length(unique(alien_species$WFO_TAXON))
+
+# Now you can build separate curves for native vs alien!
+# Jetzt kannst du separate Kurven für heimisch vs alien bauen!</code></pre>
 <hr />
-</div>
-<div id="exercise-12-loading-and-exploring-the-dataübung-12-daten-laden-und-erkunden" class="section level2">
-<h2><span class="en">Exercise 12: Loading and Exploring the
-Data</span><span class="de">Übung 12: Daten laden und
-erkunden</span></h2>
-<div id="a-load-the-data12a-daten-laden" class="section level3">
-<h3><span class="en">12a: Load the data</span><span class="de">12a:
-Daten laden</span></h3>
-<pre class="r"><code># 12a: Load Austrian vegetation data
-# 12a: Lade österreichische Vegetationsdaten
-
-library(dplyr)
-library(ggplot2)
-
-# Load header (plot locations)
-# Lade Header (Plot-Standorte)
-header &lt;- read.csv(&quot;../data/austria_header.csv&quot;)
-
-# Load species data
-# Lade Artendaten
-species &lt;- read.csv(&quot;../data/austria_species.csv&quot;)
-
-# Check what we loaded
-# Prüfe was wir geladen haben
-print(&quot;Header dimensions:&quot;)
-dim(header)
-
-print(&quot;Species dimensions:&quot;)
-dim(species)</code></pre>
-</div>
-<div id="b-explore-the-header-plot-information12b-header-erkunden-plot-informationen" class="section level3">
-<h3><span class="en">12b: Explore the header (plot
-information)</span><span class="de">12b: Header erkunden
-(Plot-Informationen)</span></h3>
-<pre class="r"><code># 12b: Understand the plot data
-# 12b: Verstehe die Plot-Daten
-
-# What columns do we have?
-# Welche Spalten haben wir?
-names(header)
-
-# First few rows
-# Erste paar Zeilen
-head(header)
-
-# How many plots?
-# Wie viele Plots?
-n_plots &lt;- ____(header)
-print(paste(&quot;Number of plots:&quot;, n_plots))
-
-# Coordinate ranges (where in Austria?)
-# Koordinatenbereiche (wo in Österreich?)
-lon_range &lt;- range(header$____)
-lat_range &lt;- range(header$____)
-print(paste(&quot;Longitude:&quot;, round(lon_range[1], 2), &quot;to&quot;, round(lon_range[2], 2)))
-print(paste(&quot;Latitude:&quot;, round(lat_range[1], 2), &quot;to&quot;, round(lat_range[2], 2)))
-
-# What time period?
-# Welcher Zeitraum?
-year_range &lt;- range(header$____)
-print(paste(&quot;Years:&quot;, year_range[1], &quot;to&quot;, year_range[2]))</code></pre>
-</div>
-<div id="c-explore-the-species-data12c-artendaten-erkunden" class="section level3">
-<h3><span class="en">12c: Explore the species data</span><span class="de">12c: Artendaten erkunden</span></h3>
-<pre class="r"><code># 12c: Understand the species data
-# 12c: Verstehe die Artendaten
-
-# What columns?
-# Welche Spalten?
-names(species)
-
-# First few rows
-# Erste paar Zeilen
-head(species)
-
-# How many total records?
-# Wie viele Datensätze insgesamt?
-n_records &lt;- nrow(____)
-print(paste(&quot;Total species records:&quot;, n_records))
-
-# THE KEY COLUMN: STATUS
-# DIE SCHLÜSSELSPALTE: STATUS
-table(species$____)
-
-# How many unique species?
-# Wie viele einzigartige Arten?
-n_species &lt;- length(unique(species$____))
-print(paste(&quot;Unique species:&quot;, n_species))
-
-# How many unique plots have species data?
-# Wie viele einzigartige Plots haben Artendaten?
-n_plots_with_species &lt;- length(unique(species$____))
-print(paste(&quot;Plots with species data:&quot;, n_plots_with_species))</code></pre>
-</div>
-<div id="d-native-vs-alien-breakdown12d-heimisch-vs-alien-aufschlüsselung" class="section level3">
-<h3><span class="en">12d: Native vs alien breakdown</span><span class="de">12d: Heimisch vs Alien Aufschlüsselung</span></h3>
-<pre class="r"><code># 12d: Compare native and alien species
-# 12d: Vergleiche heimische und Alien-Arten
-
-# Count records by status
-# Zähle Datensätze nach Status
-status_table &lt;- table(species$STATUS)
-print(status_table)
-
-# Count UNIQUE species by status
-# Zähle EINZIGARTIGE Arten nach Status
-native_species &lt;- species %&gt;%
-  filter(STATUS == &quot;____&quot;) %&gt;%
-  pull(WFO_TAXON) %&gt;%
-  unique()
-
-alien_species &lt;- species %&gt;%
-  filter(STATUS == &quot;____&quot;) %&gt;%
-  pull(WFO_TAXON) %&gt;%
-  unique()
-
-n_native &lt;- length(native_species)
-n_alien &lt;- length(alien_species)
-
-print(paste(&quot;Native species:&quot;, n_native))
-print(paste(&quot;Alien (neo) species:&quot;, n_alien))
-
-# What percentage are aliens?
-# Welcher Prozentsatz sind Aliens?
-pct_alien_species &lt;- round(100 * n_alien / (n_native + n_alien), 1)
-print(paste(&quot;Aliens are&quot;, pct_alien_species, &quot;% of all species&quot;))
-
-# What percentage of RECORDS are aliens?
-# Welcher Prozentsatz der DATENSÄTZE sind Aliens?
-n_native_records &lt;- sum(species$STATUS == &quot;native&quot;)
-n_alien_records &lt;- sum(species$STATUS == &quot;neo&quot;)
-pct_alien_records &lt;- round(100 * n_alien_records / nrow(species), 1)
-print(paste(&quot;Alien records are&quot;, pct_alien_records, &quot;% of all records&quot;))</code></pre>
-<div class="explore">
-<p><span class="en"><strong>Explore:</strong> Why might the percentage
-of alien species be different from the percentage of alien records? What
-does this tell us about how common aliens are?</span> <span class="de"><strong>Erkunden:</strong> Warum könnte der Prozentsatz der
-Alien-Arten anders sein als der Prozentsatz der Alien-Datensätze? Was
-sagt uns das darüber wie häufig Aliens sind?</span></p>
-</div>
-<hr />
-</div>
-</div>
-<div id="exercise-13-mapping-the-dataübung-13-daten-kartieren" class="section level2">
-<h2><span class="en">Exercise 13: Mapping the Data</span><span class="de">Übung 13: Daten kartieren</span></h2>
-<div id="a-basic-plot-map13a-grundlegende-plot-karte" class="section level3">
-<h3><span class="en">13a: Basic plot map</span><span class="de">13a:
-Grundlegende Plot-Karte</span></h3>
-<pre class="r"><code># 13a: Where are the vegetation plots?
-# 13a: Wo sind die Vegetationsplots?
-
-ggplot(header, aes(x = Longitude, y = Latitude)) +
-  geom_point(alpha = 0.3, size = 0.5, color = &quot;darkgreen&quot;) +
-  coord_quickmap() +  # Preserves geographic aspect ratio
-  labs(
-    title = &quot;____&quot;,
-    subtitle = paste(nrow(header), &quot;plots&quot;),
-    x = &quot;Longitude&quot;,
-    y = &quot;Latitude&quot;
-  ) +
-  theme_minimal()</code></pre>
-</div>
-<div id="b-map-alien-richness13b-alien-reichtum-kartieren" class="section level3">
-<h3><span class="en">13b: Map alien richness</span><span class="de">13b:
-Alien-Reichtum kartieren</span></h3>
-<pre class="r"><code># 13b: Where are the aliens?
-# 13b: Wo sind die Aliens?
-
-# Count aliens per plot
-# Zähle Aliens pro Plot
-aliens_per_plot &lt;- species %&gt;%
-  filter(STATUS == &quot;____&quot;) %&gt;%
-  group_by(PlotObservationID) %&gt;%
-  summarise(n_aliens = n_distinct(WFO_TAXON), .groups = &quot;drop&quot;)
-
-# Merge with coordinates
-# Verbinde mit Koordinaten
-plot_aliens &lt;- merge(header, aliens_per_plot,
-                     by = &quot;____&quot;, all.x = TRUE)
-plot_aliens$n_aliens[is.na(plot_aliens$n_aliens)] &lt;- 0
-
-# Map it
-# Kartiere es
-ggplot(plot_aliens, aes(x = Longitude, y = Latitude, color = n_aliens)) +
-  geom_point(alpha = 0.5, size = 1) +
-  scale_color_gradient(low = &quot;____&quot;, high = &quot;____&quot;, name = &quot;Alien\nspecies&quot;) +
-  coord_quickmap() +
-  labs(
-    title = &quot;Alien Species Richness Across Austria&quot;,
-    subtitle = &quot;Where are the invasion hotspots?&quot;
-  ) +
-  theme_minimal()
-
-# Statistics
-# Statistiken
-plots_with_aliens &lt;- sum(plot_aliens$n_aliens &gt; 0)
-pct_invaded &lt;- round(100 * plots_with_aliens / nrow(plot_aliens), 1)
-print(paste(&quot;Plots with at least 1 alien:&quot;, plots_with_aliens,
-            &quot;(&quot;, pct_invaded, &quot;%)&quot;))</code></pre>
-</div>
-<div id="c-histogram-of-alien-richness13c-histogramm-des-alien-reichtums" class="section level3">
-<h3><span class="en">13c: Histogram of alien richness</span><span class="de">13c: Histogramm des Alien-Reichtums</span></h3>
-<pre class="r"><code># 13c: Distribution of alien species per plot
-# 13c: Verteilung der Alien-Arten pro Plot
-
-ggplot(plot_aliens, aes(x = n_aliens)) +
-  geom_histogram(binwidth = 1, fill = &quot;darkred&quot;, alpha = 0.7) +
-  labs(
-    title = &quot;Distribution of Alien Richness&quot;,
-    x = &quot;Number of Alien Species per Plot&quot;,
-    y = &quot;Number of Plots&quot;
-  ) +
-  theme_minimal()
-
-# Most plots have how many aliens?
-# Die meisten Plots haben wie viele Aliens?
-print(paste(&quot;Median aliens per plot:&quot;, median(plot_aliens$n_aliens)))
-print(paste(&quot;Mean aliens per plot:&quot;, round(mean(plot_aliens$n_aliens), 2)))
-print(paste(&quot;Max aliens in one plot:&quot;, max(plot_aliens$____)))</code></pre>
-<hr />
-</div>
-</div>
-<div id="exercise-14-building-the-nearest-neighbour-algorithmübung-14-den-nearest-neighbour-algorithmus-bauen" class="section level2">
-<h2><span class="en">Exercise 14: Building the Nearest-Neighbour
-Algorithm</span><span class="de">Übung 14: Den
-Nearest-Neighbour-Algorithmus bauen</span></h2>
-<div id="a-distance-function14a-distanzfunktion" class="section level3">
-<h3><span class="en">14a: Distance function</span><span class="de">14a:
-Distanzfunktion</span></h3>
-<pre class="r"><code># 14a: We need this to find nearest plots
-# 14a: Wir brauchen dies um nächste Plots zu finden
-
-calc_distance &lt;- function(x1, y1, x2, y2) {
-  sqrt((x2 - x1)^____ + (y2 - y1)^____)
-}
-
-# Test it
-# Teste sie
-calc_distance(14.0, 47.0, 15.0, 48.0)  # About 1.41 degrees</code></pre>
-</div>
-<div id="b-nearest-neighbour-walk-function14b-nearest-neighbour-walk-funktion" class="section level3">
-<h3><span class="en">14b: Nearest-neighbour walk function</span><span class="de">14b: Nearest-Neighbour-Walk-Funktion</span></h3>
-<pre class="r"><code># 14b: The core algorithm
-# 14b: Der Kernalgorithmus
-
-nn_walk &lt;- function(header_data, start_idx = NULL) {
-  n &lt;- nrow(header_data)
-
-  # Random start if not specified
-  # Zufälliger Start wenn nicht angegeben
-  if (is.null(start_idx)) {
-    start_idx &lt;- sample(1:n, 1)
-  }
-
-  visited &lt;- rep(FALSE, n)
-  visit_order &lt;- numeric(n)
-  current &lt;- start_idx
-
-  for (i in 1:n) {
-    # Visit current
-    # Besuche aktuellen
-    visited[current] &lt;- ____
-    visit_order[i] &lt;- header_data$PlotObservationID[current]
-
-    # Find nearest unvisited (if not done)
-    # Finde nächsten unbesuchten (wenn nicht fertig)
-    if (i &lt; n) {
-      distances &lt;- calc_distance(
-        header_data$Longitude[current],
-        header_data$Latitude[current],
-        header_data$____,
-        header_data$____
-      )
-
-      distances[____] &lt;- Inf  # Don&#39;t revisit
-      current &lt;- which.min(____)
-    }
-  }
-
-  return(visit_order)
-}</code></pre>
-</div>
-<div id="c-accumulation-function14c-akkumulationsfunktion" class="section level3">
-<h3><span class="en">14c: Accumulation function</span><span class="de">14c: Akkumulationsfunktion</span></h3>
-<pre class="r"><code># 14c: Build accumulation curve from visit order
-# 14c: Baue Akkumulationskurve aus Besuchsreihenfolge
-
-build_accumulation &lt;- function(species_data, plot_order, status_filter = NULL) {
-
-  # Filter by status if specified
-  # Nach Status filtern wenn angegeben
-  if (!is.null(status_filter)) {
-    species_data &lt;- species_data %&gt;% filter(STATUS == status_filter)
-  }
-
-  found &lt;- c()
-  accum &lt;- numeric(length(plot_order))
-
-  for (i in seq_along(plot_order)) {
-    # Get species in this plot
-    # Hole Arten in diesem Plot
-    plot_spp &lt;- species_data %&gt;%
-      filter(PlotObservationID == plot_order[i]) %&gt;%
-      pull(____) %&gt;%
-      unique()
-
-    # Find new species
-    # Finde neue Arten
-    new_spp &lt;- setdiff(plot_spp, ____)
-    found &lt;- c(found, new_spp)
-    accum[i] &lt;- length(____)
-  }
-
-  return(accum)
-}</code></pre>
-</div>
-<div id="d-test-on-a-small-sample14d-test-an-einer-kleinen-stichprobe" class="section level3">
-<h3><span class="en">14d: Test on a small sample</span><span class="de">14d: Test an einer kleinen Stichprobe</span></h3>
-<pre class="r"><code># 14d: Test the algorithm
-# 14d: Teste den Algorithmus
-
-set.seed(42)
-sample_size &lt;- 100
-
-# Sample plots
-# Stichprobe von Plots
-sample_ids &lt;- sample(unique(header$PlotObservationID), sample_size)
-sample_header &lt;- header %&gt;% filter(PlotObservationID %in% sample_ids)
-sample_species &lt;- species %&gt;% filter(PlotObservationID %in% sample_ids)
-
-# Run nearest-neighbour walk
-# Führe Nearest-Neighbour-Walk aus
-nn_order &lt;- nn_walk(sample_header)
-
-# Build curves
-# Baue Kurven
-all_curve &lt;- build_accumulation(sample_species, nn_order, NULL)
-native_curve &lt;- build_accumulation(sample_species, nn_order, &quot;____&quot;)
-alien_curve &lt;- build_accumulation(sample_species, nn_order, &quot;____&quot;)
-
-# Quick view
-# Schnelle Ansicht
-print(paste(&quot;After&quot;, sample_size, &quot;plots:&quot;))
-print(paste(&quot;  All species:&quot;, max(all_curve)))
-print(paste(&quot;  Native:&quot;, max(native_curve)))
-print(paste(&quot;  Alien:&quot;, max(alien_curve)))</code></pre>
-<hr />
-</div>
-</div>
-<div id="exercise-15-first-comparison-plotübung-15-erster-vergleichsplot" class="section level2">
-<h2><span class="en">Exercise 15: First Comparison Plot</span><span class="de">Übung 15: Erster Vergleichsplot</span></h2>
-<div id="a-plot-native-vs-alien-curves15a-plotte-heimisch-vs-alien-kurven" class="section level3">
-<h3><span class="en">15a: Plot native vs alien curves</span><span class="de">15a: Plotte heimisch vs alien Kurven</span></h3>
-<pre class="r"><code># 15a: Compare the curves
-# 15a: Vergleiche die Kurven
-
-# Create data frame for plotting
-# Erstelle Data Frame zum Plotten
-comparison &lt;- data.frame(
-  plots = rep(1:sample_size, 2),
-  species = c(native_curve, alien_curve),
-  status = rep(c(&quot;Native&quot;, &quot;Alien&quot;), each = sample_size)
-)
-
-# Plot
-# Plotte
-ggplot(comparison, aes(x = plots, y = species, color = status)) +
-  geom_line(linewidth = 1.2) +
-  scale_color_manual(values = c(&quot;Native&quot; = &quot;____&quot;, &quot;Alien&quot; = &quot;____&quot;)) +
-  labs(
-    title = &quot;Species Accumulation: Native vs Alien&quot;,
-    subtitle = paste(&quot;Nearest-neighbour order,&quot;, sample_size, &quot;plots&quot;),
-    x = &quot;Number of Plots Visited&quot;,
-    y = &quot;Cumulative Species&quot;,
-    color = &quot;Status&quot;
-  ) +
-  theme_minimal() +
-  theme(legend.position = &quot;bottom&quot;)</code></pre>
-</div>
-<div id="b-calculate-saturation-metrics15b-berechne-sättigungsmetriken" class="section level3">
-<h3><span class="en">15b: Calculate saturation metrics</span><span class="de">15b: Berechne Sättigungsmetriken</span></h3>
-<pre class="r"><code># 15b: When did we find 80% of species?
-# 15b: Wann haben wir 80% der Arten gefunden?
-
-find_saturation &lt;- function(curve, threshold = 0.8) {
-  total &lt;- max(curve)
-  target &lt;- total * threshold
-  which(curve &gt;= target)[____]  # First plot where we hit target
-}
-
-native_sat &lt;- find_saturation(native_curve, 0.8)
-alien_sat &lt;- find_saturation(alien_curve, ____)
-
-print(paste(&quot;Plots to 80% - Native:&quot;, native_sat, &quot;Alien:&quot;, alien_sat))
-
-# As percentage of total plots
-# Als Prozentsatz aller Plots
-native_pct &lt;- round(100 * native_sat / sample_size)
-alien_pct &lt;- round(100 * alien_sat / sample_size)
-print(paste(&quot;Native needs&quot;, native_pct, &quot;% of plots for 80% of species&quot;))
-print(paste(&quot;Alien needs&quot;, alien_pct, &quot;% of plots for 80% of species&quot;))</code></pre>
-<div class="predict">
-<p><span class="en"><strong>Predict:</strong> Based on our hypothesis,
-which group should need fewer plots to reach 80%? Does your result
-match?</span> <span class="de"><strong>Vorhersage:</strong> Basierend
-auf unserer Hypothese, welche Gruppe sollte weniger Plots brauchen um
-80% zu erreichen? Passt dein Ergebnis?</span></p>
-</div>
-<hr />
-</div>
-</div>
-</div>
-<div id="quick-referenceschnellreferenz" class="section level1">
-<h1><span class="en">Quick Reference</span><span class="de">Schnellreferenz</span></h1>
 <div class="en">
-<table>
-<thead>
-<tr class="header">
-<th>Function</th>
-<th>Purpose</th>
-<th>Example</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><code>c()</code></td>
-<td>Combine values</td>
-<td><code>c(1, 2, 3)</code></td>
-</tr>
-<tr class="even">
-<td><code>length()</code></td>
-<td>Count elements</td>
-<td><code>length(vec)</code></td>
-</tr>
-<tr class="odd">
-<td><code>unique()</code></td>
-<td>Get unique values</td>
-<td><code>unique(vec)</code></td>
-</tr>
-<tr class="even">
-<td><code>setdiff(a, b)</code></td>
-<td>Elements in a but not b</td>
-<td><code>setdiff(new, old)</code></td>
-</tr>
-<tr class="odd">
-<td><code>sum()</code></td>
-<td>Add up values</td>
-<td><code>sum(vec)</code></td>
-</tr>
-<tr class="even">
-<td><code>mean()</code></td>
-<td>Average</td>
-<td><code>mean(vec)</code></td>
-</tr>
-<tr class="odd">
-<td><code>cumsum()</code></td>
-<td>Running total</td>
-<td><code>cumsum(vec)</code></td>
-</tr>
-<tr class="even">
-<td><code>sqrt()</code></td>
-<td>Square root</td>
-<td><code>sqrt(25)</code></td>
-</tr>
-<tr class="odd">
-<td><code>which.min()</code></td>
-<td>Index of minimum</td>
-<td><code>which.min(vec)</code></td>
-</tr>
-<tr class="even">
-<td><code>nrow()</code>, <code>ncol()</code></td>
-<td>Count rows/columns</td>
-<td><code>nrow(df)</code></td>
-</tr>
-<tr class="odd">
-<td><code>subset()</code></td>
-<td>Filter data</td>
-<td><code>subset(df, x &gt; 5)</code></td>
-</tr>
-<tr class="even">
-<td><code>function()</code></td>
-<td>Define a function</td>
-<td><code>f &lt;- function(x) x^2</code></td>
-</tr>
-<tr class="odd">
-<td><code>return()</code></td>
-<td>Return value from function</td>
-<td><code>return(result)</code></td>
-</tr>
-<tr class="even">
-<td><code>ggplot()</code></td>
-<td>Initialize a plot</td>
-<td><code>ggplot(data, aes(x, y))</code></td>
-</tr>
-<tr class="odd">
-<td><code>geom_line()</code></td>
-<td>Add a line</td>
-<td><code>+ geom_line()</code></td>
-</tr>
-<tr class="even">
-<td><code>geom_point()</code></td>
-<td>Add points</td>
-<td><code>+ geom_point()</code></td>
-</tr>
-<tr class="odd">
-<td><code>geom_ribbon()</code></td>
-<td>Add shaded band</td>
-<td><code>+ geom_ribbon(aes(ymin, ymax))</code></td>
-</tr>
-<tr class="even">
-<td><code>labs()</code></td>
-<td>Add labels</td>
-<td><code>+ labs(title = &quot;...&quot;)</code></td>
-</tr>
-<tr class="odd">
-<td><code>theme_minimal()</code></td>
-<td>Clean theme</td>
-<td><code>+ theme_minimal()</code></td>
-</tr>
-<tr class="even">
-<td><code>apply()</code></td>
-<td>Apply function to matrix</td>
-<td><code>apply(mat, 2, mean)</code></td>
-</tr>
-</tbody>
-</table>
+<p><strong>You did it!</strong> You built your first species
+accumulation curve using real Austrian data!</p>
+<p><strong>Key concepts learned:</strong> - Variables store data -
+<code>c()</code> creates vectors - <code>unique()</code> counts
+different species - Loops let us repeat actions - <code>ggplot()</code>
+creates beautiful plots</p>
 </div>
 <div class="de">
-<table style="width:100%;">
-<colgroup>
-<col width="37%" />
-<col width="25%" />
-<col width="37%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th>Funktion</th>
-<th>Zweck</th>
-<th>Beispiel</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><code>c()</code></td>
-<td>Werte kombinieren</td>
-<td><code>c(1, 2, 3)</code></td>
-</tr>
-<tr class="even">
-<td><code>length()</code></td>
-<td>Elemente zählen</td>
-<td><code>length(vec)</code></td>
-</tr>
-<tr class="odd">
-<td><code>unique()</code></td>
-<td>Einzigartige Werte</td>
-<td><code>unique(vec)</code></td>
-</tr>
-<tr class="even">
-<td><code>setdiff(a, b)</code></td>
-<td>Elemente in a aber nicht b</td>
-<td><code>setdiff(new, old)</code></td>
-</tr>
-<tr class="odd">
-<td><code>sum()</code></td>
-<td>Summieren</td>
-<td><code>sum(vec)</code></td>
-</tr>
-<tr class="even">
-<td><code>mean()</code></td>
-<td>Durchschnitt</td>
-<td><code>mean(vec)</code></td>
-</tr>
-<tr class="odd">
-<td><code>cumsum()</code></td>
-<td>Laufende Summe</td>
-<td><code>cumsum(vec)</code></td>
-</tr>
-<tr class="even">
-<td><code>sqrt()</code></td>
-<td>Quadratwurzel</td>
-<td><code>sqrt(25)</code></td>
-</tr>
-<tr class="odd">
-<td><code>which.min()</code></td>
-<td>Index des Minimums</td>
-<td><code>which.min(vec)</code></td>
-</tr>
-<tr class="even">
-<td><code>nrow()</code>, <code>ncol()</code></td>
-<td>Zeilen/Spalten zählen</td>
-<td><code>nrow(df)</code></td>
-</tr>
-<tr class="odd">
-<td><code>subset()</code></td>
-<td>Daten filtern</td>
-<td><code>subset(df, x &gt; 5)</code></td>
-</tr>
-<tr class="even">
-<td><code>function()</code></td>
-<td>Funktion definieren</td>
-<td><code>f &lt;- function(x) x^2</code></td>
-</tr>
-<tr class="odd">
-<td><code>return()</code></td>
-<td>Wert aus Funktion zurückgeben</td>
-<td><code>return(result)</code></td>
-</tr>
-<tr class="even">
-<td><code>ggplot()</code></td>
-<td>Plot initialisieren</td>
-<td><code>ggplot(data, aes(x, y))</code></td>
-</tr>
-<tr class="odd">
-<td><code>geom_line()</code></td>
-<td>Linie hinzufügen</td>
-<td><code>+ geom_line()</code></td>
-</tr>
-<tr class="even">
-<td><code>geom_point()</code></td>
-<td>Punkte hinzufügen</td>
-<td><code>+ geom_point()</code></td>
-</tr>
-<tr class="odd">
-<td><code>geom_ribbon()</code></td>
-<td>Schattiertes Band</td>
-<td><code>+ geom_ribbon(aes(ymin, ymax))</code></td>
-</tr>
-<tr class="even">
-<td><code>labs()</code></td>
-<td>Beschriftungen</td>
-<td><code>+ labs(title = &quot;...&quot;)</code></td>
-</tr>
-<tr class="odd">
-<td><code>theme_minimal()</code></td>
-<td>Sauberes Theme</td>
-<td><code>+ theme_minimal()</code></td>
-</tr>
-<tr class="even">
-<td><code>apply()</code></td>
-<td>Funktion auf Matrix anwenden</td>
-<td><code>apply(mat, 2, mean)</code></td>
-</tr>
-</tbody>
-</table>
+<p><strong>Du hast es geschafft!</strong> Du hast deine erste
+Artenakkumulationskurve mit echten österreichischen Daten gebaut!</p>
+<p><strong>Gelernte Schlüsselkonzepte:</strong> - Variablen speichern
+Daten - <code>c()</code> erstellt Vektoren - <code>unique()</code> zählt
+verschiedene Arten - Schleifen lassen uns Aktionen wiederholen -
+<code>ggplot()</code> erstellt schöne Plots</p>
 </div>
 </div>
 

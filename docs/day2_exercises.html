@@ -1783,75 +1783,101 @@ $(document).ready(function() {
 });
 </script>
 <hr />
-<div id="welcome-to-day-2willkommen-zu-tag-2" class="section level1">
-<h1><span class="en">Welcome to Day 2!</span><span class="de">Willkommen
+<div id="part-2-advanced-analysis---welcome-to-day-2teil-2-fortgeschrittene-analyse---willkommen-zu-tag-2" class="section level1">
+<h1><span class="en">Part 2: Advanced Analysis - Welcome to Day
+2!</span><span class="de">Teil 2: Fortgeschrittene Analyse - Willkommen
 zu Tag 2!</span></h1>
 <div class="en">
-<p>Yesterday you went from learning basic R to building your first
-native vs alien accumulation curve on real Austrian data. Today
-we’ll:</p>
+<p>Yesterday you built your first species accumulation curve. Today
+we’ll take it to the next level with real scientific analysis!</p>
+<p><strong>What you’ll learn today:</strong></p>
 <ol style="list-style-type: decimal">
-<li><strong>Quantify uncertainty</strong> - Run from multiple starting
-points to see how much variation exists</li>
-<li><strong>Compare patterns quantitatively</strong> - Saturation
-speeds, slope ratios</li>
-<li><strong>Create publication-quality figures</strong> with confidence
-intervals</li>
-<li><strong>Draw scientific conclusions</strong> about native vs alien
-distributions</li>
+<li><strong>Spatial sampling</strong> - Walk through plots like a real
+field ecologist</li>
+<li><strong>Measuring uncertainty</strong> - Run from multiple starting
+points</li>
+<li><strong>Comparing natives vs aliens</strong> - Do they accumulate
+differently?</li>
+<li><strong>Publication-quality figures</strong> - Make plots ready for
+a research paper</li>
 </ol>
-<p>First, let’s reload our data and functions from Day 1.</p>
+<p><strong>How to use these exercises:</strong></p>
+<ul>
+<li>Replace each <code>____</code> with the correct code</li>
+<li>Run each chunk to see if it works</li>
+<li>Read the hints if you get stuck</li>
+<li>The exercises build on each other - do them in order!</li>
+</ul>
 </div>
 <div class="de">
-<p>Gestern hast du von R-Grundlagen bis zur ersten heimisch vs alien
-Akkumulationskurve mit echten österreichischen Daten gelernt. Heute
-werden wir:</p>
+<p>Gestern hast du deine erste Artenakkumulationskurve gebaut. Heute
+bringen wir es mit echter wissenschaftlicher Analyse auf das nächste
+Level!</p>
+<p><strong>Was du heute lernst:</strong></p>
 <ol style="list-style-type: decimal">
-<li><strong>Unsicherheit quantifizieren</strong> - Von mehreren
-Startpunkten starten um Variation zu sehen</li>
-<li><strong>Muster quantitativ vergleichen</strong> -
-Sättigungsgeschwindigkeiten, Steigungsverhältnisse</li>
-<li><strong>Publikationsreife Abbildungen erstellen</strong> mit
-Konfidenzintervallen</li>
-<li><strong>Wissenschaftliche Schlussfolgerungen</strong> über heimische
-vs Alien-Verteilungen ziehen</li>
+<li><strong>Räumliche Probenahme</strong> - Gehe durch Plots wie ein
+echter Feldökologe</li>
+<li><strong>Unsicherheit messen</strong> - Starte von mehreren
+Punkten</li>
+<li><strong>Heimische vs Aliens vergleichen</strong> - Akkumulieren sie
+unterschiedlich?</li>
+<li><strong>Publikationsreife Abbildungen</strong> - Erstelle Plots
+bereit für eine Forschungsarbeit</li>
 </ol>
-<p>Zuerst laden wir unsere Daten und Funktionen von Tag 1.</p>
+<p><strong>So verwendest du diese Übungen:</strong></p>
+<ul>
+<li>Ersetze jedes <code>____</code> mit dem richtigen Code</li>
+<li>Führe jeden Chunk aus um zu sehen ob er funktioniert</li>
+<li>Lies die Hinweise wenn du nicht weiterkommst</li>
+<li>Die Übungen bauen aufeinander auf - mache sie der Reihe nach!</li>
+</ul>
 </div>
 <hr />
 </div>
-<div id="part-5-setup---reload-day-1-functionsteil-5-setup---tag-1-funktionen-neu-laden" class="section level1">
-<h1><span class="en">Part 5: Setup - Reload Day 1 Functions</span><span class="de">Teil 5: Setup - Tag 1 Funktionen neu laden</span></h1>
-<div id="load-data-and-define-functionsdaten-laden-und-funktionen-definieren" class="section level2">
-<h2><span class="en">Load Data and Define Functions</span><span class="de">Daten laden und Funktionen definieren</span></h2>
+<div id="exercise-1-setup---load-data-and-functionsübung-1-setup---daten-und-funktionen-laden" class="section level1">
+<h1><span class="en">Exercise 1: Setup - Load Data and
+Functions</span><span class="de">Übung 1: Setup - Daten und Funktionen
+laden</span></h1>
+<div class="en">
+<p><strong>Concept:</strong> Before we start, we need to load our data
+and define some helper functions. These functions will make our analysis
+easier.</p>
+</div>
+<div class="de">
+<p><strong>Konzept:</strong> Bevor wir beginnen, müssen wir unsere Daten
+laden und einige Hilfsfunktionen definieren. Diese Funktionen machen
+unsere Analyse einfacher.</p>
+</div>
+<div id="a-load-packages-and-data1a-pakete-und-daten-laden" class="section level3">
+<h3><span class="en">1a: Load packages and data</span><span class="de">1a: Pakete und Daten laden</span></h3>
 <pre class="r"><code># Load packages
 # Pakete laden
-library(dplyr)
-library(ggplot2)
+library(tidyverse)
 
 # Load data
 # Daten laden
-header &lt;- read.csv(&quot;../data/austria_header.csv&quot;)
-species &lt;- read.csv(&quot;../data/austria_species.csv&quot;)
+header &lt;- read_csv(&quot;../data/austria_header.csv&quot;)
+species &lt;- read_csv(&quot;../data/austria_species.csv&quot;)
 
-# Verify data loaded
-# Überprüfe dass Daten geladen sind
-cat(&quot;Header:&quot;, nrow(header), &quot;plots\n&quot;)
-cat(&quot;Species:&quot;, nrow(species), &quot;records\n&quot;)
+# Check data loaded correctly
+# Überprüfe dass Daten korrekt geladen sind
+cat(&quot;Plots loaded:&quot;, nrow(header), &quot;\n&quot;)
+cat(&quot;Species records:&quot;, nrow(species), &quot;\n&quot;)
 cat(&quot;Unique species:&quot;, length(unique(species$WFO_TAXON)), &quot;\n&quot;)</code></pre>
-<pre class="r"><code># Distance function
-# Distanzfunktion
+</div>
+<div id="b-define-helper-functions1b-hilfsfunktionen-definieren" class="section level3">
+<h3><span class="en">1b: Define helper functions</span><span class="de">1b: Hilfsfunktionen definieren</span></h3>
+<pre class="r"><code># Distance function - calculates distance between two points
+# Distanzfunktion - berechnet Abstand zwischen zwei Punkten
 calc_distance &lt;- function(x1, y1, x2, y2) {
   sqrt((x2 - x1)^2 + (y2 - y1)^2)
 }
 
-# Nearest-neighbour walk function
-# Nearest-Neighbour-Walk-Funktion
+# Nearest-neighbour walk - visits plots by always going to closest unvisited
+# Nearest-Neighbour-Walk - besucht Plots indem immer zum nächsten unbesuchten gegangen wird
 nn_walk &lt;- function(header_data, start_idx = NULL) {
   n &lt;- nrow(header_data)
-  if (is.null(start_idx)) {
-    start_idx &lt;- sample(1:n, 1)
-  }
+  if (is.null(start_idx)) start_idx &lt;- sample(1:n, 1)
 
   visited &lt;- rep(FALSE, n)
   visit_order &lt;- numeric(n)
@@ -1863,21 +1889,18 @@ nn_walk &lt;- function(header_data, start_idx = NULL) {
 
     if (i &lt; n) {
       distances &lt;- calc_distance(
-        header_data$Longitude[current],
-        header_data$Latitude[current],
-        header_data$Longitude,
-        header_data$Latitude
+        header_data$Longitude[current], header_data$Latitude[current],
+        header_data$Longitude, header_data$Latitude
       )
       distances[visited] &lt;- Inf
       current &lt;- which.min(distances)
     }
   }
-
   return(visit_order)
 }
 
-# Accumulation function
-# Akkumulationsfunktion
+# Build accumulation curve for given plot order
+# Baue Akkumulationskurve für gegebene Plot-Reihenfolge
 build_accumulation &lt;- function(species_data, plot_order, status_filter = NULL) {
   if (!is.null(status_filter)) {
     species_data &lt;- species_data %&gt;% filter(STATUS == status_filter)
@@ -1896,108 +1919,169 @@ build_accumulation &lt;- function(species_data, plot_order, status_filter = NULL
     found &lt;- c(found, new_spp)
     accum[i] &lt;- length(found)
   }
-
   return(accum)
 }
 
-# Saturation point function
-# Sättigungspunkt-Funktion
+# Find saturation point (when we reach X% of total species)
+# Finde Sättigungspunkt (wenn wir X% der Gesamtarten erreichen)
 find_saturation &lt;- function(curve, threshold = 0.8) {
-  total &lt;- max(curve)
-  target &lt;- total * threshold
+  target &lt;- max(curve) * threshold
   which(curve &gt;= target)[1]
 }
 
 cat(&quot;All functions loaded!\n&quot;)</code></pre>
 <div class="hint">
-<p><span class="en">Run both code blocks above to set up for today’s
-exercises. If you get errors, make sure the data files are in the
-correct location (<code>../data/</code>).</span> <span class="de">Führe
-beide Code-Blöcke oben aus um dich für die heutigen Übungen
-vorzubereiten. Bei Fehlern stelle sicher dass die Datendateien am
-richtigen Ort sind (<code>../data/</code>).</span></p>
+<p><span class="en">Hint: Run both code blocks above. If you get errors,
+check that the data files exist in <code>../data/</code>.</span> <span class="de">Hinweis: Führe beide Code-Blöcke aus. Bei Fehlern prüfe ob
+die Dateien in <code>../data/</code> existieren.</span></p>
 </div>
 <hr />
 </div>
 </div>
-<div id="part-6-measuring-uncertaintyteil-6-unsicherheit-messen" class="section level1">
-<h1><span class="en">Part 6: Measuring Uncertainty</span><span class="de">Teil 6: Unsicherheit messen</span></h1>
+<div id="exercise-2-understanding-spatial-samplingübung-2-räumliche-probenahme-verstehen" class="section level1">
+<h1><span class="en">Exercise 2: Understanding Spatial
+Sampling</span><span class="de">Übung 2: Räumliche Probenahme
+verstehen</span></h1>
 <div class="en">
-<p>Yesterday we ran from a single starting point. But the accumulation
-curve depends on where we start - different paths through the landscape
-give different curves. Today we’ll run from many starting points and
-quantify this variation.</p>
+<p><strong>Concept:</strong> When we sample plots randomly, we might
+jump all over the map. But a <strong>nearest-neighbour walk</strong>
+samples like a real ecologist would - always going to the closest
+unvisited plot. This creates a realistic spatial accumulation curve.</p>
 </div>
 <div class="de">
-<p>Gestern starteten wir von einem einzigen Punkt. Aber die
-Akkumulationskurve hängt davon ab wo wir starten - verschiedene Wege
-durch die Landschaft geben verschiedene Kurven. Heute starten wir von
-vielen Punkten und quantifizieren diese Variation.</p>
+<p><strong>Konzept:</strong> Wenn wir Plots zufällig sampeln, springen
+wir vielleicht über die ganze Karte. Aber ein
+<strong>Nearest-Neighbour-Walk</strong> sampelt wie ein echter Ökologe -
+geht immer zum nächsten unbesuchten Plot. Das erstellt eine realistische
+räumliche Akkumulationskurve.</p>
 </div>
-<hr />
-<div id="exercise-16-multiple-seeds---measuring-uncertaintyübung-16-mehrere-seeds---unsicherheit-messen" class="section level2">
-<h2><span class="en">Exercise 16: Multiple Seeds - Measuring
-Uncertainty</span><span class="de">Übung 16: Mehrere Seeds -
-Unsicherheit messen</span></h2>
-<div id="a-run-from-multiple-starting-points16a-von-mehreren-startpunkten-starten" class="section level3">
-<h3><span class="en">16a: Run from multiple starting points</span><span class="de">16a: Von mehreren Startpunkten starten</span></h3>
-<pre class="r"><code># 16a: The starting point matters - let&#39;s quantify how much
-# 16a: Der Startpunkt ist wichtig - quantifizieren wir wie sehr
-
-n_seeds &lt;- 20  # Number of different starting points
+<div id="a-create-a-sample-dataset2a-erstelle-einen-beispieldatensatz" class="section level3">
+<h3><span class="en">2a: Create a sample dataset</span><span class="de">2a: Erstelle einen Beispieldatensatz</span></h3>
+<pre class="r"><code># Take a random sample of 150 plots (for speed)
+# Nimm eine zufällige Stichprobe von 150 Plots (für Geschwindigkeit)
+set.seed(42)  # For reproducibility / Für Reproduzierbarkeit
 sample_size &lt;- 150
 
-set.seed(42)
 sample_ids &lt;- sample(unique(header$PlotObservationID), sample_size)
 sample_header &lt;- header %&gt;% filter(PlotObservationID %in% sample_ids)
 sample_species &lt;- species %&gt;% filter(PlotObservationID %in% sample_ids)
 
-# Storage for results
-# Speicher für Ergebnisse
+cat(&quot;Sample created:&quot;, nrow(sample_header), &quot;plots\n&quot;)</code></pre>
+</div>
+<div id="b-run-a-nearest-neighbour-walk2b-führe-einen-nearest-neighbour-walk-aus" class="section level3">
+<h3><span class="en">2b: Run a nearest-neighbour walk</span><span class="de">2b: Führe einen Nearest-Neighbour-Walk aus</span></h3>
+<pre class="r"><code># Start from plot 1 and walk to nearest neighbours
+# Starte von Plot 1 und gehe zu nächsten Nachbarn
+nn_order &lt;- nn_walk(sample_header, start_idx = 1)
+
+# Build curves for native and alien species
+# Baue Kurven für heimische und Alien-Arten
+native_curve &lt;- build_accumulation(sample_species, nn_order, &quot;____&quot;)
+alien_curve &lt;- build_accumulation(sample_species, nn_order, &quot;____&quot;)
+
+# Check the results
+# Überprüfe die Ergebnisse
+cat(&quot;Native species found:&quot;, max(native_curve), &quot;\n&quot;)
+cat(&quot;Alien species found:&quot;, max(alien_curve), &quot;\n&quot;)</code></pre>
+</div>
+<div id="c-plot-the-comparison2c-plotte-den-vergleich" class="section level3">
+<h3><span class="en">2c: Plot the comparison</span><span class="de">2c:
+Plotte den Vergleich</span></h3>
+<pre class="r"><code># Create data frame for plotting
+# Erstelle Data Frame zum Plotten
+curve_data &lt;- data.frame(
+  plots = rep(1:sample_size, 2),
+  species = c(native_curve, alien_curve),
+  status = rep(c(&quot;Native&quot;, &quot;Alien&quot;), each = sample_size)
+)
+
+ggplot(curve_data, aes(x = plots, y = species, color = status)) +
+  geom_line(linewidth = 1.2) +
+  scale_color_manual(values = c(&quot;Native&quot; = &quot;darkgreen&quot;, &quot;Alien&quot; = &quot;____&quot;)) +
+  labs(
+    title = &quot;Native vs Alien Species Accumulation&quot;,
+    x = &quot;Plots Sampled (Nearest-Neighbour Order)&quot;,
+    y = &quot;Cumulative Species&quot;,
+    color = &quot;&quot;
+  ) +
+  theme_minimal()</code></pre>
+<div class="hint">
+<p><span class="en">Hint: Native species use STATUS = “nat”, alien
+species use STATUS = “neo”.</span> <span class="de">Hinweis: Heimische
+Arten haben STATUS = “nat”, Alien-Arten haben STATUS = “neo”.</span></p>
+</div>
+<hr />
+</div>
+</div>
+<div id="exercise-3-measuring-uncertaintyübung-3-unsicherheit-messen" class="section level1">
+<h1><span class="en">Exercise 3: Measuring Uncertainty</span><span class="de">Übung 3: Unsicherheit messen</span></h1>
+<div class="en">
+<p><strong>Concept:</strong> The curve we get depends on WHERE we start!
+If we start in a native-rich area, natives accumulate fast. If we start
+near an alien hotspot, aliens accumulate fast. We need to run from MANY
+starting points to see the true pattern.</p>
+</div>
+<div class="de">
+<p><strong>Konzept:</strong> Die Kurve die wir bekommen hängt davon ab
+WO wir starten! Starten wir in einem heimisch-reichen Gebiet,
+akkumulieren Heimische schnell. Starten wir nahe einem Alien-Hotspot,
+akkumulieren Aliens schnell. Wir müssen von VIELEN Startpunkten starten
+um das wahre Muster zu sehen.</p>
+</div>
+<div id="a-run-from-multiple-starting-points3a-von-mehreren-startpunkten-starten" class="section level3">
+<h3><span class="en">3a: Run from multiple starting points</span><span class="de">3a: Von mehreren Startpunkten starten</span></h3>
+<pre class="r"><code># Run from 20 different starting points
+# Starte von 20 verschiedenen Startpunkten
+n_seeds &lt;- 20
+
+# Storage for results (matrix: rows = seeds, columns = plots)
+# Speicher für Ergebnisse (Matrix: Zeilen = Seeds, Spalten = Plots)
 native_runs &lt;- matrix(NA, nrow = n_seeds, ncol = sample_size)
 alien_runs &lt;- matrix(NA, nrow = n_seeds, ncol = sample_size)
 
-# Run from each seed
-# Starte von jedem Seed
-cat(&quot;Running&quot;, n_seeds, &quot;seeds...\n&quot;)
+# Run from each starting point
+# Starte von jedem Startpunkt
+cat(&quot;Running&quot;, n_seeds, &quot;starting points...\n&quot;)
 for (seed in 1:n_seeds) {
   nn_order &lt;- nn_walk(sample_header, start_idx = seed)
   native_runs[seed, ] &lt;- build_accumulation(sample_species, nn_order, &quot;____&quot;)
   alien_runs[seed, ] &lt;- build_accumulation(sample_species, nn_order, &quot;____&quot;)
 
-  if (seed %% 5 == 0) cat(&quot;  Completed seed&quot;, seed, &quot;\n&quot;)
+  if (seed %% 5 == 0) cat(&quot;  Completed&quot;, seed, &quot;\n&quot;)
 }
-
 cat(&quot;Done!\n&quot;)</code></pre>
 </div>
-<div id="b-calculate-summary-statistics16b-zusammenfassende-statistiken-berechnen" class="section level3">
-<h3><span class="en">16b: Calculate summary statistics</span><span class="de">16b: Zusammenfassende Statistiken berechnen</span></h3>
-<pre class="r"><code># 16b: Mean and confidence intervals
-# 16b: Mittelwert und Konfidenzintervalle
-
+<div id="b-calculate-mean-and-confidence-intervals3b-berechne-mittelwert-und-konfidenzintervalle" class="section level3">
+<h3><span class="en">3b: Calculate mean and confidence
+intervals</span><span class="de">3b: Berechne Mittelwert und
+Konfidenzintervalle</span></h3>
+<pre class="r"><code># Mean across all runs
+# Mittelwert über alle Läufe
 native_mean &lt;- apply(native_runs, 2, ____)
+alien_mean &lt;- apply(alien_runs, 2, mean)
+
+# 95% confidence intervals (2.5% and 97.5% quantiles)
+# 95% Konfidenzintervalle (2.5% und 97.5% Quantile)
 native_lower &lt;- apply(native_runs, 2, function(x) quantile(x, 0.025))
 native_upper &lt;- apply(native_runs, 2, function(x) quantile(x, ____))
 
-alien_mean &lt;- apply(alien_runs, 2, mean)
 alien_lower &lt;- apply(alien_runs, 2, function(x) quantile(x, ____))
 alien_upper &lt;- apply(alien_runs, 2, function(x) quantile(x, 0.975))
 
-# Coefficient of variation at midpoint
-# Variationskoeffizient am Mittelpunkt
+# How much variation is there?
+# Wie viel Variation gibt es?
 midpoint &lt;- sample_size %/% 2
 native_cv &lt;- round(100 * sd(native_runs[, midpoint]) / mean(native_runs[, midpoint]), 1)
 alien_cv &lt;- round(100 * sd(alien_runs[, midpoint]) / mean(alien_runs[, midpoint]), 1)
 
-print(paste(&quot;Variation at&quot;, midpoint, &quot;plots:&quot;))
-print(paste(&quot;  Native CV:&quot;, native_cv, &quot;%&quot;))
-print(paste(&quot;  Alien CV:&quot;, alien_cv, &quot;%&quot;))</code></pre>
+cat(&quot;Variation at midpoint:\n&quot;)
+cat(&quot;  Native CV:&quot;, native_cv, &quot;%\n&quot;)
+cat(&quot;  Alien CV:&quot;, alien_cv, &quot;%\n&quot;)</code></pre>
 </div>
-<div id="c-plot-with-uncertainty-bands16c-plotte-mit-unsicherheitsbändern" class="section level3">
-<h3><span class="en">16c: Plot with uncertainty bands</span><span class="de">16c: Plotte mit Unsicherheitsbändern</span></h3>
-<pre class="r"><code># 16c: Publication-quality plot
-# 16c: Publikationsreifer Plot
-
+<div id="c-plot-with-uncertainty-bands3c-plotte-mit-unsicherheitsbändern" class="section level3">
+<h3><span class="en">3c: Plot with uncertainty bands</span><span class="de">3c: Plotte mit Unsicherheitsbändern</span></h3>
+<pre class="r"><code># Create summary data frame
+# Erstelle Zusammenfassungs-Data-Frame
 summary_data &lt;- data.frame(
   plots = rep(1:sample_size, 2),
   mean = c(native_mean, alien_mean),
@@ -2006,6 +2090,8 @@ summary_data &lt;- data.frame(
   status = rep(c(&quot;Native&quot;, &quot;Alien&quot;), each = sample_size)
 )
 
+# Plot with shaded confidence bands
+# Plotte mit schattierten Konfidenzbändern
 ggplot(summary_data, aes(x = plots)) +
   geom_ribbon(aes(ymin = lower, ymax = upper, fill = status), alpha = ____) +
   geom_line(aes(y = mean, color = status), linewidth = 1.2) +
@@ -2013,25 +2099,41 @@ ggplot(summary_data, aes(x = plots)) +
   scale_fill_manual(values = c(&quot;Native&quot; = &quot;darkgreen&quot;, &quot;Alien&quot; = &quot;red&quot;)) +
   labs(
     title = &quot;Species Accumulation with Uncertainty&quot;,
-    subtitle = paste(n_seeds, &quot;starting points - shaded area = 95% CI&quot;),
-    x = &quot;Plots Sampled (Nearest-Neighbour Order)&quot;,
+    subtitle = paste(n_seeds, &quot;starting points - shaded = 95% CI&quot;),
+    x = &quot;Plots Sampled&quot;,
     y = &quot;Cumulative Species&quot;,
     color = &quot;&quot;, fill = &quot;&quot;
   ) +
   theme_minimal() +
   theme(legend.position = &quot;bottom&quot;)</code></pre>
+<div class="hint">
+<p><span class="en">Hint: Use <code>mean</code> for the average. For 95%
+CI, upper bound is 0.975 quantile, lower is 0.025.</span> <span class="de">Hinweis: Benutze <code>mean</code> für den Durchschnitt. Für
+95% CI ist obere Grenze 0.975 Quantil, untere 0.025.</span></p>
+</div>
 <hr />
 </div>
 </div>
-<div id="exercise-17-comparing-curve-shapes-quantitativelyübung-17-kurvenformen-quantitativ-vergleichen" class="section level2">
-<h2><span class="en">Exercise 17: Comparing Curve Shapes
-Quantitatively</span><span class="de">Übung 17: Kurvenformen quantitativ
-vergleichen</span></h2>
-<div id="a-saturation-point-comparison17a-sättigungspunkt-vergleich" class="section level3">
-<h3><span class="en">17a: Saturation point comparison</span><span class="de">17a: Sättigungspunkt-Vergleich</span></h3>
-<pre class="r"><code># 17a: At what point do we reach 80% of species?
-# 17a: Bei welchem Punkt erreichen wir 80% der Arten?
-
+<div id="exercise-4-comparing-saturation-speedübung-4-sättigungsgeschwindigkeit-vergleichen" class="section level1">
+<h1><span class="en">Exercise 4: Comparing Saturation Speed</span><span class="de">Übung 4: Sättigungsgeschwindigkeit vergleichen</span></h1>
+<div class="en">
+<p><strong>Concept:</strong> <strong>Saturation</strong> is when we’ve
+found most of the species and the curve flattens. If natives saturate
+FASTER than aliens, it means natives are more evenly distributed (we
+find them everywhere). If aliens saturate SLOWER, they’re more patchy
+(clustered in certain areas).</p>
+</div>
+<div class="de">
+<p><strong>Konzept:</strong> <strong>Sättigung</strong> ist wenn wir die
+meisten Arten gefunden haben und die Kurve abflacht. Wenn Heimische
+SCHNELLER saturieren, sind sie gleichmäßiger verteilt (wir finden sie
+überall). Wenn Aliens LANGSAMER saturieren, sind sie fleckenhafter (in
+bestimmten Gebieten geclustert).</p>
+</div>
+<div id="a-find-saturation-points4a-finde-sättigungspunkte" class="section level3">
+<h3><span class="en">4a: Find saturation points</span><span class="de">4a: Finde Sättigungspunkte</span></h3>
+<pre class="r"><code># At what point do we reach 80% of species?
+# Bei welchem Punkt erreichen wir 80% der Arten?
 native_sat &lt;- apply(native_runs, 1, find_saturation, threshold = 0.8)
 alien_sat &lt;- apply(alien_runs, 1, find_saturation, threshold = ____)
 
@@ -2040,12 +2142,14 @@ alien_sat &lt;- apply(alien_runs, 1, find_saturation, threshold = ____)
 native_sat_pct &lt;- 100 * native_sat / sample_size
 alien_sat_pct &lt;- 100 * alien_sat / sample_size
 
-print(&quot;Plots needed to reach 80% of species:&quot;)
-print(paste(&quot;  Native:&quot;, round(mean(native_sat_pct)), &quot;% (SD:&quot;, round(sd(native_sat_pct), 1), &quot;)&quot;))
-print(paste(&quot;  Alien:&quot;, round(mean(alien_sat_pct)), &quot;% (SD:&quot;, round(sd(alien_sat_pct), 1), &quot;)&quot;))
-
-# Box plot comparison
-# Boxplot-Vergleich
+cat(&quot;Plots needed to reach 80% of species:\n&quot;)
+cat(&quot;  Native:&quot;, round(mean(native_sat_pct)), &quot;% (SD:&quot;, round(sd(native_sat_pct), 1), &quot;)\n&quot;)
+cat(&quot;  Alien:&quot;, round(mean(alien_sat_pct)), &quot;% (SD:&quot;, round(sd(alien_sat_pct), 1), &quot;)\n&quot;)</code></pre>
+</div>
+<div id="b-visualize-with-boxplot4b-visualisiere-mit-boxplot" class="section level3">
+<h3><span class="en">4b: Visualize with boxplot</span><span class="de">4b: Visualisiere mit Boxplot</span></h3>
+<pre class="r"><code># Create data for boxplot
+# Erstelle Daten für Boxplot
 sat_data &lt;- data.frame(
   saturation_pct = c(native_sat_pct, alien_sat_pct),
   status = rep(c(&quot;Native&quot;, &quot;Alien&quot;), each = n_seeds)
@@ -2055,7 +2159,7 @@ ggplot(sat_data, aes(x = status, y = saturation_pct, fill = status)) +
   geom_boxplot() +
   scale_fill_manual(values = c(&quot;Native&quot; = &quot;____&quot;, &quot;Alien&quot; = &quot;____&quot;)) +
   labs(
-    title = &quot;Saturation Speed Comparison&quot;,
+    title = &quot;How Fast Do Species Saturate?&quot;,
     subtitle = &quot;% of plots needed to find 80% of species&quot;,
     y = &quot;% of Plots Needed&quot;,
     x = &quot;&quot;
@@ -2063,56 +2167,59 @@ ggplot(sat_data, aes(x = status, y = saturation_pct, fill = status)) +
   theme_minimal() +
   theme(legend.position = &quot;none&quot;)</code></pre>
 </div>
-<div id="b-slope-ratio-early-vs-late17b-steigungsverhältnis-früh-vs-spät" class="section level3">
-<h3><span class="en">17b: Slope ratio (early vs late)</span><span class="de">17b: Steigungsverhältnis (früh vs spät)</span></h3>
-<pre class="r"><code># 17b: Compare early vs late slopes
-# 17b: Vergleiche frühe vs späte Steigungen
-
-# Steep start + flat end = species evenly distributed
-# Steil am Anfang + flach am Ende = Arten gleichmäßig verteilt
-# Steady throughout = species patchy
-# Stetig durchgehend = Arten fleckenhaft
+<div id="c-calculate-slope-ratio4c-berechne-steigungsverhältnis" class="section level3">
+<h3><span class="en">4c: Calculate slope ratio</span><span class="de">4c: Berechne Steigungsverhältnis</span></h3>
+<pre class="r"><code># Compare early vs late slopes
+# Vergleiche frühe vs späte Steigungen
+# High ratio = fast saturation (steep early, flat late)
+# Hohes Verhältnis = schnelle Sättigung (steil früh, flach spät)
 
 calc_slope_ratio &lt;- function(curve) {
   n &lt;- length(curve)
-
-  # Early slope (first 20%)
-  # Frühe Steigung (erste 20%)
   early_end &lt;- round(n * 0.2)
-  early_slope &lt;- (curve[early_end] - curve[1]) / early_end
-
-  # Late slope (last 20%)
-  # Späte Steigung (letzte 20%)
   late_start &lt;- round(n * 0.8)
+
+  early_slope &lt;- (curve[early_end] - curve[1]) / early_end
   late_slope &lt;- (curve[n] - curve[late_start]) / (n - late_start)
 
-  if (late_slope &gt; 0) {
-    return(early_slope / late_slope)
-  } else {
-    return(NA)
-  }
+  if (late_slope &gt; 0) return(early_slope / late_slope)
+  else return(NA)
 }
 
 native_ratios &lt;- apply(native_runs, 1, calc_slope_ratio)
 alien_ratios &lt;- apply(alien_runs, 1, ____)
 
-print(&quot;Slope ratio (early/late) - higher = faster saturation:&quot;)
-print(paste(&quot;  Native:&quot;, round(mean(native_ratios, na.rm = TRUE), 1)))
-print(paste(&quot;  Alien:&quot;, round(mean(alien_ratios, na.rm = TRUE), 1)))</code></pre>
+cat(&quot;Slope ratio (higher = faster saturation):\n&quot;)
+cat(&quot;  Native:&quot;, round(mean(native_ratios, na.rm = TRUE), 1), &quot;\n&quot;)
+cat(&quot;  Alien:&quot;, round(mean(alien_ratios, na.rm = TRUE), 1), &quot;\n&quot;)</code></pre>
+<div class="hint">
+<p><span class="en">Hint: Fill in colors “darkgreen” and “red”. For
+slope ratio, use <code>calc_slope_ratio</code>.</span> <span class="de">Hinweis: Fülle Farben “darkgreen” und “red” ein. Für
+Steigungsverhältnis nutze <code>calc_slope_ratio</code>.</span></p>
+</div>
 <hr />
 </div>
 </div>
-<div id="exercise-18-geographic-patternsübung-18-geografische-muster" class="section level2">
-<h2><span class="en">Exercise 18: Geographic Patterns</span><span class="de">Übung 18: Geografische Muster</span></h2>
-<div id="a-does-starting-location-affect-results18a-beeinflusst-der-startort-die-ergebnisse" class="section level3">
-<h3><span class="en">18a: Does starting location affect
-results?</span><span class="de">18a: Beeinflusst der Startort die
-Ergebnisse?</span></h3>
-<pre class="r"><code># 18a: Map how starting location affects alien detection
-# 18a: Kartiere wie der Startort die Alien-Erkennung beeinflusst
-
+<div id="exercise-5-geographic-patternsübung-5-geografische-muster" class="section level1">
+<h1><span class="en">Exercise 5: Geographic Patterns</span><span class="de">Übung 5: Geografische Muster</span></h1>
+<div class="en">
+<p><strong>Concept:</strong> Does it matter WHERE in Austria we start?
+Some areas might have more aliens (near cities, roads). Let’s map how
+starting location affects what we find!</p>
+</div>
+<div class="de">
+<p><strong>Konzept:</strong> Ist es wichtig WO in Österreich wir
+starten? Manche Gebiete haben vielleicht mehr Aliens (nahe Städten,
+Straßen). Kartieren wir wie der Startort beeinflusst was wir finden!</p>
+</div>
+<div id="a-map-alien-proportion-by-starting-location5a-kartiere-alien-anteil-nach-startort" class="section level3">
+<h3><span class="en">5a: Map alien proportion by starting
+location</span><span class="de">5a: Kartiere Alien-Anteil nach
+Startort</span></h3>
+<pre class="r"><code># Test from 30 different starting locations
+# Teste von 30 verschiedenen Startorten
 n_map_seeds &lt;- 30
-checkpoint &lt;- 75  # Check alien ratio after this many plots
+checkpoint &lt;- 75  # Check after this many plots
 
 seed_results &lt;- data.frame(
   seed_idx = 1:n_map_seeds,
@@ -2123,18 +2230,18 @@ seed_results &lt;- data.frame(
 )
 
 for (i in 1:n_map_seeds) {
-  # Record seed location
-  # Erfasse Seed-Standort
+  # Record starting location
+  # Erfasse Startort
   seed_results$seed_lon[i] &lt;- sample_header$Longitude[i]
   seed_results$seed_lat[i] &lt;- sample_header$Latitude[i]
 
-  # Run from this seed
-  # Starte von diesem Seed
+  # Run from this starting point
+  # Starte von diesem Startpunkt
   nn_order &lt;- nn_walk(sample_header, start_idx = i)
 
   # Get counts at checkpoint
   # Hole Zählungen am Checkpoint
-  native_curve &lt;- build_accumulation(sample_species, nn_order, &quot;native&quot;)
+  native_curve &lt;- build_accumulation(sample_species, nn_order, &quot;nat&quot;)
   alien_curve &lt;- build_accumulation(sample_species, nn_order, &quot;neo&quot;)
 
   seed_results$native_count[i] &lt;- native_curve[min(checkpoint, length(native_curve))]
@@ -2146,14 +2253,12 @@ for (i in 1:n_map_seeds) {
 seed_results$alien_prop &lt;- seed_results$alien_count /
   (seed_results$native_count + seed_results$____)
 
-# Map it
-# Kartiere es
+# Map it!
+# Kartiere es!
 ggplot(seed_results, aes(x = seed_lon, y = seed_lat, color = alien_prop)) +
-  geom_point(size = 3) +
+  geom_point(size = 4) +
   scale_color_gradient2(
-    low = &quot;darkgreen&quot;,
-    mid = &quot;yellow&quot;,
-    high = &quot;red&quot;,
+    low = &quot;darkgreen&quot;, mid = &quot;yellow&quot;, high = &quot;red&quot;,
     midpoint = mean(seed_results$alien_prop),
     name = &quot;Alien\nproportion&quot;
   ) +
@@ -2161,42 +2266,53 @@ ggplot(seed_results, aes(x = seed_lon, y = seed_lat, color = alien_prop)) +
   labs(
     title = &quot;How Starting Location Affects Alien Detection&quot;,
     subtitle = paste(&quot;Alien proportion after&quot;, checkpoint, &quot;plots&quot;),
-    x = &quot;Longitude&quot;,
-    y = &quot;Latitude&quot;
+    x = &quot;Longitude&quot;, y = &quot;Latitude&quot;
   ) +
   theme_minimal()</code></pre>
+<div class="hint">
+<p><span class="en">Hint: Fill in <code>alien_count</code> to complete
+the proportion calculation.</span> <span class="de">Hinweis: Fülle
+<code>alien_count</code> ein um die Anteilsberechnung zu
+vervollständigen.</span></p>
+</div>
 <hr />
 </div>
 </div>
+<div id="exercise-6-final-publication-plotübung-6-finaler-publikationsplot" class="section level1">
+<h1><span class="en">Exercise 6: Final Publication Plot</span><span class="de">Übung 6: Finaler Publikationsplot</span></h1>
+<div class="en">
+<p><strong>Concept:</strong> Let’s put it all together and create a
+publication-quality figure that shows our main finding: how native vs
+alien species accumulate differently across Austrian plots.</p>
 </div>
-<div id="part-7-complete-research-analysisteil-7-vollständige-forschungsanalyse" class="section level1">
-<h1><span class="en">Part 7: Complete Research Analysis</span><span class="de">Teil 7: Vollständige Forschungsanalyse</span></h1>
-<div id="exercise-19-full-analysisübung-19-vollständige-analyse" class="section level2">
-<h2><span class="en">Exercise 19: Full Analysis</span><span class="de">Übung 19: Vollständige Analyse</span></h2>
-<div id="a-run-the-complete-analysis19a-führe-die-komplette-analyse-aus" class="section level3">
-<h3><span class="en">19a: Run the complete analysis</span><span class="de">19a: Führe die komplette Analyse aus</span></h3>
-<pre class="r"><code># 19a: Production run with more samples
-# 19a: Produktionslauf mit mehr Stichproben
-
-# Parameters
-# Parameter
+<div class="de">
+<p><strong>Konzept:</strong> Fassen wir alles zusammen und erstellen
+eine publikationsreife Abbildung die unser Hauptergebnis zeigt: wie
+heimische vs Alien-Arten unterschiedlich über österreichische Plots
+akkumulieren.</p>
+</div>
+<div id="a-run-full-analysis6a-führe-vollständige-analyse-aus" class="section level3">
+<h3><span class="en">6a: Run full analysis</span><span class="de">6a:
+Führe vollständige Analyse aus</span></h3>
+<pre class="r"><code># Larger sample for final analysis
+# Größere Stichprobe für finale Analyse
 n_seeds &lt;- 30
-sample_size &lt;- 250
+sample_size &lt;- 200
 
 set.seed(2024)
 sample_ids &lt;- sample(unique(header$PlotObservationID), sample_size)
 sample_header &lt;- header %&gt;% filter(PlotObservationID %in% sample_ids)
 sample_species &lt;- species %&gt;% filter(PlotObservationID %in% sample_ids)
 
-# Run analysis
-# Führe Analyse aus
+# Run from all seeds
+# Starte von allen Seeds
 native_runs &lt;- matrix(NA, nrow = n_seeds, ncol = sample_size)
 alien_runs &lt;- matrix(NA, nrow = n_seeds, ncol = sample_size)
 
 cat(&quot;Running full analysis...\n&quot;)
 for (seed in 1:n_seeds) {
   nn_order &lt;- nn_walk(sample_header, start_idx = seed)
-  native_runs[seed, ] &lt;- build_accumulation(sample_species, nn_order, &quot;native&quot;)
+  native_runs[seed, ] &lt;- build_accumulation(sample_species, nn_order, &quot;nat&quot;)
   alien_runs[seed, ] &lt;- build_accumulation(sample_species, nn_order, &quot;neo&quot;)
   if (seed %% 10 == 0) cat(&quot;  Completed&quot;, seed, &quot;of&quot;, n_seeds, &quot;\n&quot;)
 }
@@ -2214,63 +2330,58 @@ results &lt;- data.frame(
   status = rep(c(&quot;Native&quot;, &quot;Alien&quot;), each = sample_size)
 )</code></pre>
 </div>
-<div id="b-create-final-publication-plot19b-erstelle-finalen-publikationsplot" class="section level3">
-<h3><span class="en">19b: Create final publication plot</span><span class="de">19b: Erstelle finalen Publikationsplot</span></h3>
-<pre class="r"><code># 19b: Publication-ready figure
-# 19b: Publikationsreife Abbildung
-
+<div id="b-create-publication-quality-figure6b-erstelle-publikationsreife-abbildung" class="section level3">
+<h3><span class="en">6b: Create publication-quality figure</span><span class="de">6b: Erstelle publikationsreife Abbildung</span></h3>
+<pre class="r"><code># Publication-ready figure
+# Publikationsreife Abbildung
 final_plot &lt;- ggplot(results, aes(x = plots)) +
   geom_ribbon(aes(ymin = lower, ymax = upper, fill = status), alpha = 0.25) +
   geom_line(aes(y = mean, color = status), linewidth = 1.3) +
-  scale_color_manual(
-    values = c(&quot;Native&quot; = &quot;#228B22&quot;, &quot;Alien&quot; = &quot;#DC143C&quot;),
-    name = &quot;&quot;
-  ) +
-  scale_fill_manual(
-    values = c(&quot;Native&quot; = &quot;#228B22&quot;, &quot;Alien&quot; = &quot;#DC143C&quot;),
-    name = &quot;&quot;
-  ) +
+  scale_color_manual(values = c(&quot;Native&quot; = &quot;#228B22&quot;, &quot;Alien&quot; = &quot;#DC143C&quot;)) +
+  scale_fill_manual(values = c(&quot;Native&quot; = &quot;#228B22&quot;, &quot;Alien&quot; = &quot;#DC143C&quot;)) +
   labs(
-    title = &quot;Species Accumulation: Native vs Alien Plants&quot;,
-    subtitle = paste0(&quot;Nearest-neighbour sampling from &quot;, n_seeds,
-                      &quot; starting points (95% CI shown)&quot;),
+    title = &quot;Species Accumulation: Native vs Alien Plants in Austria&quot;,
+    subtitle = paste0(n_seeds, &quot; starting points, 95% confidence intervals&quot;),
     x = &quot;Number of Plots Sampled&quot;,
     y = &quot;Cumulative Species Count&quot;,
-    caption = &quot;Data: Austrian vegetation plots&quot;
+    color = &quot;&quot;, fill = &quot;&quot;
   ) +
   theme_minimal(base_size = 13) +
   theme(
     legend.position = c(0.85, 0.2),
     legend.background = element_rect(fill = &quot;white&quot;, color = &quot;gray80&quot;),
-    plot.title = element_text(face = &quot;bold&quot;),
-    panel.grid.minor = element_blank()
+    plot.title = element_text(face = &quot;bold&quot;)
   )
 
 print(final_plot)
 
 # Save it (uncomment to run)
-# Speichere es (entkommentieren zum Ausführen)
-# ggsave(&quot;austria_accumulation_final.png&quot;, final_plot, width = 10, height = 7, dpi = 300)</code></pre>
+# ggsave(&quot;austria_accumulation.png&quot;, final_plot, width = 10, height = 7, dpi = 300)</code></pre>
 <hr />
 </div>
 </div>
-<div id="exercise-20-results-summaryübung-20-ergebniszusammenfassung" class="section level2">
-<h2><span class="en">Exercise 20: Results Summary</span><span class="de">Übung 20: Ergebniszusammenfassung</span></h2>
-<pre class="r"><code># 20: Final statistics report
-# 20: Abschließender Statistikbericht
+<div id="exercise-7-interpret-your-resultsübung-7-interpretiere-deine-ergebnisse" class="section level1">
+<h1><span class="en">Exercise 7: Interpret Your Results</span><span class="de">Übung 7: Interpretiere deine Ergebnisse</span></h1>
+<div class="en">
+<p><strong>Concept:</strong> Science isn’t just about making plots -
+it’s about understanding what they mean! Let’s summarize our
+findings.</p>
+</div>
+<div class="de">
+<p><strong>Konzept:</strong> Wissenschaft bedeutet nicht nur Plots zu
+erstellen - es geht darum zu verstehen was sie bedeuten! Fassen wir
+unsere Ergebnisse zusammen.</p>
+</div>
+<div id="a-generate-results-summary7a-generiere-ergebniszusammenfassung" class="section level3">
+<h3><span class="en">7a: Generate results summary</span><span class="de">7a: Generiere Ergebniszusammenfassung</span></h3>
+<pre class="r"><code>cat(&quot;\n========== RESULTS SUMMARY ==========\n\n&quot;)
 
-cat(&quot;\n===== RESULTS SUMMARY =====\n\n&quot;)
-
-# Species found
-# Gefundene Arten
+# Total species found
 cat(&quot;Species found:\n&quot;)
-cat(&quot;  Native:&quot;, round(mean(native_runs[, sample_size])),
-    &quot;(range:&quot;, min(native_runs[, sample_size]), &quot;-&quot;, max(native_runs[, sample_size]), &quot;)\n&quot;)
-cat(&quot;  Alien:&quot;, round(mean(alien_runs[, sample_size])),
-    &quot;(range:&quot;, min(alien_runs[, sample_size]), &quot;-&quot;, max(alien_runs[, sample_size]), &quot;)\n\n&quot;)
+cat(&quot;  Native:&quot;, round(mean(native_runs[, sample_size])), &quot;species\n&quot;)
+cat(&quot;  Alien:&quot;, round(mean(alien_runs[, sample_size])), &quot;species\n\n&quot;)
 
-# Saturation
-# Sättigung
+# Saturation comparison
 native_sat &lt;- apply(native_runs, 1, find_saturation, threshold = 0.8)
 alien_sat &lt;- apply(alien_runs, 1, find_saturation, threshold = 0.8)
 
@@ -2280,34 +2391,25 @@ cat(&quot;  Native:&quot;, round(mean(native_sat)), &quot;plots (&quot;,
 cat(&quot;  Alien:&quot;, round(mean(alien_sat)), &quot;plots (&quot;,
     round(100*mean(alien_sat)/sample_size), &quot;%)\n\n&quot;)
 
-# Variation
-# Variation
-cat(&quot;Variation between starting points (CV at 100 plots):\n&quot;)
-cat(&quot;  Native:&quot;, round(100 * sd(native_runs[,100]) / mean(native_runs[,100]), 1), &quot;%\n&quot;)
-cat(&quot;  Alien:&quot;, round(100 * sd(alien_runs[,100]) / mean(alien_runs[,100]), 1), &quot;%\n\n&quot;)
-
-# Conclusion
-# Schlussfolgerung
-cat(&quot;===== CONCLUSION =====\n&quot;)
+# Draw conclusion
+cat(&quot;========== CONCLUSION ==========\n&quot;)
 if (mean(native_sat) &lt; mean(alien_sat)) {
-  cat(&quot;Native species saturate FASTER than aliens.\n&quot;)
-  cat(&quot;This suggests natives are more evenly distributed,\n&quot;)
-  cat(&quot;while aliens are more patchy/clustered.\n&quot;)
+  cat(&quot;Native species saturate FASTER than aliens!\n&quot;)
+  cat(&quot;-&gt; Natives are more evenly distributed\n&quot;)
+  cat(&quot;-&gt; Aliens are more patchy/clustered\n&quot;)
 } else {
-  cat(&quot;Aliens saturate FASTER than natives.\n&quot;)
-  cat(&quot;This is unexpected - perhaps aliens are more widespread\n&quot;)
-  cat(&quot;than hypothesized in this region.\n&quot;)
+  cat(&quot;Aliens saturate FASTER than natives!\n&quot;)
+  cat(&quot;-&gt; Aliens are more widespread than expected\n&quot;)
 }</code></pre>
 <blockquote>
-<span class="en"><strong>Final Discussion:</strong> 1. Do the results
-support our hypothesis about natives saturating faster? 2. What does the
-variation between seeds tell us about alien distribution? 3. What would
-you investigate next? (Climate? Land use? Specific regions?) </span>
-<span class="de"><strong>Abschlussdiskussion:</strong> 1. Unterstützen
-die Ergebnisse unsere Hypothese dass Heimische schneller saturieren? 2.
-Was sagt uns die Variation zwischen Seeds über die Alienverteilung? 3.
-Was würdest du als nächstes untersuchen? (Klima? Landnutzung? Bestimmte
-Regionen?) </span>
+<span class="en"><strong>Discussion Questions:</strong> 1. Do natives
+really saturate faster? What does this mean ecologically? 2. Why might
+aliens be more “patchy” (clustered in certain areas)? 3. What would you
+investigate next? (Urban areas? Elevation? Climate?) </span> <span class="de"><strong>Diskussionsfragen:</strong> 1. Saturieren Heimische
+wirklich schneller? Was bedeutet das ökologisch? 2. Warum könnten Aliens
+“fleckenhafter” sein (in bestimmten Gebieten geclustert)? 3. Was würdest
+du als nächstes untersuchen? (Städtische Gebiete? Höhenlage? Klima?)
+</span>
 </blockquote>
 <hr />
 </div>

@@ -334,72 +334,97 @@ $(document).ready(function() {
 
 ---
 
-# <span class="en">Welcome to Day 2!</span><span class="de">Willkommen zu Tag 2!</span>
+# <span class="en">Part 2: Advanced Analysis - Welcome to Day 2!</span><span class="de">Teil 2: Fortgeschrittene Analyse - Willkommen zu Tag 2!</span>
 
 <div class="en">
 
-Yesterday you went from learning basic R to building your first native vs alien accumulation curve on real Austrian data. Today we'll:
+Yesterday you built your first species accumulation curve. Today we'll take it to the next level with real scientific analysis!
 
-1. **Quantify uncertainty** - Run from multiple starting points to see how much variation exists
-2. **Compare patterns quantitatively** - Saturation speeds, slope ratios
-3. **Create publication-quality figures** with confidence intervals
-4. **Draw scientific conclusions** about native vs alien distributions
+**What you'll learn today:**
 
-First, let's reload our data and functions from Day 1.
+1. **Spatial sampling** - Walk through plots like a real field ecologist
+2. **Measuring uncertainty** - Run from multiple starting points
+3. **Comparing natives vs aliens** - Do they accumulate differently?
+4. **Publication-quality figures** - Make plots ready for a research paper
+
+**How to use these exercises:**
+
+- Replace each `____` with the correct code
+- Run each chunk to see if it works
+- Read the hints if you get stuck
+- The exercises build on each other - do them in order!
 
 </div>
 
 <div class="de">
 
-Gestern hast du von R-Grundlagen bis zur ersten heimisch vs alien Akkumulationskurve mit echten österreichischen Daten gelernt. Heute werden wir:
+Gestern hast du deine erste Artenakkumulationskurve gebaut. Heute bringen wir es mit echter wissenschaftlicher Analyse auf das nächste Level!
 
-1. **Unsicherheit quantifizieren** - Von mehreren Startpunkten starten um Variation zu sehen
-2. **Muster quantitativ vergleichen** - Sättigungsgeschwindigkeiten, Steigungsverhältnisse
-3. **Publikationsreife Abbildungen erstellen** mit Konfidenzintervallen
-4. **Wissenschaftliche Schlussfolgerungen** über heimische vs Alien-Verteilungen ziehen
+**Was du heute lernst:**
 
-Zuerst laden wir unsere Daten und Funktionen von Tag 1.
+1. **Räumliche Probenahme** - Gehe durch Plots wie ein echter Feldökologe
+2. **Unsicherheit messen** - Starte von mehreren Punkten
+3. **Heimische vs Aliens vergleichen** - Akkumulieren sie unterschiedlich?
+4. **Publikationsreife Abbildungen** - Erstelle Plots bereit für eine Forschungsarbeit
+
+**So verwendest du diese Übungen:**
+
+- Ersetze jedes `____` mit dem richtigen Code
+- Führe jeden Chunk aus um zu sehen ob er funktioniert
+- Lies die Hinweise wenn du nicht weiterkommst
+- Die Übungen bauen aufeinander auf - mache sie der Reihe nach!
 
 </div>
 
 ---
 
-# <span class="en">Part 5: Setup - Reload Day 1 Functions</span><span class="de">Teil 5: Setup - Tag 1 Funktionen neu laden</span>
+# <span class="en">Exercise 1: Setup - Load Data and Functions</span><span class="de">Übung 1: Setup - Daten und Funktionen laden</span>
 
-## <span class="en">Load Data and Define Functions</span><span class="de">Daten laden und Funktionen definieren</span>
+<div class="en">
+
+**Concept:** Before we start, we need to load our data and define some helper functions. These functions will make our analysis easier.
+
+</div>
+
+<div class="de">
+
+**Konzept:** Bevor wir beginnen, müssen wir unsere Daten laden und einige Hilfsfunktionen definieren. Diese Funktionen machen unsere Analyse einfacher.
+
+</div>
+
+### <span class="en">1a: Load packages and data</span><span class="de">1a: Pakete und Daten laden</span>
 
 ```{r}
 # Load packages
 # Pakete laden
-library(dplyr)
-library(ggplot2)
+library(tidyverse)
 
 # Load data
 # Daten laden
-header <- read.csv("../data/austria_header.csv")
-species <- read.csv("../data/austria_species.csv")
+header <- read_csv("../data/austria_header.csv")
+species <- read_csv("../data/austria_species.csv")
 
-# Verify data loaded
-# Überprüfe dass Daten geladen sind
-cat("Header:", nrow(header), "plots\n")
-cat("Species:", nrow(species), "records\n")
+# Check data loaded correctly
+# Überprüfe dass Daten korrekt geladen sind
+cat("Plots loaded:", nrow(header), "\n")
+cat("Species records:", nrow(species), "\n")
 cat("Unique species:", length(unique(species$WFO_TAXON)), "\n")
 ```
 
+### <span class="en">1b: Define helper functions</span><span class="de">1b: Hilfsfunktionen definieren</span>
+
 ```{r}
-# Distance function
-# Distanzfunktion
+# Distance function - calculates distance between two points
+# Distanzfunktion - berechnet Abstand zwischen zwei Punkten
 calc_distance <- function(x1, y1, x2, y2) {
   sqrt((x2 - x1)^2 + (y2 - y1)^2)
 }
 
-# Nearest-neighbour walk function
-# Nearest-Neighbour-Walk-Funktion
+# Nearest-neighbour walk - visits plots by always going to closest unvisited
+# Nearest-Neighbour-Walk - besucht Plots indem immer zum nächsten unbesuchten gegangen wird
 nn_walk <- function(header_data, start_idx = NULL) {
   n <- nrow(header_data)
-  if (is.null(start_idx)) {
-    start_idx <- sample(1:n, 1)
-  }
+  if (is.null(start_idx)) start_idx <- sample(1:n, 1)
 
   visited <- rep(FALSE, n)
   visit_order <- numeric(n)
@@ -411,21 +436,18 @@ nn_walk <- function(header_data, start_idx = NULL) {
 
     if (i < n) {
       distances <- calc_distance(
-        header_data$Longitude[current],
-        header_data$Latitude[current],
-        header_data$Longitude,
-        header_data$Latitude
+        header_data$Longitude[current], header_data$Latitude[current],
+        header_data$Longitude, header_data$Latitude
       )
       distances[visited] <- Inf
       current <- which.min(distances)
     }
   }
-
   return(visit_order)
 }
 
-# Accumulation function
-# Akkumulationsfunktion
+# Build accumulation curve for given plot order
+# Baue Akkumulationskurve für gegebene Plot-Reihenfolge
 build_accumulation <- function(species_data, plot_order, status_filter = NULL) {
   if (!is.null(status_filter)) {
     species_data <- species_data %>% filter(STATUS == status_filter)
@@ -444,15 +466,13 @@ build_accumulation <- function(species_data, plot_order, status_filter = NULL) {
     found <- c(found, new_spp)
     accum[i] <- length(found)
   }
-
   return(accum)
 }
 
-# Saturation point function
-# Sättigungspunkt-Funktion
+# Find saturation point (when we reach X% of total species)
+# Finde Sättigungspunkt (wenn wir X% der Gesamtarten erreichen)
 find_saturation <- function(curve, threshold = 0.8) {
-  total <- max(curve)
-  target <- total * threshold
+  target <- max(curve) * threshold
   which(curve >= target)[1]
 }
 
@@ -460,94 +480,160 @@ cat("All functions loaded!\n")
 ```
 
 <div class="hint">
-<span class="en">Run both code blocks above to set up for today's exercises. If you get errors, make sure the data files are in the correct location (`../data/`).</span>
-<span class="de">Führe beide Code-Blöcke oben aus um dich für die heutigen Übungen vorzubereiten. Bei Fehlern stelle sicher dass die Datendateien am richtigen Ort sind (`../data/`).</span>
+<span class="en">Hint: Run both code blocks above. If you get errors, check that the data files exist in `../data/`.</span>
+<span class="de">Hinweis: Führe beide Code-Blöcke aus. Bei Fehlern prüfe ob die Dateien in `../data/` existieren.</span>
 </div>
 
 ---
 
-# <span class="en">Part 6: Measuring Uncertainty</span><span class="de">Teil 6: Unsicherheit messen</span>
+# <span class="en">Exercise 2: Understanding Spatial Sampling</span><span class="de">Übung 2: Räumliche Probenahme verstehen</span>
 
 <div class="en">
 
-Yesterday we ran from a single starting point. But the accumulation curve depends on where we start - different paths through the landscape give different curves. Today we'll run from many starting points and quantify this variation.
+**Concept:** When we sample plots randomly, we might jump all over the map. But a **nearest-neighbour walk** samples like a real ecologist would - always going to the closest unvisited plot. This creates a realistic spatial accumulation curve.
 
 </div>
 
 <div class="de">
 
-Gestern starteten wir von einem einzigen Punkt. Aber die Akkumulationskurve hängt davon ab wo wir starten - verschiedene Wege durch die Landschaft geben verschiedene Kurven. Heute starten wir von vielen Punkten und quantifizieren diese Variation.
+**Konzept:** Wenn wir Plots zufällig sampeln, springen wir vielleicht über die ganze Karte. Aber ein **Nearest-Neighbour-Walk** sampelt wie ein echter Ökologe - geht immer zum nächsten unbesuchten Plot. Das erstellt eine realistische räumliche Akkumulationskurve.
 
 </div>
 
----
-
-## <span class="en">Exercise 16: Multiple Seeds - Measuring Uncertainty</span><span class="de">Übung 16: Mehrere Seeds - Unsicherheit messen</span>
-
-### <span class="en">16a: Run from multiple starting points</span><span class="de">16a: Von mehreren Startpunkten starten</span>
+### <span class="en">2a: Create a sample dataset</span><span class="de">2a: Erstelle einen Beispieldatensatz</span>
 
 ```{r}
-# 16a: The starting point matters - let's quantify how much
-# 16a: Der Startpunkt ist wichtig - quantifizieren wir wie sehr
-
-n_seeds <- 20  # Number of different starting points
+# Take a random sample of 150 plots (for speed)
+# Nimm eine zufällige Stichprobe von 150 Plots (für Geschwindigkeit)
+set.seed(42)  # For reproducibility / Für Reproduzierbarkeit
 sample_size <- 150
 
-set.seed(42)
 sample_ids <- sample(unique(header$PlotObservationID), sample_size)
 sample_header <- header %>% filter(PlotObservationID %in% sample_ids)
 sample_species <- species %>% filter(PlotObservationID %in% sample_ids)
 
-# Storage for results
-# Speicher für Ergebnisse
+cat("Sample created:", nrow(sample_header), "plots\n")
+```
+
+### <span class="en">2b: Run a nearest-neighbour walk</span><span class="de">2b: Führe einen Nearest-Neighbour-Walk aus</span>
+
+```{r}
+# Start from plot 1 and walk to nearest neighbours
+# Starte von Plot 1 und gehe zu nächsten Nachbarn
+nn_order <- nn_walk(sample_header, start_idx = 1)
+
+# Build curves for native and alien species
+# Baue Kurven für heimische und Alien-Arten
+native_curve <- build_accumulation(sample_species, nn_order, "____")
+alien_curve <- build_accumulation(sample_species, nn_order, "____")
+
+# Check the results
+# Überprüfe die Ergebnisse
+cat("Native species found:", max(native_curve), "\n")
+cat("Alien species found:", max(alien_curve), "\n")
+```
+
+### <span class="en">2c: Plot the comparison</span><span class="de">2c: Plotte den Vergleich</span>
+
+```{r}
+# Create data frame for plotting
+# Erstelle Data Frame zum Plotten
+curve_data <- data.frame(
+  plots = rep(1:sample_size, 2),
+  species = c(native_curve, alien_curve),
+  status = rep(c("Native", "Alien"), each = sample_size)
+)
+
+ggplot(curve_data, aes(x = plots, y = species, color = status)) +
+  geom_line(linewidth = 1.2) +
+  scale_color_manual(values = c("Native" = "darkgreen", "Alien" = "____")) +
+  labs(
+    title = "Native vs Alien Species Accumulation",
+    x = "Plots Sampled (Nearest-Neighbour Order)",
+    y = "Cumulative Species",
+    color = ""
+  ) +
+  theme_minimal()
+```
+
+<div class="hint">
+<span class="en">Hint: Native species use STATUS = "nat", alien species use STATUS = "neo".</span>
+<span class="de">Hinweis: Heimische Arten haben STATUS = "nat", Alien-Arten haben STATUS = "neo".</span>
+</div>
+
+---
+
+# <span class="en">Exercise 3: Measuring Uncertainty</span><span class="de">Übung 3: Unsicherheit messen</span>
+
+<div class="en">
+
+**Concept:** The curve we get depends on WHERE we start! If we start in a native-rich area, natives accumulate fast. If we start near an alien hotspot, aliens accumulate fast. We need to run from MANY starting points to see the true pattern.
+
+</div>
+
+<div class="de">
+
+**Konzept:** Die Kurve die wir bekommen hängt davon ab WO wir starten! Starten wir in einem heimisch-reichen Gebiet, akkumulieren Heimische schnell. Starten wir nahe einem Alien-Hotspot, akkumulieren Aliens schnell. Wir müssen von VIELEN Startpunkten starten um das wahre Muster zu sehen.
+
+</div>
+
+### <span class="en">3a: Run from multiple starting points</span><span class="de">3a: Von mehreren Startpunkten starten</span>
+
+```{r}
+# Run from 20 different starting points
+# Starte von 20 verschiedenen Startpunkten
+n_seeds <- 20
+
+# Storage for results (matrix: rows = seeds, columns = plots)
+# Speicher für Ergebnisse (Matrix: Zeilen = Seeds, Spalten = Plots)
 native_runs <- matrix(NA, nrow = n_seeds, ncol = sample_size)
 alien_runs <- matrix(NA, nrow = n_seeds, ncol = sample_size)
 
-# Run from each seed
-# Starte von jedem Seed
-cat("Running", n_seeds, "seeds...\n")
+# Run from each starting point
+# Starte von jedem Startpunkt
+cat("Running", n_seeds, "starting points...\n")
 for (seed in 1:n_seeds) {
   nn_order <- nn_walk(sample_header, start_idx = seed)
   native_runs[seed, ] <- build_accumulation(sample_species, nn_order, "____")
   alien_runs[seed, ] <- build_accumulation(sample_species, nn_order, "____")
 
-  if (seed %% 5 == 0) cat("  Completed seed", seed, "\n")
+  if (seed %% 5 == 0) cat("  Completed", seed, "\n")
 }
-
 cat("Done!\n")
 ```
 
-### <span class="en">16b: Calculate summary statistics</span><span class="de">16b: Zusammenfassende Statistiken berechnen</span>
+### <span class="en">3b: Calculate mean and confidence intervals</span><span class="de">3b: Berechne Mittelwert und Konfidenzintervalle</span>
 
 ```{r}
-# 16b: Mean and confidence intervals
-# 16b: Mittelwert und Konfidenzintervalle
-
+# Mean across all runs
+# Mittelwert über alle Läufe
 native_mean <- apply(native_runs, 2, ____)
+alien_mean <- apply(alien_runs, 2, mean)
+
+# 95% confidence intervals (2.5% and 97.5% quantiles)
+# 95% Konfidenzintervalle (2.5% und 97.5% Quantile)
 native_lower <- apply(native_runs, 2, function(x) quantile(x, 0.025))
 native_upper <- apply(native_runs, 2, function(x) quantile(x, ____))
 
-alien_mean <- apply(alien_runs, 2, mean)
 alien_lower <- apply(alien_runs, 2, function(x) quantile(x, ____))
 alien_upper <- apply(alien_runs, 2, function(x) quantile(x, 0.975))
 
-# Coefficient of variation at midpoint
-# Variationskoeffizient am Mittelpunkt
+# How much variation is there?
+# Wie viel Variation gibt es?
 midpoint <- sample_size %/% 2
 native_cv <- round(100 * sd(native_runs[, midpoint]) / mean(native_runs[, midpoint]), 1)
 alien_cv <- round(100 * sd(alien_runs[, midpoint]) / mean(alien_runs[, midpoint]), 1)
 
-print(paste("Variation at", midpoint, "plots:"))
-print(paste("  Native CV:", native_cv, "%"))
-print(paste("  Alien CV:", alien_cv, "%"))
+cat("Variation at midpoint:\n")
+cat("  Native CV:", native_cv, "%\n")
+cat("  Alien CV:", alien_cv, "%\n")
 ```
 
-### <span class="en">16c: Plot with uncertainty bands</span><span class="de">16c: Plotte mit Unsicherheitsbändern</span>
+### <span class="en">3c: Plot with uncertainty bands</span><span class="de">3c: Plotte mit Unsicherheitsbändern</span>
 
 ```{r}
-# 16c: Publication-quality plot
-# 16c: Publikationsreifer Plot
-
+# Create summary data frame
+# Erstelle Zusammenfassungs-Data-Frame
 summary_data <- data.frame(
   plots = rep(1:sample_size, 2),
   mean = c(native_mean, alien_mean),
@@ -556,6 +642,8 @@ summary_data <- data.frame(
   status = rep(c("Native", "Alien"), each = sample_size)
 )
 
+# Plot with shaded confidence bands
+# Plotte mit schattierten Konfidenzbändern
 ggplot(summary_data, aes(x = plots)) +
   geom_ribbon(aes(ymin = lower, ymax = upper, fill = status), alpha = ____) +
   geom_line(aes(y = mean, color = status), linewidth = 1.2) +
@@ -563,8 +651,8 @@ ggplot(summary_data, aes(x = plots)) +
   scale_fill_manual(values = c("Native" = "darkgreen", "Alien" = "red")) +
   labs(
     title = "Species Accumulation with Uncertainty",
-    subtitle = paste(n_seeds, "starting points - shaded area = 95% CI"),
-    x = "Plots Sampled (Nearest-Neighbour Order)",
+    subtitle = paste(n_seeds, "starting points - shaded = 95% CI"),
+    x = "Plots Sampled",
     y = "Cumulative Species",
     color = "", fill = ""
   ) +
@@ -572,16 +660,32 @@ ggplot(summary_data, aes(x = plots)) +
   theme(legend.position = "bottom")
 ```
 
+<div class="hint">
+<span class="en">Hint: Use `mean` for the average. For 95% CI, upper bound is 0.975 quantile, lower is 0.025.</span>
+<span class="de">Hinweis: Benutze `mean` für den Durchschnitt. Für 95% CI ist obere Grenze 0.975 Quantil, untere 0.025.</span>
+</div>
+
 ---
 
-## <span class="en">Exercise 17: Comparing Curve Shapes Quantitatively</span><span class="de">Übung 17: Kurvenformen quantitativ vergleichen</span>
+# <span class="en">Exercise 4: Comparing Saturation Speed</span><span class="de">Übung 4: Sättigungsgeschwindigkeit vergleichen</span>
 
-### <span class="en">17a: Saturation point comparison</span><span class="de">17a: Sättigungspunkt-Vergleich</span>
+<div class="en">
+
+**Concept:** **Saturation** is when we've found most of the species and the curve flattens. If natives saturate FASTER than aliens, it means natives are more evenly distributed (we find them everywhere). If aliens saturate SLOWER, they're more patchy (clustered in certain areas).
+
+</div>
+
+<div class="de">
+
+**Konzept:** **Sättigung** ist wenn wir die meisten Arten gefunden haben und die Kurve abflacht. Wenn Heimische SCHNELLER saturieren, sind sie gleichmäßiger verteilt (wir finden sie überall). Wenn Aliens LANGSAMER saturieren, sind sie fleckenhafter (in bestimmten Gebieten geclustert).
+
+</div>
+
+### <span class="en">4a: Find saturation points</span><span class="de">4a: Finde Sättigungspunkte</span>
 
 ```{r}
-# 17a: At what point do we reach 80% of species?
-# 17a: Bei welchem Punkt erreichen wir 80% der Arten?
-
+# At what point do we reach 80% of species?
+# Bei welchem Punkt erreichen wir 80% der Arten?
 native_sat <- apply(native_runs, 1, find_saturation, threshold = 0.8)
 alien_sat <- apply(alien_runs, 1, find_saturation, threshold = ____)
 
@@ -590,12 +694,16 @@ alien_sat <- apply(alien_runs, 1, find_saturation, threshold = ____)
 native_sat_pct <- 100 * native_sat / sample_size
 alien_sat_pct <- 100 * alien_sat / sample_size
 
-print("Plots needed to reach 80% of species:")
-print(paste("  Native:", round(mean(native_sat_pct)), "% (SD:", round(sd(native_sat_pct), 1), ")"))
-print(paste("  Alien:", round(mean(alien_sat_pct)), "% (SD:", round(sd(alien_sat_pct), 1), ")"))
+cat("Plots needed to reach 80% of species:\n")
+cat("  Native:", round(mean(native_sat_pct)), "% (SD:", round(sd(native_sat_pct), 1), ")\n")
+cat("  Alien:", round(mean(alien_sat_pct)), "% (SD:", round(sd(alien_sat_pct), 1), ")\n")
+```
 
-# Box plot comparison
-# Boxplot-Vergleich
+### <span class="en">4b: Visualize with boxplot</span><span class="de">4b: Visualisiere mit Boxplot</span>
+
+```{r}
+# Create data for boxplot
+# Erstelle Daten für Boxplot
 sat_data <- data.frame(
   saturation_pct = c(native_sat_pct, alien_sat_pct),
   status = rep(c("Native", "Alien"), each = n_seeds)
@@ -605,7 +713,7 @@ ggplot(sat_data, aes(x = status, y = saturation_pct, fill = status)) +
   geom_boxplot() +
   scale_fill_manual(values = c("Native" = "____", "Alien" = "____")) +
   labs(
-    title = "Saturation Speed Comparison",
+    title = "How Fast Do Species Saturate?",
     subtitle = "% of plots needed to find 80% of species",
     y = "% of Plots Needed",
     x = ""
@@ -614,57 +722,62 @@ ggplot(sat_data, aes(x = status, y = saturation_pct, fill = status)) +
   theme(legend.position = "none")
 ```
 
-### <span class="en">17b: Slope ratio (early vs late)</span><span class="de">17b: Steigungsverhältnis (früh vs spät)</span>
+### <span class="en">4c: Calculate slope ratio</span><span class="de">4c: Berechne Steigungsverhältnis</span>
 
 ```{r}
-# 17b: Compare early vs late slopes
-# 17b: Vergleiche frühe vs späte Steigungen
-
-# Steep start + flat end = species evenly distributed
-# Steil am Anfang + flach am Ende = Arten gleichmäßig verteilt
-# Steady throughout = species patchy
-# Stetig durchgehend = Arten fleckenhaft
+# Compare early vs late slopes
+# Vergleiche frühe vs späte Steigungen
+# High ratio = fast saturation (steep early, flat late)
+# Hohes Verhältnis = schnelle Sättigung (steil früh, flach spät)
 
 calc_slope_ratio <- function(curve) {
   n <- length(curve)
-
-  # Early slope (first 20%)
-  # Frühe Steigung (erste 20%)
   early_end <- round(n * 0.2)
-  early_slope <- (curve[early_end] - curve[1]) / early_end
-
-  # Late slope (last 20%)
-  # Späte Steigung (letzte 20%)
   late_start <- round(n * 0.8)
+
+  early_slope <- (curve[early_end] - curve[1]) / early_end
   late_slope <- (curve[n] - curve[late_start]) / (n - late_start)
 
-  if (late_slope > 0) {
-    return(early_slope / late_slope)
-  } else {
-    return(NA)
-  }
+  if (late_slope > 0) return(early_slope / late_slope)
+  else return(NA)
 }
 
 native_ratios <- apply(native_runs, 1, calc_slope_ratio)
 alien_ratios <- apply(alien_runs, 1, ____)
 
-print("Slope ratio (early/late) - higher = faster saturation:")
-print(paste("  Native:", round(mean(native_ratios, na.rm = TRUE), 1)))
-print(paste("  Alien:", round(mean(alien_ratios, na.rm = TRUE), 1)))
+cat("Slope ratio (higher = faster saturation):\n")
+cat("  Native:", round(mean(native_ratios, na.rm = TRUE), 1), "\n")
+cat("  Alien:", round(mean(alien_ratios, na.rm = TRUE), 1), "\n")
 ```
+
+<div class="hint">
+<span class="en">Hint: Fill in colors "darkgreen" and "red". For slope ratio, use `calc_slope_ratio`.</span>
+<span class="de">Hinweis: Fülle Farben "darkgreen" und "red" ein. Für Steigungsverhältnis nutze `calc_slope_ratio`.</span>
+</div>
 
 ---
 
-## <span class="en">Exercise 18: Geographic Patterns</span><span class="de">Übung 18: Geografische Muster</span>
+# <span class="en">Exercise 5: Geographic Patterns</span><span class="de">Übung 5: Geografische Muster</span>
 
-### <span class="en">18a: Does starting location affect results?</span><span class="de">18a: Beeinflusst der Startort die Ergebnisse?</span>
+<div class="en">
+
+**Concept:** Does it matter WHERE in Austria we start? Some areas might have more aliens (near cities, roads). Let's map how starting location affects what we find!
+
+</div>
+
+<div class="de">
+
+**Konzept:** Ist es wichtig WO in Österreich wir starten? Manche Gebiete haben vielleicht mehr Aliens (nahe Städten, Straßen). Kartieren wir wie der Startort beeinflusst was wir finden!
+
+</div>
+
+### <span class="en">5a: Map alien proportion by starting location</span><span class="de">5a: Kartiere Alien-Anteil nach Startort</span>
 
 ```{r}
-# 18a: Map how starting location affects alien detection
-# 18a: Kartiere wie der Startort die Alien-Erkennung beeinflusst
-
+# Test from 30 different starting locations
+# Teste von 30 verschiedenen Startorten
 n_map_seeds <- 30
-checkpoint <- 75  # Check alien ratio after this many plots
+checkpoint <- 75  # Check after this many plots
 
 seed_results <- data.frame(
   seed_idx = 1:n_map_seeds,
@@ -675,18 +788,18 @@ seed_results <- data.frame(
 )
 
 for (i in 1:n_map_seeds) {
-  # Record seed location
-  # Erfasse Seed-Standort
+  # Record starting location
+  # Erfasse Startort
   seed_results$seed_lon[i] <- sample_header$Longitude[i]
   seed_results$seed_lat[i] <- sample_header$Latitude[i]
 
-  # Run from this seed
-  # Starte von diesem Seed
+  # Run from this starting point
+  # Starte von diesem Startpunkt
   nn_order <- nn_walk(sample_header, start_idx = i)
 
   # Get counts at checkpoint
   # Hole Zählungen am Checkpoint
-  native_curve <- build_accumulation(sample_species, nn_order, "native")
+  native_curve <- build_accumulation(sample_species, nn_order, "nat")
   alien_curve <- build_accumulation(sample_species, nn_order, "neo")
 
   seed_results$native_count[i] <- native_curve[min(checkpoint, length(native_curve))]
@@ -698,14 +811,12 @@ for (i in 1:n_map_seeds) {
 seed_results$alien_prop <- seed_results$alien_count /
   (seed_results$native_count + seed_results$____)
 
-# Map it
-# Kartiere es
+# Map it!
+# Kartiere es!
 ggplot(seed_results, aes(x = seed_lon, y = seed_lat, color = alien_prop)) +
-  geom_point(size = 3) +
+  geom_point(size = 4) +
   scale_color_gradient2(
-    low = "darkgreen",
-    mid = "yellow",
-    high = "red",
+    low = "darkgreen", mid = "yellow", high = "red",
     midpoint = mean(seed_results$alien_prop),
     name = "Alien\nproportion"
   ) +
@@ -713,43 +824,54 @@ ggplot(seed_results, aes(x = seed_lon, y = seed_lat, color = alien_prop)) +
   labs(
     title = "How Starting Location Affects Alien Detection",
     subtitle = paste("Alien proportion after", checkpoint, "plots"),
-    x = "Longitude",
-    y = "Latitude"
+    x = "Longitude", y = "Latitude"
   ) +
   theme_minimal()
 ```
 
+<div class="hint">
+<span class="en">Hint: Fill in `alien_count` to complete the proportion calculation.</span>
+<span class="de">Hinweis: Fülle `alien_count` ein um die Anteilsberechnung zu vervollständigen.</span>
+</div>
+
 ---
 
-# <span class="en">Part 7: Complete Research Analysis</span><span class="de">Teil 7: Vollständige Forschungsanalyse</span>
+# <span class="en">Exercise 6: Final Publication Plot</span><span class="de">Übung 6: Finaler Publikationsplot</span>
 
-## <span class="en">Exercise 19: Full Analysis</span><span class="de">Übung 19: Vollständige Analyse</span>
+<div class="en">
 
-### <span class="en">19a: Run the complete analysis</span><span class="de">19a: Führe die komplette Analyse aus</span>
+**Concept:** Let's put it all together and create a publication-quality figure that shows our main finding: how native vs alien species accumulate differently across Austrian plots.
+
+</div>
+
+<div class="de">
+
+**Konzept:** Fassen wir alles zusammen und erstellen eine publikationsreife Abbildung die unser Hauptergebnis zeigt: wie heimische vs Alien-Arten unterschiedlich über österreichische Plots akkumulieren.
+
+</div>
+
+### <span class="en">6a: Run full analysis</span><span class="de">6a: Führe vollständige Analyse aus</span>
 
 ```{r}
-# 19a: Production run with more samples
-# 19a: Produktionslauf mit mehr Stichproben
-
-# Parameters
-# Parameter
+# Larger sample for final analysis
+# Größere Stichprobe für finale Analyse
 n_seeds <- 30
-sample_size <- 250
+sample_size <- 200
 
 set.seed(2024)
 sample_ids <- sample(unique(header$PlotObservationID), sample_size)
 sample_header <- header %>% filter(PlotObservationID %in% sample_ids)
 sample_species <- species %>% filter(PlotObservationID %in% sample_ids)
 
-# Run analysis
-# Führe Analyse aus
+# Run from all seeds
+# Starte von allen Seeds
 native_runs <- matrix(NA, nrow = n_seeds, ncol = sample_size)
 alien_runs <- matrix(NA, nrow = n_seeds, ncol = sample_size)
 
 cat("Running full analysis...\n")
 for (seed in 1:n_seeds) {
   nn_order <- nn_walk(sample_header, start_idx = seed)
-  native_runs[seed, ] <- build_accumulation(sample_species, nn_order, "native")
+  native_runs[seed, ] <- build_accumulation(sample_species, nn_order, "nat")
   alien_runs[seed, ] <- build_accumulation(sample_species, nn_order, "neo")
   if (seed %% 10 == 0) cat("  Completed", seed, "of", n_seeds, "\n")
 }
@@ -768,66 +890,63 @@ results <- data.frame(
 )
 ```
 
-### <span class="en">19b: Create final publication plot</span><span class="de">19b: Erstelle finalen Publikationsplot</span>
+### <span class="en">6b: Create publication-quality figure</span><span class="de">6b: Erstelle publikationsreife Abbildung</span>
 
 ```{r}
-# 19b: Publication-ready figure
-# 19b: Publikationsreife Abbildung
-
+# Publication-ready figure
+# Publikationsreife Abbildung
 final_plot <- ggplot(results, aes(x = plots)) +
   geom_ribbon(aes(ymin = lower, ymax = upper, fill = status), alpha = 0.25) +
   geom_line(aes(y = mean, color = status), linewidth = 1.3) +
-  scale_color_manual(
-    values = c("Native" = "#228B22", "Alien" = "#DC143C"),
-    name = ""
-  ) +
-  scale_fill_manual(
-    values = c("Native" = "#228B22", "Alien" = "#DC143C"),
-    name = ""
-  ) +
+  scale_color_manual(values = c("Native" = "#228B22", "Alien" = "#DC143C")) +
+  scale_fill_manual(values = c("Native" = "#228B22", "Alien" = "#DC143C")) +
   labs(
-    title = "Species Accumulation: Native vs Alien Plants",
-    subtitle = paste0("Nearest-neighbour sampling from ", n_seeds,
-                      " starting points (95% CI shown)"),
+    title = "Species Accumulation: Native vs Alien Plants in Austria",
+    subtitle = paste0(n_seeds, " starting points, 95% confidence intervals"),
     x = "Number of Plots Sampled",
     y = "Cumulative Species Count",
-    caption = "Data: Austrian vegetation plots"
+    color = "", fill = ""
   ) +
   theme_minimal(base_size = 13) +
   theme(
     legend.position = c(0.85, 0.2),
     legend.background = element_rect(fill = "white", color = "gray80"),
-    plot.title = element_text(face = "bold"),
-    panel.grid.minor = element_blank()
+    plot.title = element_text(face = "bold")
   )
 
 print(final_plot)
 
 # Save it (uncomment to run)
-# Speichere es (entkommentieren zum Ausführen)
-# ggsave("austria_accumulation_final.png", final_plot, width = 10, height = 7, dpi = 300)
+# ggsave("austria_accumulation.png", final_plot, width = 10, height = 7, dpi = 300)
 ```
 
 ---
 
-## <span class="en">Exercise 20: Results Summary</span><span class="de">Übung 20: Ergebniszusammenfassung</span>
+# <span class="en">Exercise 7: Interpret Your Results</span><span class="de">Übung 7: Interpretiere deine Ergebnisse</span>
+
+<div class="en">
+
+**Concept:** Science isn't just about making plots - it's about understanding what they mean! Let's summarize our findings.
+
+</div>
+
+<div class="de">
+
+**Konzept:** Wissenschaft bedeutet nicht nur Plots zu erstellen - es geht darum zu verstehen was sie bedeuten! Fassen wir unsere Ergebnisse zusammen.
+
+</div>
+
+### <span class="en">7a: Generate results summary</span><span class="de">7a: Generiere Ergebniszusammenfassung</span>
 
 ```{r}
-# 20: Final statistics report
-# 20: Abschließender Statistikbericht
+cat("\n========== RESULTS SUMMARY ==========\n\n")
 
-cat("\n===== RESULTS SUMMARY =====\n\n")
-
-# Species found
-# Gefundene Arten
+# Total species found
 cat("Species found:\n")
-cat("  Native:", round(mean(native_runs[, sample_size])),
-    "(range:", min(native_runs[, sample_size]), "-", max(native_runs[, sample_size]), ")\n")
-cat("  Alien:", round(mean(alien_runs[, sample_size])),
-    "(range:", min(alien_runs[, sample_size]), "-", max(alien_runs[, sample_size]), ")\n\n")
+cat("  Native:", round(mean(native_runs[, sample_size])), "species\n")
+cat("  Alien:", round(mean(alien_runs[, sample_size])), "species\n\n")
 
-# Saturation
-# Sättigung
+# Saturation comparison
 native_sat <- apply(native_runs, 1, find_saturation, threshold = 0.8)
 alien_sat <- apply(alien_runs, 1, find_saturation, threshold = 0.8)
 
@@ -837,36 +956,28 @@ cat("  Native:", round(mean(native_sat)), "plots (",
 cat("  Alien:", round(mean(alien_sat)), "plots (",
     round(100*mean(alien_sat)/sample_size), "%)\n\n")
 
-# Variation
-# Variation
-cat("Variation between starting points (CV at 100 plots):\n")
-cat("  Native:", round(100 * sd(native_runs[,100]) / mean(native_runs[,100]), 1), "%\n")
-cat("  Alien:", round(100 * sd(alien_runs[,100]) / mean(alien_runs[,100]), 1), "%\n\n")
-
-# Conclusion
-# Schlussfolgerung
-cat("===== CONCLUSION =====\n")
+# Draw conclusion
+cat("========== CONCLUSION ==========\n")
 if (mean(native_sat) < mean(alien_sat)) {
-  cat("Native species saturate FASTER than aliens.\n")
-  cat("This suggests natives are more evenly distributed,\n")
-  cat("while aliens are more patchy/clustered.\n")
+  cat("Native species saturate FASTER than aliens!\n")
+  cat("-> Natives are more evenly distributed\n")
+  cat("-> Aliens are more patchy/clustered\n")
 } else {
-  cat("Aliens saturate FASTER than natives.\n")
-  cat("This is unexpected - perhaps aliens are more widespread\n")
-  cat("than hypothesized in this region.\n")
+  cat("Aliens saturate FASTER than natives!\n")
+  cat("-> Aliens are more widespread than expected\n")
 }
 ```
 
 <blockquote>
-<span class="en">**Final Discussion:**
-1. Do the results support our hypothesis about natives saturating faster?
-2. What does the variation between seeds tell us about alien distribution?
-3. What would you investigate next? (Climate? Land use? Specific regions?)
+<span class="en">**Discussion Questions:**
+1. Do natives really saturate faster? What does this mean ecologically?
+2. Why might aliens be more "patchy" (clustered in certain areas)?
+3. What would you investigate next? (Urban areas? Elevation? Climate?)
 </span>
-<span class="de">**Abschlussdiskussion:**
-1. Unterstützen die Ergebnisse unsere Hypothese dass Heimische schneller saturieren?
-2. Was sagt uns die Variation zwischen Seeds über die Alienverteilung?
-3. Was würdest du als nächstes untersuchen? (Klima? Landnutzung? Bestimmte Regionen?)
+<span class="de">**Diskussionsfragen:**
+1. Saturieren Heimische wirklich schneller? Was bedeutet das ökologisch?
+2. Warum könnten Aliens "fleckenhafter" sein (in bestimmten Gebieten geclustert)?
+3. Was würdest du als nächstes untersuchen? (Städtische Gebiete? Höhenlage? Klima?)
 </span>
 </blockquote>
 

@@ -55,7 +55,7 @@
 
     .container {
       text-align: center;
-      max-width: 900px;
+      max-width: 1000px;
     }
 
     h1 {
@@ -73,22 +73,22 @@
 
     .grid-header {
       display: grid;
-      grid-template-columns: 100px 1fr 1fr;
-      gap: 15px;
-      margin-bottom: 15px;
+      grid-template-columns: 80px 1fr 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
     }
 
     .grid-header span {
       font-weight: bold;
       color: #2E7D32;
-      font-size: 1.1rem;
-      padding: 10px;
+      font-size: 1rem;
+      padding: 8px;
     }
 
     .grid {
       display: grid;
-      grid-template-columns: 100px 1fr 1fr;
-      gap: 15px;
+      grid-template-columns: 80px 1fr 1fr 1fr;
+      gap: 12px;
     }
 
     .row-label {
@@ -97,50 +97,54 @@
       justify-content: center;
       font-weight: bold;
       color: #2E7D32;
-      font-size: 1.1rem;
+      font-size: 1rem;
       background: rgba(255,255,255,0.5);
-      border-radius: 12px;
-      padding: 10px;
+      border-radius: 10px;
+      padding: 8px;
     }
 
     .card {
       background: white;
-      border-radius: 16px;
-      padding: 25px 20px;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+      border-radius: 14px;
+      padding: 20px 15px;
+      box-shadow: 0 6px 25px rgba(0,0,0,0.1);
       transition: transform 0.3s, box-shadow 0.3s;
       text-decoration: none;
       color: inherit;
     }
 
     .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 35px rgba(0,0,0,0.15);
     }
 
     .card-icon {
-      font-size: 2.5rem;
-      margin-bottom: 12px;
+      font-size: 2rem;
+      margin-bottom: 10px;
     }
 
     .card h2 {
       color: #2E7D32;
-      margin-bottom: 8px;
-      font-size: 1.2rem;
+      margin-bottom: 6px;
+      font-size: 1.1rem;
     }
 
     .card p {
       color: #666;
-      line-height: 1.5;
-      font-size: 0.95rem;
+      line-height: 1.4;
+      font-size: 0.85rem;
     }
 
     .card.theory {
       border-left: 4px solid #4CAF50;
     }
 
-    .card.code {
+    .card.exercises {
       border-left: 4px solid #1976D2;
+    }
+
+    .card.solutions {
+      border-left: 4px solid #FF9800;
     }
 
     footer {
@@ -155,19 +159,13 @@
     body.lang-de .de { display: inline; }
     body.lang-de .en { display: none; }
 
-    @media (max-width: 700px) {
+    @media (max-width: 800px) {
       .grid-header, .grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr;
       }
       .grid-header span:first-child,
       .row-label {
         display: none;
-      }
-      .card h2::before {
-        display: block;
-        font-size: 0.8rem;
-        color: #666;
-        margin-bottom: 5px;
       }
     }
   </style>
@@ -195,8 +193,12 @@
         <span class="de">Theorie</span>
       </span>
       <span>
-        <span class="en">Code</span>
-        <span class="de">Code</span>
+        <span class="en">Exercises</span>
+        <span class="de">Übungen</span>
+      </span>
+      <span>
+        <span class="en">Solutions</span>
+        <span class="de">Lösungen</span>
       </span>
     </div>
 
@@ -214,20 +216,32 @@
           <span class="de">Konzepte</span>
         </h2>
         <p>
-          <span class="en">Biodiversity, accumulation curves, asymptotes, native vs. alien species</span>
-          <span class="de">Biodiversität, Akkumulationskurven, Asymptoten, heimische vs. Alien-Arten</span>
+          <span class="en">Biodiversity, sampling, accumulation curves, asymptotes</span>
+          <span class="de">Biodiversität, Stichproben, Akkumulationskurven, Asymptoten</span>
         </p>
       </a>
 
-      <a href="day1_code.html" class="card code">
-        <div class="card-icon">💻</div>
+      <a href="day1_exercises.html" class="card exercises">
+        <div class="card-icon">✏️</div>
         <h2>
-          <span class="en">R Exercises</span>
-          <span class="de">R-Übungen</span>
+          <span class="en">Fill the Blanks</span>
+          <span class="de">Lückentext</span>
         </h2>
         <p>
-          <span class="en">Vectors, data loading, cumsum(), plotting basics</span>
-          <span class="de">Vektoren, Daten laden, cumsum(), Plot-Grundlagen</span>
+          <span class="en">8 exercises: vectors, data, loops, filtering, cumsum</span>
+          <span class="de">8 Übungen: Vektoren, Daten, Schleifen, Filtern, cumsum</span>
+        </p>
+      </a>
+
+      <a href="day1_solutions.html" class="card solutions">
+        <div class="card-icon">✅</div>
+        <h2>
+          <span class="en">Answers</span>
+          <span class="de">Antworten</span>
+        </h2>
+        <p>
+          <span class="en">Complete code for all Day 1 exercises</span>
+          <span class="de">Vollständiger Code für alle Tag-1-Übungen</span>
         </p>
       </a>
 
@@ -244,20 +258,32 @@
           <span class="de">Algorithmen</span>
         </h2>
         <p>
-          <span class="en">Spatial order, nearest-neighbor, multiple seeds, interpretation</span>
-          <span class="de">Räumliche Ordnung, Nearest-Neighbor, mehrere Seeds, Interpretation</span>
+          <span class="en">Spatial order, nearest-neighbor, multiple seeds</span>
+          <span class="de">Räumliche Ordnung, Nearest-Neighbor, Seeds</span>
         </p>
       </a>
 
-      <a href="day2_code.html" class="card code">
+      <a href="day2_exercises.html" class="card exercises">
         <div class="card-icon">🔬</div>
         <h2>
-          <span class="en">Analysis</span>
-          <span class="de">Analyse</span>
+          <span class="en">Research Project</span>
+          <span class="de">Forschungsprojekt</span>
         </h2>
         <p>
-          <span class="en">Distance functions, loops, spatial curves, native vs. alien comparison</span>
-          <span class="de">Distanzfunktionen, Schleifen, räumliche Kurven, Vergleich heimisch vs. Alien</span>
+          <span class="en">12 exercises: functions, plots, Austrian data analysis</span>
+          <span class="de">12 Übungen: Funktionen, Plots, Analyse österr. Daten</span>
+        </p>
+      </a>
+
+      <a href="day2_solutions.html" class="card solutions">
+        <div class="card-icon">✅</div>
+        <h2>
+          <span class="en">Answers</span>
+          <span class="de">Antworten</span>
+        </h2>
+        <p>
+          <span class="en">Complete code for all Day 2 exercises</span>
+          <span class="de">Vollständiger Code für alle Tag-2-Übungen</span>
         </p>
       </a>
     </div>

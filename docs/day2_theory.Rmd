@@ -1132,38 +1132,6 @@ So können wir die **Form** der Akkumulation vergleichen, nicht nur die Gesamtza
 
 ---
 
-## <span class="en">Main Findings</span><span class="de">Hauptergebnisse</span>
-
-<div class="results-box">
-
-<div class="en">
-
-1. **Native species are much more diverse** in Austria than alien species (~6:1 ratio)
-
-2. **Spatial patterns differ** between native and alien species
-
-3. **The starting point matters** - we need multiple seeds to get reliable curves
-
-4. **Normalized curves** allow fair comparison between groups of different sizes
-
-</div>
-
-<div class="de">
-
-1. **Heimische Arten sind viel diverser** in Österreich als Alien-Arten (~6:1 Verhältnis)
-
-2. **Räumliche Muster unterscheiden sich** zwischen heimischen und Alien-Arten
-
-3. **Der Startpunkt ist wichtig** - wir brauchen mehrere Seeds für zuverlässige Kurven
-
-4. **Normalisierte Kurven** ermöglichen fairen Vergleich zwischen unterschiedlich großen Gruppen
-
-</div>
-
-</div>
-
----
-
 ## <span class="en">Take-Home Message</span><span class="de">Fazit</span>
 
 <div class="en">

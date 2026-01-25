@@ -588,7 +588,7 @@ par_old <- par(mfrow = c(1, 2))
 random_plots <- data.frame(
   x = runif(60, 0, 10),
   y = runif(60, 0, 10),
-  type = "Random (H₀ World)"
+  type = "Random (Null Hypothesis)"
 )
 
 # Clustered distribution (real world)
@@ -682,7 +682,7 @@ null_curves <- lapply(1:n_seeds, function(i) {
   data.frame(plots = 1:n_plots,
              species = simulate_curve(clustered = FALSE, seed_num = i),
              seed = paste0("Seed ", i),
-             scenario = "H₀: Random Distribution")
+             scenario = "Null: Random Distribution")
 })
 
 real_curves <- lapply(1:n_seeds, function(i) {
@@ -763,6 +763,123 @@ Das ist eigentlich **interessanter** als einheitliche Kurven zu finden! Es bedeu
 ---
 
 # <span class="en">Comparing Native vs. Alien</span><span class="de">Vergleich Heimisch vs. Alien</span>
+
+## <span class="en">Our Research Hypothesis</span><span class="de">Unsere Forschungshypothese</span>
+
+<div class="hypothesis-box">
+
+<div class="en">
+
+**Research Question:** Do alien (introduced) species accumulate differently than native species across the Austrian landscape?
+
+**Null Hypothesis (H₀):**
+> Native and alien species accumulate at the same rate - their curves have the same shape. There is no difference in spatial distribution patterns.
+
+**Alternative Hypothesis (H₁):**
+> Native and alien species have different accumulation patterns, reflecting differences in how they are distributed across the landscape.
+
+</div>
+
+<div class="de">
+
+**Forschungsfrage:** Akkumulieren Alien-Arten (eingeführte Arten) anders als heimische Arten über die österreichische Landschaft?
+
+**Nullhypothese (H₀):**
+> Heimische und Alien-Arten akkumulieren mit der gleichen Rate - ihre Kurven haben die gleiche Form. Es gibt keinen Unterschied in den räumlichen Verteilungsmustern.
+
+**Alternativhypothese (H₁):**
+> Heimische und Alien-Arten haben unterschiedliche Akkumulationsmuster, die Unterschiede in ihrer Verteilung über die Landschaft widerspiegeln.
+
+</div>
+
+</div>
+
+<div class="en">
+
+**What might we expect?**
+
+| Hypothesis | Prediction | Biological Reasoning |
+|------------|------------|---------------------|
+| **Aliens accumulate faster** | Steeper initial curve | Aliens are generalists, found everywhere |
+| **Aliens accumulate slower** | Flatter initial curve | Aliens are clustered near introduction points (cities, ports) |
+| **No difference** | Identical curves | Distribution patterns are similar |
+
+**The key insight:** By comparing normalized curves, we can see if one group is more clustered or more evenly spread than the other.
+
+</div>
+
+<div class="de">
+
+**Was könnten wir erwarten?**
+
+| Hypothese | Vorhersage | Biologische Begründung |
+|-----------|------------|------------------------|
+| **Aliens akkumulieren schneller** | Steilere anfängliche Kurve | Aliens sind Generalisten, überall zu finden |
+| **Aliens akkumulieren langsamer** | Flachere anfängliche Kurve | Aliens sind geclustert nahe Einführungspunkten (Städte, Häfen) |
+| **Kein Unterschied** | Identische Kurven | Verteilungsmuster sind ähnlich |
+
+**Die wichtige Erkenntnis:** Durch den Vergleich normalisierter Kurven können wir sehen, ob eine Gruppe stärker geclustert oder gleichmäßiger verteilt ist als die andere.
+
+</div>
+
+```{r hypothesis-prediction, fig.height=4.5}
+# Show predicted scenarios
+set.seed(42)
+n_plots <- 60
+
+# Create three scenarios
+scenarios <- data.frame(
+  plots = rep(1:n_plots, 3),
+  scenario = rep(c("Aliens More Clustered", "No Difference", "Aliens More Spread"), each = n_plots)
+)
+
+# Simulate curves
+# Natives: moderate clustering
+native_base <- cumsum(c(8, pmax(0, round(rnorm(n_plots-1, 3, 1.5) * exp(-(1:(n_plots-1))/25)))))
+native_pct <- native_base / max(native_base) * 100
+
+# Scenario 1: Aliens more clustered (slower accumulation = more clustered near hotspots)
+alien_clustered <- cumsum(c(3, pmax(0, round(rnorm(n_plots-1, 2, 1) * (1 + (1:(n_plots-1))/50) * exp(-(1:(n_plots-1))/30)))))
+alien_clustered_pct <- alien_clustered / max(alien_clustered) * 100
+
+# Scenario 2: No difference
+alien_same <- native_base * 0.3  # Fewer species, same pattern
+alien_same_pct <- alien_same / max(alien_same) * 100
+
+# Scenario 3: Aliens more spread (faster accumulation = evenly distributed)
+alien_spread <- cumsum(c(12, pmax(0, round(rnorm(n_plots-1, 4, 1) * exp(-(1:(n_plots-1))/15)))))
+alien_spread_pct <- alien_spread / max(alien_spread) * 100
+
+# Combine data
+prediction_data <- data.frame(
+  plots = rep(1:n_plots, 6),
+  pct = c(native_pct, alien_clustered_pct, native_pct, alien_same_pct, native_pct, alien_spread_pct),
+  type = rep(c("Native", "Alien"), each = n_plots, times = 3),
+  scenario = rep(c("Aliens More Clustered\n(near introduction points)",
+                   "No Difference\n(H0: same pattern)",
+                   "Aliens More Spread\n(generalist dispersers)"), each = n_plots * 2)
+)
+
+prediction_data$scenario <- factor(prediction_data$scenario,
+                                    levels = c("Aliens More Clustered\n(near introduction points)",
+                                               "No Difference\n(H0: same pattern)",
+                                               "Aliens More Spread\n(generalist dispersers)"))
+
+ggplot(prediction_data, aes(x = plots, y = pct, color = type, linetype = type)) +
+  geom_line(linewidth = 1.5) +
+  facet_wrap(~scenario, ncol = 3) +
+  scale_color_manual(values = c("Native" = "#2E7D32", "Alien" = "#D32F2F")) +
+  scale_linetype_manual(values = c("Native" = "solid", "Alien" = "dashed")) +
+  labs(title = "Possible Outcomes: Native vs. Alien Accumulation",
+       subtitle = "Normalized curves (% of total species) allow shape comparison",
+       x = "Plots Sampled", y = "% of Total Species",
+       color = "Species Type", linetype = "Species Type") +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "bottom",
+        strip.text = element_text(size = 10, face = "bold"))
+```
+
+---
 
 ## <span class="en">Normalization for Fair Comparison</span><span class="de">Normalisierung für fairen Vergleich</span>
 

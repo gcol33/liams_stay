@@ -1216,6 +1216,102 @@ So können wir die **Form** der Akkumulation vergleichen, nicht nur die Gesamtza
 
 ---
 
+# <span class="en">Future Directions</span><span class="de">Zukünftige Richtungen</span>
+
+## <span class="en">Beyond Species Richness: Biomass Accumulation</span><span class="de">Über Artenreichtum hinaus: Biomasse-Akkumulation</span>
+
+<div class="en">
+
+So far we've only counted **species** (species richness). But what about **how much** of each species is present?
+
+**Biomass accumulation curves** could tell us even more:
+
+| Metric | What it measures | What it reveals |
+|--------|------------------|-----------------|
+| **Species richness** | Number of different species | Diversity patterns |
+| **Biomass** | Total weight/cover of plants | Dominance patterns |
+| **Combined** | Both together | Full ecological picture |
+
+</div>
+
+<div class="de">
+
+Bisher haben wir nur **Arten** gezählt (Artenreichtum). Aber was ist mit **wie viel** von jeder Art vorhanden ist?
+
+**Biomasse-Akkumulationskurven** könnten uns noch mehr verraten:
+
+| Metrik | Was sie misst | Was sie zeigt |
+|--------|---------------|---------------|
+| **Artenreichtum** | Anzahl verschiedener Arten | Diversitätsmuster |
+| **Biomasse** | Gesamtgewicht/-deckung der Pflanzen | Dominanzmuster |
+| **Kombiniert** | Beides zusammen | Vollständiges ökologisches Bild |
+
+</div>
+
+```{r biomass-concept, fig.height=4}
+set.seed(42)
+n <- 50
+
+# Species richness curve (what we do now)
+sr_curve <- data.frame(
+  plots = 1:n,
+  value = cumsum(c(10, pmax(0, round(rnorm(n-1, 3, 1.5) * exp(-(1:(n-1))/20))))),
+  type = "Species Richness"
+)
+sr_curve$pct <- sr_curve$value / max(sr_curve$value) * 100
+
+# Biomass curve (hypothetical - could accumulate differently)
+biomass_curve <- data.frame(
+  plots = 1:n,
+  value = cumsum(c(25, pmax(0, round(rnorm(n-1, 8, 3) * exp(-(1:(n-1))/15))))),
+  type = "Biomass"
+)
+biomass_curve$pct <- biomass_curve$value / max(biomass_curve$value) * 100
+
+both_curves <- rbind(sr_curve, biomass_curve)
+
+ggplot(both_curves, aes(x = plots, y = pct, color = type, linetype = type)) +
+  geom_line(linewidth = 2) +
+  scale_color_manual(values = c("Species Richness" = "#2E7D32", "Biomass" = "#FF9800")) +
+  scale_linetype_manual(values = c("Species Richness" = "solid", "Biomass" = "dashed")) +
+  labs(title = "Future Idea: Combining Species Richness and Biomass",
+       subtitle = "Biomass might accumulate faster (dominated by few common species)",
+       x = "Plots Sampled", y = "% of Total",
+       color = "Metric", linetype = "Metric") +
+  theme_minimal(base_size = 14) +
+  theme(legend.position = "bottom")
+```
+
+<div class="hypothesis-box">
+
+<div class="en">
+
+**Why biomass matters:**
+
+- A few **dominant species** might contribute most of the biomass
+- Alien species could have **high biomass but low diversity** (invasive monocultures)
+- Native ecosystems might show **balanced biomass across many species**
+
+**Research question:** Do alien species contribute disproportionately to biomass relative to their species count?
+
+</div>
+
+<div class="de">
+
+**Warum Biomasse wichtig ist:**
+
+- Einige wenige **dominante Arten** könnten den Großteil der Biomasse ausmachen
+- Alien-Arten könnten **hohe Biomasse aber geringe Diversität** haben (invasive Monokulturen)
+- Heimische Ökosysteme könnten **ausgewogene Biomasse über viele Arten** zeigen
+
+**Forschungsfrage:** Tragen Alien-Arten überproportional zur Biomasse bei im Verhältnis zu ihrer Artenzahl?
+
+</div>
+
+</div>
+
+---
+
 # <span class="en">Summary</span><span class="de">Zusammenfassung</span>
 
 ## <span class="en">Key Concepts</span><span class="de">Schlüsselkonzepte</span>

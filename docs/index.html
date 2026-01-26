@@ -63,6 +63,9 @@
       font-size: 2.5rem;
       margin-bottom: 0.5rem;
       text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+      overflow-wrap: break-word;
+      word-break: break-word;
+      hyphens: auto;
     }
 
     .subtitle {
@@ -127,12 +130,18 @@
       color: #2E7D32;
       margin-bottom: 6px;
       font-size: 1.1rem;
+      overflow-wrap: break-word;
+      word-break: break-word;
+      hyphens: auto;
     }
 
     .card p {
       color: #666;
       line-height: 1.4;
       font-size: 0.85rem;
+      overflow-wrap: break-word;
+      word-break: break-word;
+      hyphens: auto;
     }
 
     .card.theory {
@@ -289,12 +298,14 @@
 
     if (defaultLang === 'de') {
       document.body.classList.add('lang-de');
+      document.documentElement.lang = 'de';
       document.getElementById('btn-de').classList.add('active');
       document.getElementById('btn-en').classList.remove('active');
     }
 
     document.getElementById('btn-en').addEventListener('click', function() {
       document.body.classList.remove('lang-de');
+      document.documentElement.lang = 'en';
       this.classList.add('active');
       document.getElementById('btn-de').classList.remove('active');
       localStorage.setItem('workshop-lang', 'en');
@@ -302,6 +313,7 @@
 
     document.getElementById('btn-de').addEventListener('click', function() {
       document.body.classList.add('lang-de');
+      document.documentElement.lang = 'de';
       this.classList.add('active');
       document.getElementById('btn-en').classList.remove('active');
       localStorage.setItem('workshop-lang', 'de');

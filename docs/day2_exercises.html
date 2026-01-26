@@ -1798,8 +1798,7 @@ field ecologist</li>
 points</li>
 <li><strong>Comparing natives vs aliens</strong> - Do they accumulate
 differently?</li>
-<li><strong>Publication-quality figures</strong> - Make plots ready for
-a research paper</li>
+<li><strong>Polished figures</strong> - Make nice-looking plots</li>
 </ol>
 <p><strong>How to use these exercises:</strong></p>
 <ul>
@@ -1821,8 +1820,8 @@ echter Feldökologe</li>
 Punkten</li>
 <li><strong>Heimische vs Aliens vergleichen</strong> - Akkumulieren sie
 unterschiedlich?</li>
-<li><strong>Publikationsreife Abbildungen</strong> - Erstelle Plots
-bereit für eine Forschungsarbeit</li>
+<li><strong>Schöne Abbildungen</strong> - Erstelle ansprechende
+Plots</li>
 </ol>
 <p><strong>So verwendest du diese Übungen:</strong></p>
 <ul>
@@ -1861,39 +1860,239 @@ species &lt;- read_csv(&quot;../data/austria_species.csv&quot;)
 
 # Check data loaded correctly
 # Überprüfe dass Daten korrekt geladen sind
-cat(&quot;Plots loaded:&quot;, nrow(header), &quot;\n&quot;)
-cat(&quot;Species records:&quot;, nrow(species), &quot;\n&quot;)
-cat(&quot;Unique species:&quot;, length(unique(species$WFO_TAXON)), &quot;\n&quot;)</code></pre>
+print(paste(&quot;Plots loaded:&quot;, nrow(header)))
+print(paste(&quot;Species records:&quot;, nrow(species)))
+print(paste(&quot;Unique species:&quot;, length(unique(species$WFO_TAXON))))</code></pre>
 </div>
-<div id="b-define-helper-functions1b-hilfsfunktionen-definieren" class="section level3">
-<h3><span class="en">1b: Define helper functions</span><span class="de">1b: Hilfsfunktionen definieren</span></h3>
+<div id="b-new-r-concepts-for-today1b-neue-r-konzepte-für-heute" class="section level3">
+<h3><span class="en">1b: New R Concepts for Today</span><span class="de">1b: Neue R-Konzepte für heute</span></h3>
 <div class="en">
-<p><strong>Code Philosophy:</strong> These functions follow key
-programming principles:</p>
-<ol style="list-style-type: decimal">
-<li><strong>Single responsibility</strong> - Each function does ONE
-thing well</li>
-<li><strong>Reusability</strong> - Functions are generic, not hardcoded
-to specific data</li>
-<li><strong>Vectorization</strong> - Use R’s strength: operate on whole
-vectors at once</li>
-<li><strong>Sensible defaults</strong> - Optional parameters have
-reasonable default values</li>
-</ol>
+<p>Before we define our helper functions, let’s learn some <strong>new R
+concepts</strong> that we’ll use today. Yesterday you learned variables,
+vectors, and <code>unique()</code>. Today we add:</p>
+<p><strong>Writing your own functions - Fibonacci example:</strong></p>
+<p>The Fibonacci sequence: 1, 1, 2, 3, 5, 8, 13… (each number = sum of
+previous two)</p>
+<pre class="r"><code># VERSION 1: Using a vector (stores ALL numbers)
+fibonacci_vector &lt;- function(n) {
+  fib &lt;- c(1, 1)                      # Start with first two numbers
+  for (i in 3:n) {
+    fib[i] &lt;- fib[i-1] + fib[i-2]     # Add: previous + one before that
+  }
+  return(fib)
+}
+
+fibonacci_vector(7)  # Returns: 1 1 2 3 5 8 13
+
+# VERSION 2: Using 2 variables (memory efficient - only tracks last 2)
+fibonacci_two_vars &lt;- function(n) {
+  prev &lt;- 1                           # The number before current
+  curr &lt;- 1                           # Current number
+  for (i in 3:n) {
+    new &lt;- prev + curr                # Calculate next
+    prev &lt;- curr                      # Shift: current becomes previous
+    curr &lt;- new                       # Shift: new becomes current
+  }
+  return(curr)
+}
+
+fibonacci_two_vars(7)  # Returns: 13 (the 7th Fibonacci number)</code></pre>
+<p><strong>Default values in functions:</strong></p>
+<pre class="r"><code># If user doesn&#39;t provide &#39;n&#39;, use 10 as default
+fibonacci &lt;- function(n = 10) {
+  fib &lt;- c(1, 1)
+  for (i in 3:n) fib[i] &lt;- fib[i-1] + fib[i-2]
+  return(fib)
+}
+
+fibonacci()      # Returns first 10 numbers (uses default)
+fibonacci(5)     # Returns first 5 numbers</code></pre>
+<p><strong>Useful functions we’ll use:</strong></p>
+<table>
+<colgroup>
+<col width="30%" />
+<col width="42%" />
+<col width="27%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Function</th>
+<th>What it does</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>paste()</code></td>
+<td>Combine text and values</td>
+<td><code>paste(&quot;Found:&quot;, 5, &quot;species&quot;)</code></td>
+</tr>
+<tr class="even">
+<td><code>sample()</code></td>
+<td>Pick random items</td>
+<td><code>sample(1:100, 5)</code> picks 5 random numbers</td>
+</tr>
+<tr class="odd">
+<td><code>set.seed()</code></td>
+<td>Make random reproducible</td>
+<td><code>set.seed(42)</code> always gives same “random”</td>
+</tr>
+<tr class="even">
+<td><code>rep()</code></td>
+<td>Repeat values</td>
+<td><code>rep(FALSE, 5)</code> gives
+<code>FALSE FALSE FALSE FALSE FALSE</code></td>
+</tr>
+<tr class="odd">
+<td><code>which.min()</code></td>
+<td>Position of smallest value</td>
+<td><code>which.min(c(5,2,8))</code> returns <code>2</code></td>
+</tr>
+<tr class="even">
+<td><code>setdiff()</code></td>
+<td>What’s in A but not B</td>
+<td><code>setdiff(c(1,2,3), c(2,3,4))</code> returns <code>1</code></td>
+</tr>
+<tr class="odd">
+<td><code>pull()</code></td>
+<td>Extract column as vector</td>
+<td><code>data %&gt;% pull(column)</code></td>
+</tr>
+<tr class="even">
+<td><code>is.null()</code></td>
+<td>Check if NULL</td>
+<td><code>is.null(NULL)</code> returns <code>TRUE</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Special values:</strong></p>
+<ul>
+<li><code>NULL</code> = “nothing” / empty / not specified</li>
+<li><code>Inf</code> = infinity (bigger than any number)</li>
+</ul>
 </div>
 <div class="de">
-<p><strong>Code-Philosophie:</strong> Diese Funktionen folgen wichtigen
-Programmierprinzipien:</p>
-<ol style="list-style-type: decimal">
-<li><strong>Einzelverantwortung</strong> - Jede Funktion macht EINE
-Sache gut</li>
-<li><strong>Wiederverwendbarkeit</strong> - Funktionen sind generisch,
-nicht auf bestimmte Daten festgelegt</li>
-<li><strong>Vektorisierung</strong> - Nutze Rs Stärke: operiere auf
-ganzen Vektoren gleichzeitig</li>
-<li><strong>Sinnvolle Standardwerte</strong> - Optionale Parameter haben
-vernünftige Standardwerte</li>
-</ol>
+<p>Bevor wir unsere Hilfsfunktionen definieren, lernen wir einige
+<strong>neue R-Konzepte</strong>, die wir heute verwenden. Gestern hast
+du Variablen, Vektoren und <code>unique()</code> gelernt. Heute fügen
+wir hinzu:</p>
+<p><strong>Eigene Funktionen schreiben -
+Fibonacci-Beispiel:</strong></p>
+<p>Die Fibonacci-Folge: 1, 1, 2, 3, 5, 8, 13… (jede Zahl = Summe der
+vorherigen zwei)</p>
+<pre class="r"><code># VERSION 1: Mit Vektor (speichert ALLE Zahlen)
+fibonacci_vektor &lt;- function(n) {
+  fib &lt;- c(1, 1)                      # Starte mit ersten zwei Zahlen
+  for (i in 3:n) {
+    fib[i] &lt;- fib[i-1] + fib[i-2]     # Addiere: vorherige + davor
+  }
+  return(fib)
+}
+
+fibonacci_vektor(7)  # Gibt zurück: 1 1 2 3 5 8 13
+
+# VERSION 2: Mit 2 Variablen (speichereffizient - nur letzte 2)
+fibonacci_zwei_vars &lt;- function(n) {
+  vorherige &lt;- 1                      # Die Zahl vor der aktuellen
+  aktuelle &lt;- 1                       # Aktuelle Zahl
+  for (i in 3:n) {
+    neue &lt;- vorherige + aktuelle      # Berechne nächste
+    vorherige &lt;- aktuelle             # Verschiebe: aktuelle wird vorherige
+    aktuelle &lt;- neue                  # Verschiebe: neue wird aktuelle
+  }
+  return(aktuelle)
+}
+
+fibonacci_zwei_vars(7)  # Gibt zurück: 13 (die 7. Fibonacci-Zahl)</code></pre>
+<p><strong>Standardwerte in Funktionen:</strong></p>
+<pre class="r"><code># Wenn der User &#39;n&#39; nicht angibt, benutze 10 als Standard
+fibonacci &lt;- function(n = 10) {
+  fib &lt;- c(1, 1)
+  for (i in 3:n) fib[i] &lt;- fib[i-1] + fib[i-2]
+  return(fib)
+}
+
+fibonacci()      # Gibt erste 10 Zahlen zurück (benutzt Standard)
+fibonacci(5)     # Gibt erste 5 Zahlen zurück</code></pre>
+<p><strong>Nützliche Funktionen, die wir verwenden:</strong></p>
+<table style="width:100%;">
+<colgroup>
+<col width="28%" />
+<col width="42%" />
+<col width="28%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Funktion</th>
+<th>Was sie macht</th>
+<th>Beispiel</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>paste()</code></td>
+<td>Text und Werte kombinieren</td>
+<td><code>paste(&quot;Gefunden:&quot;, 5, &quot;Arten&quot;)</code></td>
+</tr>
+<tr class="even">
+<td><code>sample()</code></td>
+<td>Zufällige Elemente wählen</td>
+<td><code>sample(1:100, 5)</code> wählt 5 Zufallszahlen</td>
+</tr>
+<tr class="odd">
+<td><code>set.seed()</code></td>
+<td>Zufall reproduzierbar machen</td>
+<td><code>set.seed(42)</code> gibt immer gleichen “Zufall”</td>
+</tr>
+<tr class="even">
+<td><code>rep()</code></td>
+<td>Werte wiederholen</td>
+<td><code>rep(FALSE, 5)</code> gibt
+<code>FALSE FALSE FALSE FALSE FALSE</code></td>
+</tr>
+<tr class="odd">
+<td><code>which.min()</code></td>
+<td>Position des kleinsten Werts</td>
+<td><code>which.min(c(5,2,8))</code> gibt <code>2</code></td>
+</tr>
+<tr class="even">
+<td><code>setdiff()</code></td>
+<td>Was ist in A aber nicht in B</td>
+<td><code>setdiff(c(1,2,3), c(2,3,4))</code> gibt <code>1</code></td>
+</tr>
+<tr class="odd">
+<td><code>pull()</code></td>
+<td>Spalte als Vektor extrahieren</td>
+<td><code>data %&gt;% pull(spalte)</code></td>
+</tr>
+<tr class="even">
+<td><code>is.null()</code></td>
+<td>Prüfen ob NULL</td>
+<td><code>is.null(NULL)</code> gibt <code>TRUE</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Spezielle Werte:</strong></p>
+<ul>
+<li><code>NULL</code> = “nichts” / leer / nicht angegeben</li>
+<li><code>Inf</code> = Unendlich (größer als jede Zahl)</li>
+</ul>
+</div>
+<hr />
+</div>
+<div id="c-define-helper-functions-just-copy-run1c-hilfsfunktionen-definieren-einfach-kopieren-ausführen" class="section level3">
+<h3><span class="en">1c: Define helper functions (just copy &amp;
+run!)</span><span class="de">1c: Hilfsfunktionen definieren (einfach
+kopieren &amp; ausführen!)</span></h3>
+<div class="en">
+<p><strong>Just run this code block!</strong> You don’t need to
+understand every line - these are tools we’ll use later. Click the
+details below only if you’re curious.</p>
+</div>
+<div class="de">
+<p><strong>Führe diesen Code-Block einfach aus!</strong> Du musst nicht
+jede Zeile verstehen - das sind Werkzeuge die wir später benutzen.
+Klicke die Details unten nur wenn du neugierig bist.</p>
 </div>
 <style>
 .build-steps { background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; margin: 1em 0; }
@@ -2285,7 +2484,7 @@ find_saturation &lt;- function(curve, threshold = 0.8) {
   which(curve &gt;= target)[1]
 }
 
-cat(&quot;All functions loaded!\n&quot;)</code></pre>
+print(&quot;All functions loaded!&quot;)</code></pre>
 <div class="hint">
 <p><span class="en">Hint: Run both code blocks above. If you get errors,
 check that the data files exist in <code>../data/</code>.</span> <span class="de">Hinweis: Führe beide Code-Blöcke aus. Bei Fehlern prüfe ob
@@ -2413,11 +2612,127 @@ build_accumulation_fast &lt;- function(species_data, plot_order, status_filter =
 nn_walk &lt;- nn_walk_fast
 build_accumulation &lt;- build_accumulation_fast
 
-cat(&quot;⚡ Rcpp turbo mode activated! Functions are now 10-50x faster.\n&quot;)
-cat(&quot;⚡ Rcpp Turbo-Modus aktiviert! Funktionen sind jetzt 10-50x schneller.\n&quot;)
+print(&quot;⚡ Rcpp turbo mode activated! Functions are now 10-50x faster.&quot;)
+print(&quot;⚡ Rcpp Turbo-Modus aktiviert! Funktionen sind jetzt 10-50x schneller.&quot;)
 </code></pre>
 
 <p style="font-size: 0.85em; color: #aaa;"><span class="en">Note: Requires Rcpp package and a C++ compiler (Rtools on Windows).</span><span class="de">Hinweis: Benötigt Rcpp-Paket und einen C++ Compiler (Rtools unter Windows).</span></p>
+</div>
+<hr />
+</div>
+<div id="d-how-fast-is-my-code-complexity1d-wie-schnell-ist-mein-code-komplexität" class="section level3">
+<h3><span class="en">1d: How fast is my code? (Complexity)</span><span class="de">1d: Wie schnell ist mein Code? (Komplexität)</span></h3>
+<div class="en">
+<p><strong>Why does speed matter?</strong> With 100 plots, slow code
+takes seconds. With 10,000 plots, it could take hours!</p>
+<p><strong>What counts as “work”?</strong> To keep things simple, we
+count <strong>multiplications</strong> (and divisions). These are the
+“expensive” operations - additions and assignments are so fast we ignore
+them.</p>
+<p><strong>The problem - Nested loops:</strong> If you put a loop INSIDE
+a loop, multiplications multiply!</p>
+<table>
+<thead>
+<tr class="header">
+<th>N (input size)</th>
+<th>Multiplications (N×N)</th>
+<th>Time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>10</td>
+<td>100</td>
+<td>instant</td>
+</tr>
+<tr class="even">
+<td>100</td>
+<td>10,000</td>
+<td>instant</td>
+</tr>
+<tr class="odd">
+<td>1,000</td>
+<td>1,000,000</td>
+<td>slow</td>
+</tr>
+<tr class="even">
+<td>10,000</td>
+<td>100,000,000</td>
+<td>very slow!</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code># O(N²) - gets slow fast!
+for (i in 1:N) {
+  for (j in 1:N) {
+    # This runs N × N = N² times!
+  }
+}
+# N=100 → 10,000 multiplications
+# N=1000 → 1,000,000 multiplications (1000× slower!)</code></pre>
+<p>Our <code>nn_walk</code> function has this O(N²) behavior (it checks
+distance to all plots at each step). This is exactly when it makes sense
+to use a <strong>compiled language</strong> (like C++) instead of an
+<strong>interpreted language</strong> (like R). Compiled languages run
+the same operations 10-100× faster - that’s why we offer the Rcpp
+version!</p>
+</div>
+<div class="de">
+<p><strong>Warum ist Geschwindigkeit wichtig?</strong> Mit 100 Plots
+dauert langsamer Code Sekunden. Mit 10.000 Plots könnte es Stunden
+dauern!</p>
+<p><strong>Was zählt als “Arbeit”?</strong> Um es einfach zu halten,
+zählen wir <strong>Multiplikationen</strong> (und Divisionen). Das sind
+die “teuren” Operationen - Additionen und Zuweisungen sind so schnell,
+dass wir sie ignorieren.</p>
+<p><strong>Das Problem - Verschachtelte Schleifen:</strong> Wenn du eine
+Schleife IN eine Schleife packst, multiplizieren sich die
+Multiplikationen!</p>
+<table>
+<thead>
+<tr class="header">
+<th>N (Eingabegröße)</th>
+<th>Multiplikationen (N×N)</th>
+<th>Zeit</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>10</td>
+<td>100</td>
+<td>sofort</td>
+</tr>
+<tr class="even">
+<td>100</td>
+<td>10.000</td>
+<td>sofort</td>
+</tr>
+<tr class="odd">
+<td>1.000</td>
+<td>1.000.000</td>
+<td>langsam</td>
+</tr>
+<tr class="even">
+<td>10.000</td>
+<td>100.000.000</td>
+<td>sehr langsam!</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code># O(N²) - wird schnell langsam!
+for (i in 1:N) {
+  for (j in 1:N) {
+    # Das läuft N × N = N² mal!
+  }
+}
+# N=100 → 10.000 Multiplikationen
+# N=1000 → 1.000.000 Multiplikationen (1000× langsamer!)</code></pre>
+<p>Unsere <code>nn_walk</code> Funktion hat dieses O(N²) Verhalten (sie
+prüft die Distanz zu allen Plots bei jedem Schritt). Genau dann macht es
+Sinn, eine <strong>kompilierte Sprache</strong> (wie C++) statt einer
+<strong>interpretierten Sprache</strong> (wie R) zu verwenden.
+Kompilierte Sprachen führen die gleichen Operationen 10-100× schneller
+aus - deshalb bieten wir die Rcpp-Version an!</p>
 </div>
 <hr />
 </div>
@@ -2431,6 +2746,33 @@ verstehen</span></h1>
 jump all over the map. But a <strong>nearest-neighbour walk</strong>
 samples like a real ecologist would - always going to the closest
 unvisited plot. This creates a realistic spatial accumulation curve.</p>
+<p><strong>New concepts used here:</strong></p>
+<table>
+<colgroup>
+<col width="28%" />
+<col width="43%" />
+<col width="28%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Concept</th>
+<th>What it does</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>%in%</code></td>
+<td>Check if values are in a list</td>
+<td><code>filter(ID %in% my_ids)</code></td>
+</tr>
+<tr class="even">
+<td><code>scale_color_manual()</code></td>
+<td>Set custom colors for categories</td>
+<td><code>values = c(&quot;A&quot; = &quot;red&quot;, &quot;B&quot; = &quot;blue&quot;)</code></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="de">
 <p><strong>Konzept:</strong> Wenn wir Plots zufällig sampeln, springen
@@ -2438,6 +2780,33 @@ wir vielleicht über die ganze Karte. Aber ein
 <strong>Nearest-Neighbour-Walk</strong> sampelt wie ein echter Ökologe -
 geht immer zum nächsten unbesuchten Plot. Das erstellt eine realistische
 räumliche Akkumulationskurve.</p>
+<p><strong>Neue Konzepte hier:</strong></p>
+<table>
+<colgroup>
+<col width="27%" />
+<col width="42%" />
+<col width="30%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Konzept</th>
+<th>Was es macht</th>
+<th>Beispiel</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>%in%</code></td>
+<td>Prüft ob Werte in einer Liste sind</td>
+<td><code>filter(ID %in% meine_ids)</code></td>
+</tr>
+<tr class="even">
+<td><code>scale_color_manual()</code></td>
+<td>Setzt eigene Farben für Kategorien</td>
+<td><code>values = c(&quot;A&quot; = &quot;red&quot;, &quot;B&quot; = &quot;blue&quot;)</code></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="a-create-a-sample-dataset2a-erstelle-einen-beispieldatensatz" class="section level3">
 <h3><span class="en">2a: Create a sample dataset</span><span class="de">2a: Erstelle einen Beispieldatensatz</span></h3>
@@ -2450,7 +2819,7 @@ sample_ids &lt;- sample(unique(header$PlotObservationID), sample_size)
 sample_header &lt;- header %&gt;% filter(PlotObservationID %in% sample_ids)
 sample_species &lt;- species %&gt;% filter(PlotObservationID %in% sample_ids)
 
-cat(&quot;Sample created:&quot;, nrow(sample_header), &quot;plots\n&quot;)</code></pre>
+print(paste(&quot;Sample created:&quot;, nrow(sample_header), &quot;plots&quot;))</code></pre>
 </div>
 <div id="b-run-a-nearest-neighbour-walk2b-führe-einen-nearest-neighbour-walk-aus" class="section level3">
 <h3><span class="en">2b: Run a nearest-neighbour walk</span><span class="de">2b: Führe einen Nearest-Neighbour-Walk aus</span></h3>
@@ -2465,8 +2834,8 @@ alien_curve &lt;- build_accumulation(sample_species, nn_order, &quot;____&quot;)
 
 # Check the results
 # Überprüfe die Ergebnisse
-cat(&quot;Native species found:&quot;, max(native_curve), &quot;\n&quot;)
-cat(&quot;Alien species found:&quot;, max(alien_curve), &quot;\n&quot;)</code></pre>
+print(paste(&quot;Native species found:&quot;, max(native_curve)))
+print(paste(&quot;Alien species found:&quot;, max(alien_curve)))</code></pre>
 </div>
 <div id="c-plot-the-comparison2c-plotte-den-vergleich" class="section level3">
 <h3><span class="en">2c: Plot the comparison</span><span class="de">2c:
@@ -2504,6 +2873,59 @@ Arten haben STATUS = “nat”, Alien-Arten haben STATUS = “neo”.</span></p>
 If we start in a native-rich area, natives accumulate fast. If we start
 near an alien hotspot, aliens accumulate fast. We need to run from MANY
 starting points to see the true pattern.</p>
+<p><strong>New concepts in this exercise:</strong></p>
+<table>
+<colgroup>
+<col width="28%" />
+<col width="43%" />
+<col width="28%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Concept</th>
+<th>What it does</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>matrix(NA, nrow, ncol)</code></td>
+<td>Create empty table with rows &amp; columns</td>
+<td><code>matrix(NA, nrow=20, ncol=100)</code></td>
+</tr>
+<tr class="even">
+<td><code>colMeans(mat)</code></td>
+<td>Mean of each column</td>
+<td><code>colMeans(mat)</code> returns one mean per column</td>
+</tr>
+<tr class="odd">
+<td><code>sd()</code></td>
+<td>Standard deviation (spread of values)</td>
+<td><code>sd(c(1,2,3,4,5))</code> returns 1.58</td>
+</tr>
+<tr class="even">
+<td><code>quantile(x, p)</code></td>
+<td>Value at percentile p</td>
+<td><code>quantile(x, 0.975)</code> = 97.5th percentile</td>
+</tr>
+<tr class="odd">
+<td><code>geom_ribbon()</code></td>
+<td>Shaded band in ggplot</td>
+<td><code>geom_ribbon(aes(ymin, ymax))</code></td>
+</tr>
+<tr class="even">
+<td><code>alpha = 0.3</code></td>
+<td>Transparency (0=invisible, 1=solid)</td>
+<td>Makes bands see-through</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Why matrix() instead of data.frame()?</strong> -
+<code>matrix</code> = ALL values are the same type (only numbers).
+Faster for math! - <code>data.frame</code> = columns can be different
+types (text, numbers, TRUE/FALSE)</p>
+<p>We use matrix here because we only store numbers and need to do fast
+calculations.</p>
 </div>
 <div class="de">
 <p><strong>Konzept:</strong> Die Kurve die wir bekommen hängt davon ab
@@ -2511,6 +2933,59 @@ WO wir starten! Starten wir in einem heimisch-reichen Gebiet,
 akkumulieren Heimische schnell. Starten wir nahe einem Alien-Hotspot,
 akkumulieren Aliens schnell. Wir müssen von VIELEN Startpunkten starten
 um das wahre Muster zu sehen.</p>
+<p><strong>Neue Konzepte in dieser Übung:</strong></p>
+<table>
+<colgroup>
+<col width="27%" />
+<col width="42%" />
+<col width="30%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Konzept</th>
+<th>Was es macht</th>
+<th>Beispiel</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>matrix(NA, nrow, ncol)</code></td>
+<td>Erstelle leere Tabelle mit Zeilen &amp; Spalten</td>
+<td><code>matrix(NA, nrow=20, ncol=100)</code></td>
+</tr>
+<tr class="even">
+<td><code>colMeans(mat)</code></td>
+<td>Mittelwert jeder Spalte</td>
+<td><code>colMeans(mat)</code> gibt einen Mittelwert pro Spalte</td>
+</tr>
+<tr class="odd">
+<td><code>sd()</code></td>
+<td>Standardabweichung (Streuung der Werte)</td>
+<td><code>sd(c(1,2,3,4,5))</code> gibt 1.58</td>
+</tr>
+<tr class="even">
+<td><code>quantile(x, p)</code></td>
+<td>Wert am Perzentil p</td>
+<td><code>quantile(x, 0.975)</code> = 97.5-tes Perzentil</td>
+</tr>
+<tr class="odd">
+<td><code>geom_ribbon()</code></td>
+<td>Schattiertes Band in ggplot</td>
+<td><code>geom_ribbon(aes(ymin, ymax))</code></td>
+</tr>
+<tr class="even">
+<td><code>alpha = 0.3</code></td>
+<td>Transparenz (0=unsichtbar, 1=solide)</td>
+<td>Macht Bänder durchsichtig</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Warum matrix() statt data.frame()?</strong> -
+<code>matrix</code> = ALLE Werte sind gleicher Typ (nur Zahlen).
+Schneller für Mathe! - <code>data.frame</code> = Spalten können
+verschiedene Typen sein (Text, Zahlen, TRUE/FALSE)</p>
+<p>Wir benutzen matrix hier weil wir nur Zahlen speichern und schnelle
+Berechnungen brauchen.</p>
 </div>
 <div id="a-run-from-multiple-starting-points3a-von-mehreren-startpunkten-starten" class="section level3">
 <h3><span class="en">3a: Run from multiple starting points</span><span class="de">3a: Von mehreren Startpunkten starten</span></h3>
@@ -2525,32 +3000,38 @@ alien_runs &lt;- matrix(NA, nrow = n_seeds, ncol = sample_size)
 
 # Run from each starting point
 # Starte von jedem Startpunkt
-cat(&quot;Running&quot;, n_seeds, &quot;starting points...\n&quot;)
+print(paste(&quot;Running&quot;, n_seeds, &quot;starting points...&quot;))
 for (seed in 1:n_seeds) {
   nn_order &lt;- nn_walk(sample_header, start_idx = seed)
   native_runs[seed, ] &lt;- build_accumulation(sample_species, nn_order, &quot;____&quot;)
   alien_runs[seed, ] &lt;- build_accumulation(sample_species, nn_order, &quot;____&quot;)
 
-  if (seed %% 5 == 0) cat(&quot;  Completed&quot;, seed, &quot;\n&quot;)
+  if (seed %% 5 == 0) print(paste(&quot;  Completed&quot;, seed))
 }
-cat(&quot;Done!\n&quot;)</code></pre>
+print(&quot;Done!&quot;)</code></pre>
 </div>
 <div id="b-calculate-mean-and-confidence-intervals3b-berechne-mittelwert-und-konfidenzintervalle" class="section level3">
 <h3><span class="en">3b: Calculate mean and confidence
 intervals</span><span class="de">3b: Berechne Mittelwert und
 Konfidenzintervalle</span></h3>
-<pre class="r"><code># Mean across all runs
-# Mittelwert über alle Läufe
-native_mean &lt;- apply(native_runs, 2, ____)
-alien_mean &lt;- apply(alien_runs, 2, mean)
+<pre class="r"><code># Mean across all runs (colMeans = mean of each column)
+# Mittelwert über alle Läufe (colMeans = Mittelwert jeder Spalte)
+native_mean &lt;- colMeans(____)
+alien_mean &lt;- colMeans(alien_runs)
 
-# 95% confidence intervals (2.5% and 97.5% quantiles)
-# 95% Konfidenzintervalle (2.5% und 97.5% Quantile)
-native_lower &lt;- apply(native_runs, 2, function(x) quantile(x, 0.025))
-native_upper &lt;- apply(native_runs, 2, function(x) quantile(x, ____))
+# 95% confidence intervals using a loop
+# 95% Konfidenzintervalle mit einer Schleife
+native_lower &lt;- numeric(sample_size)
+native_upper &lt;- numeric(sample_size)
+alien_lower &lt;- numeric(sample_size)
+alien_upper &lt;- numeric(sample_size)
 
-alien_lower &lt;- apply(alien_runs, 2, function(x) quantile(x, ____))
-alien_upper &lt;- apply(alien_runs, 2, function(x) quantile(x, 0.975))
+for (i in 1:sample_size) {
+  native_lower[i] &lt;- quantile(native_runs[, i], 0.025)
+  native_upper[i] &lt;- quantile(native_runs[, i], ____)
+  alien_lower[i] &lt;- quantile(alien_runs[, i], ____)
+  alien_upper[i] &lt;- quantile(alien_runs[, i], 0.975)
+}
 
 # How much variation is there?
 # Wie viel Variation gibt es?
@@ -2558,9 +3039,9 @@ midpoint &lt;- sample_size %/% 2
 native_cv &lt;- round(100 * sd(native_runs[, midpoint]) / mean(native_runs[, midpoint]), 1)
 alien_cv &lt;- round(100 * sd(alien_runs[, midpoint]) / mean(alien_runs[, midpoint]), 1)
 
-cat(&quot;Variation at midpoint:\n&quot;)
-cat(&quot;  Native CV:&quot;, native_cv, &quot;%\n&quot;)
-cat(&quot;  Alien CV:&quot;, alien_cv, &quot;%\n&quot;)</code></pre>
+print(&quot;Variation at midpoint:&quot;)
+print(paste(&quot;  Native CV:&quot;, native_cv, &quot;%&quot;))
+print(paste(&quot;  Alien CV:&quot;, alien_cv, &quot;%&quot;))</code></pre>
 </div>
 <div id="c-plot-with-uncertainty-bands3c-plotte-mit-unsicherheitsbändern" class="section level3">
 <h3><span class="en">3c: Plot with uncertainty bands</span><span class="de">3c: Plotte mit Unsicherheitsbändern</span></h3>
@@ -2606,6 +3087,12 @@ found most of the species and the curve flattens. If natives saturate
 FASTER than aliens, it means natives are more evenly distributed (we
 find them everywhere). If aliens saturate SLOWER, they’re more patchy
 (clustered in certain areas).</p>
+<p><strong>New concept - Boxplots:</strong></p>
+<p><code>geom_boxplot()</code> shows the distribution of values: -
+<strong>Box</strong> = middle 50% of data (25th to 75th percentile) -
+<strong>Line inside</strong> = median (middle value) -
+<strong>Whiskers</strong> = extend to ~1.5× the box height -
+<strong>Dots</strong> = outliers (extreme values)</p>
 </div>
 <div class="de">
 <p><strong>Konzept:</strong> <strong>Sättigung</strong> ist wenn wir die
@@ -2613,22 +3100,33 @@ meisten Arten gefunden haben und die Kurve abflacht. Wenn Heimische
 SCHNELLER saturieren, sind sie gleichmäßiger verteilt (wir finden sie
 überall). Wenn Aliens LANGSAMER saturieren, sind sie fleckenhafter (in
 bestimmten Gebieten geclustert).</p>
+<p><strong>Neues Konzept - Boxplots:</strong></p>
+<p><code>geom_boxplot()</code> zeigt die Verteilung von Werten: -
+<strong>Box</strong> = mittlere 50% der Daten (25. bis 75. Perzentil) -
+<strong>Linie innen</strong> = Median (mittlerer Wert) -
+<strong>Whiskers</strong> = erstrecken sich ~1.5× die Boxhöhe -
+<strong>Punkte</strong> = Ausreißer (extreme Werte)</p>
 </div>
 <div id="a-find-saturation-points4a-finde-sättigungspunkte" class="section level3">
 <h3><span class="en">4a: Find saturation points</span><span class="de">4a: Finde Sättigungspunkte</span></h3>
 <pre class="r"><code># At what point do we reach 80% of species?
 # Bei welchem Punkt erreichen wir 80% der Arten?
-native_sat &lt;- apply(native_runs, 1, find_saturation, threshold = 0.8)
-alien_sat &lt;- apply(alien_runs, 1, find_saturation, threshold = ____)
+native_sat &lt;- numeric(n_seeds)
+alien_sat &lt;- numeric(n_seeds)
+
+for (i in 1:n_seeds) {
+  native_sat[i] &lt;- find_saturation(native_runs[i, ], threshold = 0.8)
+  alien_sat[i] &lt;- find_saturation(alien_runs[i, ], threshold = ____)
+}
 
 # Convert to percentage of total plots
 # In Prozent der Gesamtplots umwandeln
 native_sat_pct &lt;- 100 * native_sat / sample_size
 alien_sat_pct &lt;- 100 * alien_sat / sample_size
 
-cat(&quot;Plots needed to reach 80% of species:\n&quot;)
-cat(&quot;  Native:&quot;, round(mean(native_sat_pct)), &quot;% (SD:&quot;, round(sd(native_sat_pct), 1), &quot;)\n&quot;)
-cat(&quot;  Alien:&quot;, round(mean(alien_sat_pct)), &quot;% (SD:&quot;, round(sd(alien_sat_pct), 1), &quot;)\n&quot;)</code></pre>
+print(&quot;Plots needed to reach 80% of species:&quot;)
+print(paste(&quot;  Native:&quot;, round(mean(native_sat_pct)), &quot;% (SD:&quot;, round(sd(native_sat_pct), 1), &quot;)&quot;))
+print(paste(&quot;  Alien:&quot;, round(mean(alien_sat_pct)), &quot;% (SD:&quot;, round(sd(alien_sat_pct), 1), &quot;)&quot;))</code></pre>
 </div>
 <div id="b-visualize-with-boxplot4b-visualisiere-mit-boxplot" class="section level3">
 <h3><span class="en">4b: Visualize with boxplot</span><span class="de">4b: Visualisiere mit Boxplot</span></h3>
@@ -2670,16 +3168,21 @@ calc_slope_ratio &lt;- function(curve) {
   else return(NA)
 }
 
-native_ratios &lt;- apply(native_runs, 1, calc_slope_ratio)
-alien_ratios &lt;- apply(alien_runs, 1, ____)
+native_ratios &lt;- numeric(n_seeds)
+alien_ratios &lt;- numeric(n_seeds)
 
-cat(&quot;Slope ratio (higher = faster saturation):\n&quot;)
-cat(&quot;  Native:&quot;, round(mean(native_ratios, na.rm = TRUE), 1), &quot;\n&quot;)
-cat(&quot;  Alien:&quot;, round(mean(alien_ratios, na.rm = TRUE), 1), &quot;\n&quot;)</code></pre>
+for (i in 1:n_seeds) {
+  native_ratios[i] &lt;- calc_slope_ratio(native_runs[i, ])
+  alien_ratios[i] &lt;- calc_slope_ratio(alien_runs[i, ])
+}
+
+print(&quot;Slope ratio (higher = faster saturation):&quot;)
+print(paste(&quot;  Native:&quot;, round(mean(native_ratios, na.rm = TRUE), 1)))
+print(paste(&quot;  Alien:&quot;, round(mean(alien_ratios, na.rm = TRUE), 1)))</code></pre>
 <div class="hint">
-<p><span class="en">Hint: Fill in colors “darkgreen” and “red”. For
-slope ratio, use <code>calc_slope_ratio</code>.</span> <span class="de">Hinweis: Fülle Farben “darkgreen” und “red” ein. Für
-Steigungsverhältnis nutze <code>calc_slope_ratio</code>.</span></p>
+<p><span class="en">Hint: Fill in colors “darkgreen” and “red”.</span>
+<span class="de">Hinweis: Fülle Farben “darkgreen” und “red”
+ein.</span></p>
 </div>
 <hr />
 </div>
@@ -2690,11 +3193,76 @@ Steigungsverhältnis nutze <code>calc_slope_ratio</code>.</span></p>
 <p><strong>Concept:</strong> Does it matter WHERE in Austria we start?
 Some areas might have more aliens (near cities, roads). Let’s map how
 starting location affects what we find!</p>
+<p><strong>New ggplot concepts for mapping:</strong></p>
+<table>
+<colgroup>
+<col width="28%" />
+<col width="43%" />
+<col width="28%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Concept</th>
+<th>What it does</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>coord_quickmap()</code></td>
+<td>Correct map proportions (so Austria doesn’t look stretched!)</td>
+<td>Add at end of ggplot</td>
+</tr>
+<tr class="even">
+<td><code>scale_color_gradient2()</code></td>
+<td>Color scale with 3 colors (low→mid→high)</td>
+<td><code>low=&quot;green&quot;, mid=&quot;yellow&quot;, high=&quot;red&quot;</code></td>
+</tr>
+<tr class="odd">
+<td><code>midpoint = value</code></td>
+<td>Where the middle color appears</td>
+<td><code>midpoint = 0.5</code> for 50%</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="de">
 <p><strong>Konzept:</strong> Ist es wichtig WO in Österreich wir
 starten? Manche Gebiete haben vielleicht mehr Aliens (nahe Städten,
 Straßen). Kartieren wir wie der Startort beeinflusst was wir finden!</p>
+<p><strong>Neue ggplot-Konzepte für Karten:</strong></p>
+<table>
+<colgroup>
+<col width="27%" />
+<col width="42%" />
+<col width="30%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Konzept</th>
+<th>Was es macht</th>
+<th>Beispiel</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>coord_quickmap()</code></td>
+<td>Korrekte Kartenproportion (damit Österreich nicht gestreckt
+aussieht!)</td>
+<td>Am Ende von ggplot hinzufügen</td>
+</tr>
+<tr class="even">
+<td><code>scale_color_gradient2()</code></td>
+<td>Farbskala mit 3 Farben (niedrig→mittel→hoch)</td>
+<td><code>low=&quot;green&quot;, mid=&quot;yellow&quot;, high=&quot;red&quot;</code></td>
+</tr>
+<tr class="odd">
+<td><code>midpoint = wert</code></td>
+<td>Wo die mittlere Farbe erscheint</td>
+<td><code>midpoint = 0.5</code> für 50%</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="a-map-alien-proportion-by-starting-location5a-kartiere-alien-anteil-nach-startort" class="section level3">
 <h3><span class="en">5a: Map alien proportion by starting
@@ -2762,18 +3330,17 @@ vervollständigen.</span></p>
 <hr />
 </div>
 </div>
-<div id="exercise-6-final-publication-plotübung-6-finaler-publikationsplot" class="section level1">
-<h1><span class="en">Exercise 6: Final Publication Plot</span><span class="de">Übung 6: Finaler Publikationsplot</span></h1>
+<div id="exercise-6-putting-it-all-togetherübung-6-alles-zusammenfügen" class="section level1">
+<h1><span class="en">Exercise 6: Putting It All Together</span><span class="de">Übung 6: Alles zusammenfügen</span></h1>
 <div class="en">
 <p><strong>Concept:</strong> Let’s put it all together and create a
-publication-quality figure that shows our main finding: how native vs
-alien species accumulate differently across Austrian plots.</p>
+polished figure that shows our main finding: how native vs alien species
+accumulate differently across Austrian plots.</p>
 </div>
 <div class="de">
 <p><strong>Konzept:</strong> Fassen wir alles zusammen und erstellen
-eine publikationsreife Abbildung die unser Hauptergebnis zeigt: wie
-heimische vs Alien-Arten unterschiedlich über österreichische Plots
-akkumulieren.</p>
+eine schöne Abbildung die unser Hauptergebnis zeigt: wie heimische vs
+Alien-Arten unterschiedlich über österreichische Plots akkumulieren.</p>
 </div>
 <div id="a-run-full-analysis6a-führe-vollständige-analyse-aus" class="section level3">
 <h3><span class="en">6a: Run full analysis</span><span class="de">6a:
@@ -2793,31 +3360,44 @@ sample_species &lt;- species %&gt;% filter(PlotObservationID %in% sample_ids)
 native_runs &lt;- matrix(NA, nrow = n_seeds, ncol = sample_size)
 alien_runs &lt;- matrix(NA, nrow = n_seeds, ncol = sample_size)
 
-cat(&quot;Running full analysis...\n&quot;)
+print(&quot;Running full analysis...&quot;)
 for (seed in 1:n_seeds) {
   nn_order &lt;- nn_walk(sample_header, start_idx = seed)
   native_runs[seed, ] &lt;- build_accumulation(sample_species, nn_order, &quot;nat&quot;)
   alien_runs[seed, ] &lt;- build_accumulation(sample_species, nn_order, &quot;neo&quot;)
-  if (seed %% 10 == 0) cat(&quot;  Completed&quot;, seed, &quot;of&quot;, n_seeds, &quot;\n&quot;)
+  if (seed %% 10 == 0) print(paste(&quot;  Completed&quot;, seed, &quot;of&quot;, n_seeds))
 }
-cat(&quot;Done!\n&quot;)
+print(&quot;Done!&quot;)
 
-# Calculate summaries
-# Berechne Zusammenfassungen
+# Calculate summaries using colMeans and loops
+# Berechne Zusammenfassungen mit colMeans und Schleifen
+native_mean &lt;- colMeans(native_runs)
+alien_mean &lt;- colMeans(alien_runs)
+
+native_lower &lt;- numeric(sample_size)
+native_upper &lt;- numeric(sample_size)
+alien_lower &lt;- numeric(sample_size)
+alien_upper &lt;- numeric(sample_size)
+
+for (i in 1:sample_size) {
+  native_lower[i] &lt;- quantile(native_runs[, i], 0.025)
+  native_upper[i] &lt;- quantile(native_runs[, i], 0.975)
+  alien_lower[i] &lt;- quantile(alien_runs[, i], 0.025)
+  alien_upper[i] &lt;- quantile(alien_runs[, i], 0.975)
+}
+
 results &lt;- data.frame(
   plots = rep(1:sample_size, 2),
-  mean = c(apply(native_runs, 2, mean), apply(alien_runs, 2, mean)),
-  lower = c(apply(native_runs, 2, function(x) quantile(x, 0.025)),
-            apply(alien_runs, 2, function(x) quantile(x, 0.025))),
-  upper = c(apply(native_runs, 2, function(x) quantile(x, 0.975)),
-            apply(alien_runs, 2, function(x) quantile(x, 0.975))),
+  mean = c(native_mean, alien_mean),
+  lower = c(native_lower, alien_lower),
+  upper = c(native_upper, alien_upper),
   status = rep(c(&quot;Native&quot;, &quot;Alien&quot;), each = sample_size)
 )</code></pre>
 </div>
-<div id="b-create-publication-quality-figure6b-erstelle-publikationsreife-abbildung" class="section level3">
-<h3><span class="en">6b: Create publication-quality figure</span><span class="de">6b: Erstelle publikationsreife Abbildung</span></h3>
-<pre class="r"><code># Publication-ready figure
-# Publikationsreife Abbildung
+<div id="b-create-polished-figure6b-erstelle-schöne-abbildung" class="section level3">
+<h3><span class="en">6b: Create polished figure</span><span class="de">6b: Erstelle schöne Abbildung</span></h3>
+<pre class="r"><code># Polished figure
+# Schöne Abbildung
 final_plot &lt;- ggplot(results, aes(x = plots)) +
   geom_ribbon(aes(ymin = lower, ymax = upper, fill = status), alpha = 0.25) +
   geom_line(aes(y = mean, color = status), linewidth = 1.3) +
@@ -2858,32 +3438,36 @@ unsere Ergebnisse zusammen.</p>
 </div>
 <div id="a-generate-results-summary7a-generiere-ergebniszusammenfassung" class="section level3">
 <h3><span class="en">7a: Generate results summary</span><span class="de">7a: Generiere Ergebniszusammenfassung</span></h3>
-<pre class="r"><code>cat(&quot;\n========== RESULTS SUMMARY ==========\n\n&quot;)
+<pre class="r"><code>print(&quot;========== RESULTS SUMMARY ==========&quot;)
 
 # Total species found
-cat(&quot;Species found:\n&quot;)
-cat(&quot;  Native:&quot;, round(mean(native_runs[, sample_size])), &quot;species\n&quot;)
-cat(&quot;  Alien:&quot;, round(mean(alien_runs[, sample_size])), &quot;species\n\n&quot;)
+print(&quot;Species found:&quot;)
+print(paste(&quot;  Native:&quot;, round(mean(native_runs[, sample_size])), &quot;species&quot;))
+print(paste(&quot;  Alien:&quot;, round(mean(alien_runs[, sample_size])), &quot;species&quot;))
 
-# Saturation comparison
-native_sat &lt;- apply(native_runs, 1, find_saturation, threshold = 0.8)
-alien_sat &lt;- apply(alien_runs, 1, find_saturation, threshold = 0.8)
+# Saturation comparison (using a loop)
+native_sat &lt;- numeric(n_seeds)
+alien_sat &lt;- numeric(n_seeds)
+for (i in 1:n_seeds) {
+  native_sat[i] &lt;- find_saturation(native_runs[i, ], threshold = 0.8)
+  alien_sat[i] &lt;- find_saturation(alien_runs[i, ], threshold = 0.8)
+}
 
-cat(&quot;Plots to reach 80% of species:\n&quot;)
-cat(&quot;  Native:&quot;, round(mean(native_sat)), &quot;plots (&quot;,
-    round(100*mean(native_sat)/sample_size), &quot;%)\n&quot;)
-cat(&quot;  Alien:&quot;, round(mean(alien_sat)), &quot;plots (&quot;,
-    round(100*mean(alien_sat)/sample_size), &quot;%)\n\n&quot;)
+print(&quot;Plots to reach 80% of species:&quot;)
+print(paste(&quot;  Native:&quot;, round(mean(native_sat)), &quot;plots (&quot;,
+    round(100*mean(native_sat)/sample_size), &quot;%)&quot;))
+print(paste(&quot;  Alien:&quot;, round(mean(alien_sat)), &quot;plots (&quot;,
+    round(100*mean(alien_sat)/sample_size), &quot;%)&quot;))
 
 # Draw conclusion
-cat(&quot;========== CONCLUSION ==========\n&quot;)
+print(&quot;========== CONCLUSION ==========&quot;)
 if (mean(native_sat) &lt; mean(alien_sat)) {
-  cat(&quot;Native species saturate FASTER than aliens!\n&quot;)
-  cat(&quot;-&gt; Natives are more evenly distributed\n&quot;)
-  cat(&quot;-&gt; Aliens are more patchy/clustered\n&quot;)
+  print(&quot;Native species saturate FASTER than aliens!&quot;)
+  print(&quot;-&gt; Natives are more evenly distributed&quot;)
+  print(&quot;-&gt; Aliens are more patchy/clustered&quot;)
 } else {
-  cat(&quot;Aliens saturate FASTER than natives!\n&quot;)
-  cat(&quot;-&gt; Aliens are more widespread than expected\n&quot;)
+  print(&quot;Aliens saturate FASTER than natives!&quot;)
+  print(&quot;-&gt; Aliens are more widespread than expected&quot;)
 }</code></pre>
 <blockquote>
 <span class="en"><strong>Discussion Questions:</strong> 1. Do natives
@@ -2916,9 +3500,9 @@ du als nächstes untersuchen? (Städtische Gebiete? Höhenlage? Klima?)
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>apply()</code></td>
-<td>Apply function to matrix</td>
-<td><code>apply(mat, 2, mean)</code></td>
+<td><code>colMeans()</code></td>
+<td>Mean of each column</td>
+<td><code>colMeans(mat)</code></td>
 </tr>
 <tr class="even">
 <td><code>quantile()</code></td>
@@ -2979,9 +3563,9 @@ du als nächstes untersuchen? (Städtische Gebiete? Höhenlage? Klima?)
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>apply()</code></td>
-<td>Funktion auf Matrix anwenden</td>
-<td><code>apply(mat, 2, mean)</code></td>
+<td><code>colMeans()</code></td>
+<td>Mittelwert jeder Spalte</td>
+<td><code>colMeans(mat)</code></td>
 </tr>
 <tr class="even">
 <td><code>quantile()</code></td>

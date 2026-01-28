@@ -11,7 +11,7 @@
 
 <meta name="author" content="Fill in the blanks!Fülle die Lücken aus!" />
 
-<meta name="date" content="2026-01-26" />
+<meta name="date" content="2026-01-28" />
 
 <title>Day 2: ExercisesTag 2: Übungen</title>
 
@@ -1503,7 +1503,7 @@ Exercises</span><span class="de">Tag 2: Übungen</span></h1>
 Project</span><span class="de">Fortgeschrittene Analyse &amp;
 Forschungsprojekt</span></h3>
 <h4 class="author"><span class="en">Fill in the blanks!</span><span class="de">Fülle die Lücken aus!</span></h4>
-<h4 class="date">2026-01-26</h4>
+<h4 class="date">2026-01-28</h4>
 
 </div>
 
@@ -2573,7 +2573,7 @@ IntegerVector build_accum_cpp(IntegerVector plot_obs_id, IntegerVector taxon_id,
                                IntegerVector plot_order) {
   int n_plots = plot_order.size();
   IntegerVector accum(n_plots);
-  std::set<int> found_species;
+  std::set&lt;int&gt; found_species;
 
   for (int i = 0; i &lt; n_plots; i++) {
     int target_plot = plot_order[i];
@@ -2587,7 +2587,7 @@ IntegerVector build_accum_cpp(IntegerVector plot_obs_id, IntegerVector taxon_id,
   }
   return accum;
 }
-&#39;, includes = &quot;#include <set>&quot;)
+&#39;, includes = &quot;#include &lt;set&gt;&quot;)
 
 # Wrapper function for nn_walk (drop-in replacement)
 # Wrapper-Funktion für nn_walk (direkter Ersatz)
@@ -3084,9 +3084,9 @@ CI, upper bound is 0.975 quantile, lower is 0.025.</span> <span class="de">Hinwe
 <div class="en">
 <p><strong>Concept:</strong> <strong>Saturation</strong> is when we’ve
 found most of the species and the curve flattens. If natives saturate
-FASTER than aliens, it means natives are more evenly distributed (we
-find them everywhere). If aliens saturate SLOWER, they’re more patchy
-(clustered in certain areas).</p>
+FASTER than aliens, it means we encounter most native species quickly as
+we move across the landscape. If aliens saturate SLOWER, different alien
+species occur in different regions — high spatial turnover.</p>
 <p><strong>New concept - Boxplots:</strong></p>
 <p><code>geom_boxplot()</code> shows the distribution of values: -
 <strong>Box</strong> = middle 50% of data (25th to 75th percentile) -
@@ -3097,9 +3097,10 @@ find them everywhere). If aliens saturate SLOWER, they’re more patchy
 <div class="de">
 <p><strong>Konzept:</strong> <strong>Sättigung</strong> ist wenn wir die
 meisten Arten gefunden haben und die Kurve abflacht. Wenn Heimische
-SCHNELLER saturieren, sind sie gleichmäßiger verteilt (wir finden sie
-überall). Wenn Aliens LANGSAMER saturieren, sind sie fleckenhafter (in
-bestimmten Gebieten geclustert).</p>
+SCHNELLER saturieren, bedeutet das, dass wir die meisten heimischen
+Arten schnell finden wenn wir durch die Landschaft gehen. Wenn Aliens
+LANGSAMER saturieren, kommen verschiedene Alien-Arten in verschiedenen
+Regionen vor — hoher räumlicher Turnover.</p>
 <p><strong>Neues Konzept - Boxplots:</strong></p>
 <p><code>geom_boxplot()</code> zeigt die Verteilung von Werten: -
 <strong>Box</strong> = mittlere 50% der Daten (25. bis 75. Perzentil) -
@@ -3463,8 +3464,8 @@ print(paste(&quot;  Alien:&quot;, round(mean(alien_sat)), &quot;plots (&quot;,
 print(&quot;========== CONCLUSION ==========&quot;)
 if (mean(native_sat) &lt; mean(alien_sat)) {
   print(&quot;Native species saturate FASTER than aliens!&quot;)
-  print(&quot;-&gt; Natives are more evenly distributed&quot;)
-  print(&quot;-&gt; Aliens are more patchy/clustered&quot;)
+  print(&quot;-&gt; We find most native species quickly across the landscape&quot;)
+  print(&quot;-&gt; Different alien species occur in different regions (high spatial turnover)&quot;)
 } else {
   print(&quot;Aliens saturate FASTER than natives!&quot;)
   print(&quot;-&gt; Aliens are more widespread than expected&quot;)
@@ -3472,12 +3473,13 @@ if (mean(native_sat) &lt; mean(alien_sat)) {
 <blockquote>
 <span class="en"><strong>Discussion Questions:</strong> 1. Do natives
 really saturate faster? What does this mean ecologically? 2. Why might
-aliens be more “patchy” (clustered in certain areas)? 3. What would you
-investigate next? (Urban areas? Elevation? Climate?) </span> <span class="de"><strong>Diskussionsfragen:</strong> 1. Saturieren Heimische
-wirklich schneller? Was bedeutet das ökologisch? 2. Warum könnten Aliens
-“fleckenhafter” sein (in bestimmten Gebieten geclustert)? 3. Was würdest
-du als nächstes untersuchen? (Städtische Gebiete? Höhenlage? Klima?)
-</span>
+different alien species occur in different regions? (Think about how
+they arrived) 3. What would you investigate next? (Urban areas?
+Elevation? Climate?) </span> <span class="de"><strong>Diskussionsfragen:</strong> 1. Saturieren Heimische
+wirklich schneller? Was bedeutet das ökologisch? 2. Warum könnten
+verschiedene Alien-Arten in verschiedenen Regionen vorkommen? (Denke
+daran wie sie angekommen sind) 3. Was würdest du als nächstes
+untersuchen? (Städtische Gebiete? Höhenlage? Klima?) </span>
 </blockquote>
 <hr />
 </div>

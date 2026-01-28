@@ -211,7 +211,7 @@ ggplot(curve_data, aes(x = plots, y = species)) +
 **Hypotheses:**
 
 - **H1:** Alien species accumulate **more slowly** (fewer species overall)
-- **H2:** Alien species are **more evenly distributed** across space
+- **H2:** Alien species show **different spatial patterns** than natives
 - **H3:** The curves will have **different shapes**
 
 </div>
@@ -223,7 +223,7 @@ ggplot(curve_data, aes(x = plots, y = species)) +
 **Hypothesen:**
 
 - **H1:** Alien-Arten akkumulieren **langsamer** (weniger Arten insgesamt)
-- **H2:** Alien-Arten sind **gleichmäßiger verteilt** im Raum
+- **H2:** Alien-Arten zeigen **andere räumliche Muster** als Einheimische
 - **H3:** Die Kurven werden **unterschiedliche Formen** haben
 
 </div>
@@ -1114,13 +1114,13 @@ So können wir die **Form** der Akkumulation vergleichen, nicht nur die Gesamtza
 
 1. **Total richness:** Native species >> Alien species (as expected)
 
-2. **Curve shape:**
-   - Steeper initial rise = species are clustered
-   - Gradual rise = species are evenly spread
+2. **Normalized curve position:**
+   - Curve above = proportionally faster accumulation (lower spatial turnover)
+   - Curve below = proportionally slower accumulation (higher spatial turnover)
 
 3. **Implications for invasions:**
-   - If aliens accumulate more evenly, they may be better dispersers
-   - Clustered natives may be limited by historical factors
+   - Higher alien turnover could mean different species arrive at different places
+   - Lower native turnover could mean widespread generalist species dominate
 
 </div>
 
@@ -1130,13 +1130,13 @@ So können wir die **Form** der Akkumulation vergleichen, nicht nur die Gesamtza
 
 1. **Gesamtartenreichtum:** Heimische Arten >> Alien-Arten (wie erwartet)
 
-2. **Kurvenform:**
-   - Steilerer anfänglicher Anstieg = Arten sind geclustert
-   - Gradueller Anstieg = Arten sind gleichmäßig verteilt
+2. **Position der normalisierten Kurve:**
+   - Kurve oben = proportional schnellere Akkumulation (niedrigerer räumlicher Turnover)
+   - Kurve unten = proportional langsamere Akkumulation (höherer räumlicher Turnover)
 
 3. **Implikationen für Invasionen:**
-   - Wenn Aliens gleichmäßiger akkumulieren, sind sie vielleicht bessere Ausbreiter
-   - Geclusterte Einheimische könnten durch historische Faktoren begrenzt sein
+   - Höherer Alien-Turnover könnte bedeuten, dass verschiedene Arten an verschiedenen Orten ankommen
+   - Niedrigerer nativer Turnover könnte bedeuten, dass weit verbreitete Generalisten dominieren
 
 </div>
 

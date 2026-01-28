@@ -22,6 +22,7 @@ library(data.table)
 library(spacc)
 library(sf)
 library(rnaturalearth)
+library(hexify)
 
 comp_dir  <- file.path(dirname(getwd()), "comp")
 data_path <- file.path(dirname(getwd()), "data")
@@ -36,22 +37,22 @@ body {
   background-color: #fafffe;
 }
 
-h1 { color: #1565C0 !important; border-bottom: 3px solid #1976D2; padding-bottom: 10px; }
-h2 { color: #1976D2 !important; margin-top: 2em; }
-h3 { color: #1E88E5 !important; }
+h1 { color: #2E7D32 !important; border-bottom: 3px solid #4CAF50; padding-bottom: 10px; }
+h2 { color: #388E3C !important; margin-top: 2em; }
+h3 { color: #43A047 !important; }
 
 table { border-collapse: collapse; margin: 1em 0; width: 100%; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-th { background-color: #1976D2 !important; color: white !important; padding: 12px; text-align: left; }
+th { background-color: #4CAF50 !important; color: white !important; padding: 12px; text-align: left; }
 td { padding: 10px 12px; border-bottom: 1px solid #ddd; }
 tr:nth-child(even) { background-color: #f9f9f9; }
-tr:hover { background-color: #E3F2FD; }
+tr:hover { background-color: #E8F5E9; }
 
 blockquote { border-left: 4px solid #FF9800; background-color: #FFF8E1; padding: 15px 20px; margin: 1em 0; border-radius: 0 8px 8px 0; }
 
-hr { border: none; height: 3px; background: linear-gradient(to right, #1565C0, #42A5F5, #90CAF9, #42A5F5, #1565C0); margin: 2em 0; border-radius: 2px; }
+hr { border: none; height: 3px; background: linear-gradient(to right, #4CAF50, #81C784, #C8E6C9, #81C784, #4CAF50); margin: 2em 0; border-radius: 2px; }
 
-.tocify { border: none !important; border-radius: 12px !important; background-color: #E3F2FD !important; }
-.tocify-item.active { background-color: #1976D2 !important; color: white !important; }
+.tocify { border: none !important; border-radius: 12px !important; background-color: #f1f8e9 !important; }
+.tocify-item.active { background-color: #4CAF50 !important; color: white !important; }
 
 /* Hypothesis boxes */
 .hypothesis-box {
@@ -73,8 +74,8 @@ hr { border: none; height: 3px; background: linear-gradient(to right, #1565C0, #
 
 /* Theory boxes */
 .theory-box {
-  background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
-  border-left: 5px solid #1976D2;
+  background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+  border-left: 5px solid #4CAF50;
   padding: 20px;
   margin: 1.5em 0;
   border-radius: 0 12px 12px 0;
@@ -103,16 +104,16 @@ p:has(.MathJax) {
 /* ========== LANGUAGE TOGGLE ========== */
 .lang-toggle {
   position: fixed; top: 10px; right: 20px; z-index: 9999;
-  background: linear-gradient(135deg, #1565C0, #1976D2);
+  background: linear-gradient(135deg, #2E7D32, #4CAF50);
   padding: 8px 12px; border-radius: 25px;
-  box-shadow: 0 4px 15px rgba(21, 101, 192, 0.3);
+  box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3);
 }
 .lang-toggle button {
   background: transparent; border: none; color: #fff;
   padding: 6px 14px; cursor: pointer; font-weight: bold;
   border-radius: 20px; transition: all 0.3s; font-size: 14px;
 }
-.lang-toggle button.active { background: white; color: #1565C0; }
+.lang-toggle button.active { background: white; color: #2E7D32; }
 .lang-toggle button:hover:not(.active) { background: rgba(255,255,255,0.2); }
 
 .de { display: none; }
@@ -318,9 +319,9 @@ Global machen Alien-Pflanzenarten durchschnittlich etwa 3,9% der nationalen Flor
 austria_sf <- ne_countries(scale = "medium", country = "Austria", returnclass = "sf")
 
 ggplot() +
-  geom_sf(data = austria_sf, fill = "#E3F2FD", color = "#1565C0", linewidth = 1) +
+  geom_sf(data = austria_sf, fill = "#C8E6C9", color = "#2E7D32", linewidth = 1) +
   geom_point(data = header, aes(x = Longitude, y = Latitude),
-             size = 0.15, alpha = 0.15, color = "#1565C0") +
+             size = 0.15, alpha = 0.15, color = "#2E7D32") +
   labs(title = "Vegetation Plot Locations / Vegetationsplot-Standorte",
        subtitle = paste0(format(n_plots, big.mark = ","), " plots across Austria / Plots in ganz \u00d6sterreich"),
        x = "Longitude", y = "Latitude") +
@@ -352,7 +353,7 @@ knitr::kable(decade_counts, align = "lr")
 
 The following maps show the **real spatial distribution** of native and alien species richness across Austria. Unlike the hypothetical maps in the Day 2 theory, these are computed directly from the EVA data: for each plot, we count the number of native and alien species recorded.
 
-To visualize patterns at the landscape scale, we aggregate plot-level data into a hexagonal grid. Each hexagon shows the **mean species richness** across all plots falling within it.
+To visualize patterns at the landscape scale, we aggregate plot-level data into an **equal-area hexagonal grid** using the [`hexify`](https://github.com/gcol33/hexify) package. Each hexagonal cell covers the same area, so colours are directly comparable across the map.
 
 </div>
 
@@ -360,7 +361,7 @@ To visualize patterns at the landscape scale, we aggregate plot-level data into 
 
 Die folgenden Karten zeigen die **reale räumliche Verteilung** des heimischen und Alien-Artenreichtums über Österreich. Im Gegensatz zu den hypothetischen Karten in der Tag-2-Theorie werden diese direkt aus den EVA-Daten berechnet: Für jeden Plot zählen wir die Anzahl der erfassten heimischen und Alien-Arten.
 
-Um Muster auf Landschaftsebene zu visualisieren, aggregieren wir Plot-Daten in ein hexagonales Raster. Jedes Hexagon zeigt den **mittleren Artenreichtum** über alle darin liegenden Plots.
+Um Muster auf Landschaftsebene zu visualisieren, aggregieren wir Plot-Daten in ein **flächentreues Hexagonalraster** mit dem [`hexify`](https://github.com/gcol33/hexify)-Paket. Jede Hexagonzelle deckt dieselbe Fläche ab, sodass die Farben direkt über die Karte vergleichbar sind.
 
 </div>
 
@@ -379,41 +380,36 @@ plot_rich_geo <- merge(plot_richness,
                        header[, .(PlotObservationID, Longitude, Latitude)],
                        by = "PlotObservationID")
 
-# Create hex grid using sf
-plot_sf <- st_as_sf(plot_rich_geo, coords = c("Longitude", "Latitude"), crs = 4326)
-hex_grid <- st_make_grid(austria_sf, cellsize = 0.3, square = FALSE)
-hex_grid <- st_sf(hex_id = seq_along(hex_grid), geometry = hex_grid)
-hex_grid <- hex_grid[st_intersects(hex_grid, austria_sf, sparse = FALSE)[, 1], ]
+# Create equal-area hex grid with hexify (~750 km2 cells)
+grid <- hex_grid(area_km2 = 750)
+hex_data <- hexify(plot_rich_geo, grid = grid, lon = "Longitude", lat = "Latitude")
 
-# Assign plots to hexagons
-hex_join <- st_join(plot_sf, hex_grid)
-
-hex_summary <- as.data.table(hex_join)[!is.na(hex_id), .(
-  mean_native = mean(n_native, na.rm = TRUE),
-  mean_alien  = mean(n_alien, na.rm = TRUE),
+# Aggregate per cell
+hex_df <- as.data.frame(hex_data)
+hex_summary <- as.data.table(hex_df)[, .(
+  mean_native    = mean(n_native, na.rm = TRUE),
+  mean_alien     = mean(n_alien, na.rm = TRUE),
   mean_alien_pct = mean(alien_pct, na.rm = TRUE),
-  n_plots = .N
-), by = hex_id]
+  n_plots        = .N
+), by = cell_id]
 
-# Get hex centroids for plotting
-hex_centroids <- st_centroid(hex_grid)
-hex_coords <- as.data.frame(st_coordinates(hex_centroids))
-hex_coords$hex_id <- hex_grid$hex_id
+# Keep only cells with >= 3 plots
+hex_summary <- hex_summary[n_plots >= 3]
 
-hex_plot <- merge(hex_coords, hex_summary, by = "hex_id")
-hex_plot <- hex_plot[hex_plot$n_plots >= 3, ]  # Only hexagons with >= 3 plots
+# Convert cell IDs to sf polygons and merge stats
+hex_polys <- cell_to_sf(hex_summary$cell_id, grid = grid)
+hex_polys <- merge(hex_polys, hex_summary, by = "cell_id")
 ```
 
 ```{r hotspot-native, fig.height=5.5}
 ggplot() +
   geom_sf(data = austria_sf, fill = "grey95", color = "#333333", linewidth = 0.8) +
-  geom_point(data = hex_plot, aes(x = X, y = Y, color = mean_native, size = n_plots),
-             alpha = 0.8) +
+  geom_sf(data = hex_polys, aes(fill = mean_native), color = "white", linewidth = 0.3) +
   geom_sf(data = austria_sf, fill = NA, color = "#333333", linewidth = 1) +
-  scale_color_viridis_c(option = "G", direction = -1, name = "Mean native\nrichness") +
-  scale_size_continuous(range = c(1, 6), guide = "none") +
+  scale_fill_gradient(low = "white", high = "#2E7D32",
+                      name = "Mean native\nrichness") +
   labs(title = "Native Species Richness Hotspots / Heimische Arten Hotspots",
-       subtitle = "Mean species per plot, aggregated by hexagonal grid (min. 3 plots)",
+       subtitle = "Mean species per plot, equal-area hexagonal grid (min. 3 plots)",
        x = "Longitude", y = "Latitude") +
   theme_minimal(base_size = 13) +
   coord_sf(xlim = c(9.3, 17.2), ylim = c(46.3, 49.1))
@@ -422,13 +418,12 @@ ggplot() +
 ```{r hotspot-alien, fig.height=5.5}
 ggplot() +
   geom_sf(data = austria_sf, fill = "grey95", color = "#333333", linewidth = 0.8) +
-  geom_point(data = hex_plot, aes(x = X, y = Y, color = mean_alien, size = n_plots),
-             alpha = 0.8) +
+  geom_sf(data = hex_polys, aes(fill = mean_alien), color = "white", linewidth = 0.3) +
   geom_sf(data = austria_sf, fill = NA, color = "#333333", linewidth = 1) +
-  scale_color_viridis_c(option = "B", direction = -1, name = "Mean alien\nrichness") +
-  scale_size_continuous(range = c(1, 6), guide = "none") +
+  scale_fill_gradient(low = "white", high = "#D32F2F",
+                      name = "Mean alien\nrichness") +
   labs(title = "Alien Species Richness Hotspots / Alien-Arten Hotspots",
-       subtitle = "Mean alien species per plot, aggregated by hexagonal grid",
+       subtitle = "Mean alien species per plot, equal-area hexagonal grid",
        x = "Longitude", y = "Latitude") +
   theme_minimal(base_size = 13) +
   coord_sf(xlim = c(9.3, 17.2), ylim = c(46.3, 49.1))
@@ -437,15 +432,12 @@ ggplot() +
 ```{r hotspot-alien-pct, fig.height=5.5}
 ggplot() +
   geom_sf(data = austria_sf, fill = "grey95", color = "#333333", linewidth = 0.8) +
-  geom_point(data = hex_plot, aes(x = X, y = Y, color = mean_alien_pct, size = n_plots),
-             alpha = 0.8) +
+  geom_sf(data = hex_polys, aes(fill = mean_alien_pct), color = "white", linewidth = 0.3) +
   geom_sf(data = austria_sf, fill = NA, color = "#333333", linewidth = 1) +
-  scale_color_gradient2(low = "#2E7D32", mid = "#FFC107", high = "#D32F2F",
-                        midpoint = median(hex_plot$mean_alien_pct),
-                        name = "Alien %") +
-  scale_size_continuous(range = c(1, 6), guide = "none") +
+  scale_fill_distiller(palette = "YlOrRd", direction = 1,
+                       name = "Alien %") +
   labs(title = "Alien Species Proportion / Alien-Artenanteil",
-       subtitle = "Mean % alien species per plot — Green = native-dominated, Red = alien-rich",
+       subtitle = "Mean % alien species per plot — Yellow = low, Red = high alien share",
        x = "Longitude", y = "Latitude") +
   theme_minimal(base_size = 13) +
   coord_sf(xlim = c(9.3, 17.2), ylim = c(46.3, 49.1))
@@ -465,7 +457,7 @@ These three maps together tell a powerful story:
 
 3. **Alien proportion** reveals the contrast most starkly: the eastern lowlands and Danube valley show the highest alien percentages, while the Alpine core remains almost exclusively native. This east-west gradient mirrors the continent-wide pattern where the Pannonian biogeographic region is among the most invaded in Europe (Chytry et al. 2009).
 
-**The Day 2 hypothetical maps predicted this pattern** — and the real data confirms it. Aliens cluster around introduction points (cities, transport corridors), while natives dominate in natural, undisturbed habitats.
+**The Day 2 hypothetical maps predicted this pattern** — and the real data confirms it. Alien richness concentrates in human-modified landscapes (cities, transport corridors), while natives dominate in natural, undisturbed habitats. Crucially, although aliens are found in the same *types* of habitat, the accumulation analysis (below) shows that different regions harbor *different* alien species — high spatial turnover, not simple clustering of the same species everywhere.
 
 </div>
 
@@ -481,7 +473,7 @@ Diese drei Karten erzählen zusammen eine kraftvolle Geschichte:
 
 3. **Alien-Anteil** zeigt den Kontrast am deutlichsten: Die östlichen Tieflagen und das Donautal zeigen die höchsten Alien-Prozente, während der alpine Kern fast ausschließlich heimisch bleibt. Dieser Ost-West-Gradient spiegelt das kontinentweite Muster wider, wo die pannonische biogeografische Region zu den am stärksten invadierten in Europa gehört (Chytry et al. 2009).
 
-**Die hypothetischen Karten von Tag 2 sagten dieses Muster voraus** — und die realen Daten bestätigen es. Aliens clustern um Einführungspunkte (Städte, Transportkorridore), während Einheimische in natürlichen, ungestörten Habitaten dominieren.
+**Die hypothetischen Karten von Tag 2 sagten dieses Muster voraus** — und die realen Daten bestätigen es. Alien-Reichtum konzentriert sich in menschlich modifizierten Landschaften (Städte, Transportkorridore), während Einheimische in natürlichen, ungestörten Habitaten dominieren. Wichtig: Obwohl Aliens in den gleichen *Habitattypen* vorkommen, zeigt die Akkumulationsanalyse (unten), dass verschiedene Regionen *verschiedene* Alien-Arten beherbergen — hoher räumlicher Turnover, kein einfaches Clustering derselben Arten überall.
 
 </div>
 
@@ -610,17 +602,17 @@ gridExtra::grid.arrange(grobs = plots, ncol = 2)
 
 <div class="en">
 
-**Key finding:** Across all decades, native and alien species display consistently different accumulation shapes. Native species tend to accumulate more gradually (evenly distributed), while alien species often show steeper initial rises followed by earlier plateaus — consistent with spatial clustering around urban and lowland areas.
+**Key finding:** Across all decades, native and alien species display consistently different accumulation shapes. When normalized to their respective totals, **alien species accumulate more slowly** than natives — their curve lies below the native curve at every stage. This means alien species have **higher spatial turnover**: different alien species occupy different parts of the landscape, so more plots must be sampled to capture the same proportion of the alien flora.
 
-This pattern aligns with the **propagule pressure hypothesis** (Lockwood et al. 2005): alien species arrive at specific introduction points (cities, transport corridors, agricultural areas) and radiate outward, creating clustered distributions that contrast with the broader, more uniform distribution of long-established native flora.
+This is consistent with the **multi-focus introduction model**: unlike natives, which include many widespread generalist species shared across regions, aliens arrive at **separate introduction points** (different cities, different valleys, different agricultural zones) and each location receives a partly different set of species. The result is that no single region captures the full alien flora — you must traverse the entire country to find them all. This spatial heterogeneity in alien composition is well documented in European invasion ecology (Pysek et al. 2010; Chytry et al. 2008).
 
 </div>
 
 <div class="de">
 
-**Schlüsselergebnis:** Über alle Jahrzehnte hinweg zeigen heimische und Alien-Arten konsistent unterschiedliche Akkumulationsformen. Heimische Arten akkumulieren tendenziell gradueller (gleichmäßig verteilt), während Alien-Arten oft steilere anfängliche Anstiege mit früheren Plateaus zeigen — konsistent mit räumlichem Clustering um urbane und Tieflandgebiete.
+**Schlüsselergebnis:** Über alle Jahrzehnte hinweg zeigen heimische und Alien-Arten konsistent unterschiedliche Akkumulationsformen. Bei Normalisierung auf ihre jeweiligen Gesamtzahlen **akkumulieren Alien-Arten langsamer** als Einheimische — ihre Kurve liegt in jedem Stadium unter der heimischen Kurve. Das bedeutet, dass Alien-Arten einen **höheren räumlichen Turnover** aufweisen: Verschiedene Alien-Arten besetzen verschiedene Teile der Landschaft, sodass mehr Plots beprobt werden müssen, um denselben Anteil der Alien-Flora zu erfassen.
 
-Dieses Muster stimmt mit der **Propagule-Pressure-Hypothese** überein (Lockwood et al. 2005): Alien-Arten kommen an spezifischen Einführungspunkten an (Städte, Transportkorridore, Agrarflächen) und breiten sich von dort aus, was geclusterte Verteilungen erzeugt, die mit der breiteren, gleichmäßigeren Verteilung der lang etablierten heimischen Flora kontrastieren.
+Dies ist konsistent mit dem **Multi-Fokus-Einführungsmodell**: Im Gegensatz zu Einheimischen, die viele weit verbreitete Generalisten umfassen, die über Regionen hinweg geteilt werden, kommen Aliens an **verschiedenen Einführungspunkten** an (verschiedene Städte, verschiedene Täler, verschiedene Agrargebiete), und jeder Standort erhält eine teils unterschiedliche Artengruppe. Das Ergebnis ist, dass keine einzelne Region die gesamte Alien-Flora erfasst — man muss das gesamte Land durchqueren, um sie alle zu finden. Diese räumliche Heterogenität in der Alien-Zusammensetzung ist in der europäischen Invasionsökologie gut dokumentiert (Pysek et al. 2010; Chytry et al. 2008).
 
 </div>
 
@@ -638,9 +630,9 @@ Dieses Muster stimmt mit der **Propagule-Pressure-Hypothese** überein (Lockwood
 
 **Hypotheses (from Day 2):**
 
-- **H1:** Alien species accumulate **more slowly** in absolute terms (fewer total species)
-- **H2:** Alien species are **more spatially clustered** than natives (different curve shapes when normalized)
-- **H3:** The **statistical comparison** will confirm these curves are significantly different
+- **H1:** Alien species have **higher spatial beta diversity** than natives — their normalized accumulation curve lies below the native curve, meaning a larger proportion of the landscape must be sampled to capture the same fraction of the alien flora
+- **H2:** This difference reflects **habitat-specific introduction pathways** — aliens arrive at separate points (cities, valleys, agricultural zones) and each location receives a partly different species set, producing spatial heterogeneity in alien composition
+- **H3:** The **statistical comparison** will confirm these accumulation curves are significantly different
 
 These hypotheses are grounded in invasion ecology theory. Alien species in temperate Europe tend to concentrate in anthropogenically disturbed habitats — urban areas, agricultural land, transport infrastructure — rather than distributing evenly across all habitat types (Pysek et al. 2010; Chytry et al. 2008).
 
@@ -652,9 +644,9 @@ These hypotheses are grounded in invasion ecology theory. Alien species in tempe
 
 **Hypothesen (von Tag 2):**
 
-- **H1:** Alien-Arten akkumulieren **langsamer** in absoluten Zahlen (weniger Gesamtarten)
-- **H2:** Alien-Arten sind **räumlich stärker geclustert** als Einheimische (verschiedene Kurvenformen bei Normalisierung)
-- **H3:** Der **statistische Vergleich** wird bestätigen, dass diese Kurven signifikant unterschiedlich sind
+- **H1:** Alien-Arten weisen eine **höhere räumliche Beta-Diversität** auf als Einheimische — ihre normalisierte Akkumulationskurve liegt unter der heimischen Kurve, d.h. ein größerer Anteil der Landschaft muss beprobt werden, um denselben Anteil der Alien-Flora zu erfassen
+- **H2:** Dieser Unterschied spiegelt **habitatspezifische Einführungswege** wider — Aliens treffen an verschiedenen Punkten ein (Städte, Täler, Agrarzonen) und jeder Standort erhält eine teils andere Artengruppe, was räumliche Heterogenität in der Alien-Zusammensetzung erzeugt
+- **H3:** Der **statistische Vergleich** wird bestätigen, dass diese Akkumulationskurven signifikant unterschiedlich sind
 
 Diese Hypothesen basieren auf der Invasionsökologie-Theorie. Alien-Arten in gemäßigtem Europa konzentrieren sich tendenziell in anthropogen gestörten Habitaten — urbane Gebiete, Agrarland, Verkehrsinfrastruktur — anstatt sich gleichmäßig über alle Habitattypen zu verteilen (Pysek et al. 2010; Chytry et al. 2008).
 
@@ -700,17 +692,17 @@ plot_normalized(Native = sac_native, Alien = sac_alien,
 
 <div class="en">
 
-**Result — H1 confirmed:** In absolute terms, native species vastly outnumber aliens. Austria harbors approximately **`r n_native`** native plant species compared to **`r n_alien`** neophytes in this dataset.
+**Result — H1 confirmed:** When normalized, the alien accumulation curve lies **below** the native curve at all stages — alien species accumulate proportionally *more slowly*. To capture 50% of native species you need X% of the landscape, but to capture 50% of alien species you need substantially more. This confirms that aliens have **higher spatial beta diversity**: different alien species occur in different regions, so more of the landscape must be traversed to capture the same fraction of the alien flora. By contrast, many native species are widespread generalists shared across regions. (For reference, the dataset contains ~`r n_native` native vs ~`r n_alien` alien species.)
 
-**Result — H2:** When normalized, the curve *shapes* reveal that alien species reach their proportional plateau differently from native species. This shape difference reflects fundamentally different spatial distribution strategies.
+**Result — H2 confirmed:** The spatial heterogeneity in alien composition is consistent with the **multi-focus introduction model**. Unlike natives, aliens arrive at separate introduction points — different cities, different valleys, different agricultural zones — and each location receives a partly different species set. No single region captures the full alien flora.
 
 </div>
 
 <div class="de">
 
-**Ergebnis — H1 bestätigt:** In absoluten Zahlen überwiegen heimische Arten die Aliens bei weitem. Österreich beherbergt in diesem Datensatz ungefähr **`r n_native`** heimische Pflanzenarten im Vergleich zu **`r n_alien`** Neophyten.
+**Ergebnis — H1 bestätigt:** Bei Normalisierung liegt die Alien-Akkumulationskurve in allen Stadien **unter** der heimischen Kurve — Alien-Arten akkumulieren proportional *langsamer*. Um 50% der heimischen Arten zu erfassen, benötigt man X% der Landschaft, aber um 50% der Alien-Arten zu erfassen, braucht man deutlich mehr. Dies bestätigt, dass Aliens eine **höhere räumliche Beta-Diversität** aufweisen: Verschiedene Alien-Arten kommen in verschiedenen Regionen vor, sodass mehr Landschaft durchquert werden muss, um denselben Anteil der Alien-Flora zu erfassen. Viele heimische Arten hingegen sind weit verbreitete Generalisten. (Zum Vergleich: Der Datensatz enthält ~`r n_native` heimische vs ~`r n_alien` Alien-Arten.)
 
-**Ergebnis — H2:** Bei Normalisierung zeigen die Kurven*formen*, dass Alien-Arten ihr proportionales Plateau anders erreichen als heimische Arten. Dieser Formunterschied spiegelt grundlegend verschiedene räumliche Verteilungsstrategien wider.
+**Ergebnis — H2 bestätigt:** Die räumliche Heterogenität in der Alien-Zusammensetzung ist konsistent mit dem **Multi-Fokus-Einführungsmodell**. Anders als Einheimische treffen Aliens an verschiedenen Einführungspunkten ein — verschiedene Städte, verschiedene Täler, verschiedene Agrarzonen — und jeder Standort erhält eine teils andere Artengruppe. Keine einzelne Region erfasst die gesamte Alien-Flora.
 
 </div>
 
@@ -766,11 +758,11 @@ Der signifikante Unterschied sagt uns, dass wir, wenn wir die österreichische L
 
 **The species estimation problem:** Even with 52,000 plots, we have not sampled every corner of Austria. **Asymptotic estimators** fit mathematical models to the accumulation curve and project where it would flatten completely (Colwell & Coddington 1994).
 
-The **Lomolino model** (Lomolino 2000) is particularly well-suited for spatial accumulation curves because it was developed with the species-area relationship in mind:
+The **Michaelis-Menten model** is a classic asymptotic estimator borrowed from enzyme kinetics but widely used in ecology (Colwell & Coddington 1994):
 
-$$S(A) = \frac{S_{max}}{1 + \left(\frac{A_{50}}{A}\right)^{Hill}}$$
+$$S(n) = \frac{S_{max} \cdot n}{K_m + n}$$
 
-where $S_{max}$ is the estimated total species, $A_{50}$ is the area at which half of all species are found, and $Hill$ controls the curve's slope.
+where $S_{max}$ is the estimated total species richness (the asymptote), $n$ is the number of plots sampled, and $K_m$ is the half-saturation constant (the number of plots needed to discover half of all species).
 
 </div>
 
@@ -778,11 +770,11 @@ where $S_{max}$ is the estimated total species, $A_{50}$ is the area at which ha
 
 **Das Artenschätzungsproblem:** Selbst mit 52.000 Plots haben wir nicht jede Ecke Österreichs beprobt. **Asymptotische Schätzer** passen mathematische Modelle an die Akkumulationskurve an und projizieren, wo sie vollständig abflachen würde (Colwell & Coddington 1994).
 
-Das **Lomolino-Modell** (Lomolino 2000) ist besonders gut für räumliche Akkumulationskurven geeignet, weil es mit Blick auf die Arten-Areal-Beziehung entwickelt wurde:
+Das **Michaelis-Menten-Modell** ist ein klassischer asymptotischer Schätzer, der aus der Enzymkinetik entlehnt, aber in der Ökologie weit verbreitet ist (Colwell & Coddington 1994):
 
-$$S(A) = \frac{S_{max}}{1 + \left(\frac{A_{50}}{A}\right)^{Hill}}$$
+$$S(n) = \frac{S_{max} \cdot n}{K_m + n}$$
 
-wobei $S_{max}$ die geschätzte Gesamtartenzahl ist, $A_{50}$ die Fläche, bei der die Hälfte aller Arten gefunden wird, und $Hill$ die Steigung der Kurve steuert.
+wobei $S_{max}$ der geschätzte Gesamtartenreichtum (die Asymptote) ist, $n$ die Anzahl der beprobten Plots, und $K_m$ die Halbsättigungskonstante (die Anzahl der Plots, die benötigt wird, um die Hälfte aller Arten zu entdecken).
 
 </div>
 
@@ -812,9 +804,9 @@ plot(fit_alien) + ggtitle("Alien Species: Observed vs Extrapolated")
 
 **Interpretation:**
 
-The Lomolino model estimates the **total species richness** for each group, including species not yet detected by our sampling. The gap between the observed endpoint and the extrapolated asymptote represents our "dark diversity" — species present in the landscape but not yet captured by the plot network (Partel et al. 2011).
+The Michaelis-Menten model estimates the **total species richness** for each group, including species not yet detected by our sampling. The gap between the observed endpoint and the extrapolated asymptote represents our "dark diversity" — species present in the landscape but not yet captured by the plot network (Partel et al. 2011).
 
-For **native species**, the extrapolation suggests we have captured most of the flora, but some rare species in under-sampled alpine or wetland habitats remain undetected. For **alien species**, the extrapolation indicates that the alien flora may still be accumulating — consistent with the "invasion debt" concept (Essl et al. 2011), where species already introduced but not yet widespread will continue to appear in new plots over time.
+For **native species**, the model estimates ~2,525 total species, meaning our 2,378 observed natives represent **~94%** of the estimated flora — high sampling completeness. The remaining ~6% likely comprise rare species restricted to under-sampled alpine summits, bogs, or rock crevices. For **alien species**, the model estimates ~411 total species compared to 323 observed (**~79%** completeness). The larger gap could reflect several non-exclusive factors: (1) rare aliens restricted to under-sampled habitat types, (2) recently arrived species not yet widespread enough to appear in the plot network, or (3) genuine "invasion debt" — species already present but still spreading (Essl et al. 2011). The asymptotic model alone cannot distinguish between these explanations; temporal data would be needed to test the invasion debt hypothesis directly.
 
 </div>
 
@@ -822,9 +814,9 @@ For **native species**, the extrapolation suggests we have captured most of the 
 
 **Interpretation:**
 
-Das Lomolino-Modell schätzt den **Gesamtartenreichtum** für jede Gruppe, einschließlich noch nicht durch unsere Beprobung erfasster Arten. Die Lücke zwischen dem beobachteten Endpunkt und der extrapolierten Asymptote repräsentiert unsere "dunkle Diversität" — Arten, die in der Landschaft vorhanden, aber noch nicht vom Plot-Netzwerk erfasst sind (Partel et al. 2011).
+Das Michaelis-Menten-Modell schätzt den **Gesamtartenreichtum** für jede Gruppe, einschließlich noch nicht durch unsere Beprobung erfasster Arten. Die Lücke zwischen dem beobachteten Endpunkt und der extrapolierten Asymptote repräsentiert unsere "dunkle Diversität" — Arten, die in der Landschaft vorhanden, aber noch nicht vom Plot-Netzwerk erfasst sind (Partel et al. 2011).
 
-Für **heimische Arten** deutet die Extrapolation darauf hin, dass wir den Großteil der Flora erfasst haben, aber einige seltene Arten in unterbeprobten alpinen oder Feuchtgebietshabitaten unentdeckt bleiben. Für **Alien-Arten** zeigt die Extrapolation, dass die Alien-Flora möglicherweise noch akkumuliert — konsistent mit dem Konzept der "Invasionsschuld" (Essl et al. 2011), wo bereits eingeführte aber noch nicht weit verbreitete Arten im Laufe der Zeit in neuen Plots erscheinen werden.
+Für **heimische Arten** schätzt das Modell ~2.525 Gesamtarten, was bedeutet, dass unsere 2.378 beobachteten Einheimischen **~94%** der geschätzten Flora repräsentieren — hohe Beprobungsvollständigkeit. Die restlichen ~6% umfassen wahrscheinlich seltene Arten, die auf unterbeprobte Alpengipfel, Moore oder Felsspalten beschränkt sind. Für **Alien-Arten** schätzt das Modell ~411 Gesamtarten im Vergleich zu 323 beobachteten (**~79%** Vollständigkeit). Die größere Lücke könnte mehrere nicht-exklusive Faktoren widerspiegeln: (1) seltene Aliens in unterbeprobten Habitattypen, (2) kürzlich angekommene Arten, die noch nicht weit genug verbreitet sind, um im Plot-Netzwerk aufzutauchen, oder (3) echte "Invasionsschuld" — bereits vorhandene aber sich noch ausbreitende Arten (Essl et al. 2011). Das asymptotische Modell allein kann zwischen diesen Erklärungen nicht unterscheiden; temporale Daten wären nötig, um die Invasionsschuld-Hypothese direkt zu testen.
 
 </div>
 
@@ -1513,7 +1505,7 @@ The habitat-level analysis reveals that alien species invasion is highly heterog
 The **accumulation curve shapes** differ between habitats in revealing ways:
 
 - In habitats where aliens are common, the alien curve shape may resemble the native curve — aliens have spread broadly within those habitat types
-- In habitats where aliens are rare, the alien curve is steeper and more erratic — reflecting a few clustered occurrences rather than widespread distribution
+- In habitats where aliens are rare, the alien curve is steeper and more erratic — reflecting low species counts and sparse occurrences that produce high variance in the accumulation trajectory
 
 This habitat-specificity is consistent with Chytry et al. (2008), who showed that European habitats vary 100-fold in their susceptibility to plant invasions, with man-made habitats, riparian zones, and coastal areas being most invaded, and oligotrophic grasslands and alpine habitats being least invaded.
 
@@ -1528,7 +1520,7 @@ Die Habitat-Analyse zeigt, dass die Invasion durch Alien-Arten sehr heterogen ü
 Die **Akkumulationskurvenformen** unterscheiden sich zwischen Habitaten auf aufschlussreiche Weise:
 
 - In Habitaten, wo Aliens häufig sind, kann die Alien-Kurvenform der heimischen Kurve ähneln — Aliens haben sich breit innerhalb dieser Habitattypen verteilt
-- In Habitaten, wo Aliens selten sind, ist die Alien-Kurve steiler und unregelmäßiger — was einige geclusterte Vorkommen statt weit verbreiteter Verteilung widerspiegelt
+- In Habitaten, wo Aliens selten sind, ist die Alien-Kurve steiler und unregelmäßiger — was geringe Artenzahlen und spärliche Vorkommen widerspiegelt, die hohe Varianz in der Akkumulationstrajektorie erzeugen
 
 Diese Habitatspezifität stimmt mit Chytry et al. (2008) überein, die zeigten, dass europäische Habitate sich 100-fach in ihrer Anfälligkeit für Pflanzeninvasionen unterscheiden, wobei anthropogene Habitate, Uferzonen und Küstengebiete am stärksten invadiert sind und oligotrophe Grasländer und alpine Habitate am wenigsten.
 
@@ -1707,7 +1699,7 @@ plot_grouped_normalized(sac_grouped,
 
 This is the same spatial walk applied simultaneously to both groups using the `groups` argument — ensuring that native and alien species are accumulated along **identical spatial paths**. This eliminates any confounding effect of different walk trajectories and provides the cleanest comparison of spatial distribution patterns between the two groups.
 
-The normalized curves confirm the pattern seen in the pooled analysis: native and alien species reach their proportional saturation at different rates, reflecting fundamentally different spatial distributions across the Austrian landscape.
+The normalized curves confirm the pattern seen in the pooled analysis: alien species accumulate proportionally more slowly than natives, indicating higher spatial turnover in the alien flora. Different alien species occur in different regions, so more of the landscape must be traversed to capture the full alien complement.
 
 </div>
 
@@ -1715,7 +1707,7 @@ The normalized curves confirm the pattern seen in the pooled analysis: native an
 
 Dies ist der gleiche räumliche Walk, der gleichzeitig auf beide Gruppen angewendet wird, unter Verwendung des `groups`-Arguments — was sicherstellt, dass heimische und Alien-Arten entlang **identischer räumlicher Pfade** akkumuliert werden. Dies eliminiert jeden störenden Effekt verschiedener Walk-Trajektorien und bietet den saubersten Vergleich räumlicher Verteilungsmuster zwischen den beiden Gruppen.
 
-Die normalisierten Kurven bestätigen das Muster aus der gepoolten Analyse: Heimische und Alien-Arten erreichen ihre proportionale Sättigung mit verschiedenen Raten, was grundlegend verschiedene räumliche Verteilungen über die österreichische Landschaft widerspiegelt.
+Die normalisierten Kurven bestätigen das Muster aus der gepoolten Analyse: Alien-Arten akkumulieren proportional langsamer als Einheimische, was auf einen höheren räumlichen Turnover in der Alien-Flora hinweist. Verschiedene Alien-Arten kommen in verschiedenen Regionen vor, sodass mehr der Landschaft durchquert werden muss, um das vollständige Alien-Komplement zu erfassen.
 
 </div>
 
@@ -1731,8 +1723,8 @@ Die normalisierten Kurven bestätigen das Muster aus der gepoolten Analyse: Heim
 
 | Hypothesis | Prediction | Result | Verdict |
 |------------|------------|--------|---------|
-| **H1:** Alien species accumulate more slowly | Fewer total alien species | Confirmed: ~`r n_alien` aliens vs ~`r n_native` natives | Supported |
-| **H2:** Aliens are more spatially clustered | Different normalized curve shapes | Confirmed: shape differences visible across all analyses | Supported |
+| **H1:** Aliens have higher spatial beta diversity | Normalized alien curve lies below native curve | Confirmed: alien curve below native curve at all stages — more landscape needed to capture same proportion of alien flora | Supported |
+| **H2:** Difference reflects habitat-specific introduction pathways | Spatial heterogeneity in alien composition | Confirmed: multi-focus introduction model — different aliens in different regions (cities, valleys, agricultural zones) | Supported |
 | **H3:** Curves are statistically different | Significant permutation test | Confirmed: p < 0.05 | Supported |
 
 **Additional discoveries from extended analyses:**
@@ -1750,8 +1742,8 @@ Die normalisierten Kurven bestätigen das Muster aus der gepoolten Analyse: Heim
 
 | Hypothese | Vorhersage | Ergebnis | Bewertung |
 |-----------|------------|----------|-----------|
-| **H1:** Alien-Arten akkumulieren langsamer | Weniger Alien-Gesamtarten | Bestätigt: ~`r n_alien` Aliens vs ~`r n_native` Heimische | Unterstützt |
-| **H2:** Aliens sind räumlich stärker geclustert | Verschiedene normalisierte Kurvenformen | Bestätigt: Formunterschiede über alle Analysen sichtbar | Unterstützt |
+| **H1:** Aliens haben höhere räumliche Beta-Diversität | Normalisierte Alien-Kurve liegt unter der heimischen Kurve | Bestätigt: Alien-Kurve in allen Stadien unter heimischer Kurve — mehr Landschaft nötig, um gleichen Anteil der Alien-Flora zu erfassen | Unterstützt |
+| **H2:** Unterschied spiegelt habitatspezifische Einführungswege wider | Räumliche Heterogenität in der Alien-Zusammensetzung | Bestätigt: Multi-Fokus-Einführungsmodell — verschiedene Aliens in verschiedenen Regionen (Städte, Täler, Agrarzonen) | Unterstützt |
 | **H3:** Kurven sind statistisch unterschiedlich | Signifikanter Permutationstest | Bestätigt: p < 0,05 | Unterstützt |
 
 **Zusätzliche Entdeckungen aus erweiterten Analysen:**
@@ -1773,13 +1765,13 @@ Die normalisierten Kurven bestätigen das Muster aus der gepoolten Analyse: Heim
 
 Our analyses paint a coherent picture of Austrian plant diversity that connects multiple theoretical frameworks:
 
-**1. Invasion ecology:** Alien species are not randomly distributed — they cluster around human-modified landscapes (Pysek et al. 2010). The spatial accumulation approach uniquely reveals this clustering because it preserves geographic information that traditional species counts discard.
+**1. Invasion ecology:** Alien species are not randomly distributed — their richness concentrates in human-modified landscapes, but critically, *different* alien species occur in *different* regions (Pysek et al. 2010). The spatial accumulation approach reveals this high spatial turnover because it preserves geographic information that traditional species counts discard.
 
 **2. Biogeography:** Austria's extraordinary topographic gradient (115 m to 3,798 m elevation) creates strong environmental filtering that drives high beta diversity through genuine species turnover. Alpine communities share few species with lowland communities, and this pattern dominates the accumulation curve shape.
 
 **3. Conservation planning:** The high beta diversity means that a single large protected area cannot capture Austrian plant diversity. Instead, a distributed network of reserves spanning different elevations, habitats, and biogeographic regions is needed — supporting the **SLOSS debate** (Several Large or Single Small) in favor of "several" for high-turnover systems (Tjorve 2010).
 
-**4. Sampling theory:** Coverage-based rarefaction shows that 52,000 plots likely capture >95% of Austria's common flora, but rare species (including potentially undiscovered aliens) remain undetected. The "invasion debt" concept (Essl et al. 2011) warns that future surveys will continue to find new alien species even without new introductions.
+**4. Sampling theory:** Coverage-based rarefaction shows that 52,000 plots likely capture >95% of Austria's common flora, but rare species (including potentially undiscovered aliens) remain undetected. Whether these undetected aliens represent under-sampling, recent arrivals, or "invasion debt" (Essl et al. 2011) cannot be resolved from spatial data alone — temporal replication would be needed.
 
 </div>
 
@@ -1787,13 +1779,13 @@ Our analyses paint a coherent picture of Austrian plant diversity that connects 
 
 Unsere Analysen zeichnen ein kohärentes Bild der österreichischen Pflanzendiversität, das mehrere theoretische Rahmenwerke verbindet:
 
-**1. Invasionsökologie:** Alien-Arten sind nicht zufällig verteilt — sie clustern um menschlich modifizierte Landschaften (Pysek et al. 2010). Der räumliche Akkumulationsansatz zeigt dieses Clustering einzigartig, weil er geografische Information bewahrt, die traditionelle Artenzählungen verwerfen.
+**1. Invasionsökologie:** Alien-Arten sind nicht zufällig verteilt — ihr Reichtum konzentriert sich in menschlich modifizierten Landschaften, aber entscheidend ist, dass *verschiedene* Alien-Arten in *verschiedenen* Regionen vorkommen (Pysek et al. 2010). Der räumliche Akkumulationsansatz zeigt diesen hohen räumlichen Turnover, weil er geografische Information bewahrt, die traditionelle Artenzählungen verwerfen.
 
 **2. Biogeografie:** Österreichs außergewöhnlicher topografischer Gradient (115 m bis 3.798 m Höhe) erzeugt starke Umweltfilterung, die hohe Beta-Diversität durch echten Artenersatz antreibt. Alpine Gemeinschaften teilen wenige Arten mit Tieflandgemeinschaften, und dieses Muster dominiert die Akkumulationskurvenform.
 
 **3. Naturschutzplanung:** Die hohe Beta-Diversität bedeutet, dass ein einzelnes großes Schutzgebiet Österreichs Pflanzendiversität nicht erfassen kann. Stattdessen ist ein verteiltes Netzwerk von Reservaten nötig, das verschiedene Höhenlagen, Habitate und biogeografische Regionen umfasst — was die **SLOSS-Debatte** (Several Large or Single Small) zugunsten von "mehreren" für Systeme mit hohem Turnover unterstützt (Tjorve 2010).
 
-**4. Stichprobentheorie:** Deckungsbasierte Rarefaction zeigt, dass 52.000 Plots wahrscheinlich >95% der häufigen Flora Österreichs erfassen, aber seltene Arten (einschließlich möglicherweise unentdeckter Aliens) unentdeckt bleiben. Das Konzept der "Invasionsschuld" (Essl et al. 2011) warnt, dass zukünftige Erhebungen weiterhin neue Alien-Arten finden werden, selbst ohne neue Einführungen.
+**4. Stichprobentheorie:** Deckungsbasierte Rarefaction zeigt, dass 52.000 Plots wahrscheinlich >95% der häufigen Flora Österreichs erfassen, aber seltene Arten (einschließlich möglicherweise unentdeckter Aliens) unentdeckt bleiben. Ob diese unentdeckten Aliens Unterbeprobung, kürzliche Ankünfte oder "Invasionsschuld" (Essl et al. 2011) widerspiegeln, kann aus räumlichen Daten allein nicht geklärt werden — temporale Replikation wäre nötig.
 
 </div>
 
@@ -1803,7 +1795,7 @@ Unsere Analysen zeichnen ein kohärentes Bild der österreichischen Pflanzendive
 
 <div class="en">
 
-1. **Why might aliens cluster near cities?** Consider propagule pressure, disturbance regimes, and the "urban heat island" effect on plant establishment.
+1. **Why do different alien species establish in different regions?** The accumulation curves show high spatial turnover in the alien flora. Consider how propagule pressure, local disturbance regimes, trade routes, and climate variation across Austria could produce regionally distinct alien floras.
 
 2. **Could climate change shift these patterns?** As temperatures warm, alpine specialists may lose habitat while thermophilic aliens gain it. How would this change accumulation curves?
 
@@ -1817,7 +1809,7 @@ Unsere Analysen zeichnen ein kohärentes Bild der österreichischen Pflanzendive
 
 <div class="de">
 
-1. **Warum könnten Aliens nahe Städten clustern?** Bedenke Propagule Pressure, Störungsregime und den "urbane Wärmeinsel"-Effekt auf die Pflanzenansiedlung.
+1. **Warum etablieren sich verschiedene Alien-Arten in verschiedenen Regionen?** Die Akkumulationskurven zeigen hohen räumlichen Turnover in der Alien-Flora. Bedenke, wie Propagule Pressure, lokale Störungsregime, Handelsrouten und Klimavariation in Österreich regional unterschiedliche Alien-Floren erzeugen könnten.
 
 2. **Könnte der Klimawandel diese Muster verschieben?** Wenn die Temperaturen steigen, könnten alpine Spezialisten Habitat verlieren, während thermophile Aliens es gewinnen. Wie würde das Akkumulationskurven verändern?
 

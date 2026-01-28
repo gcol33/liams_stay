@@ -498,8 +498,8 @@ ggplot(sat_data, aes(x = status, y = saturation_pct, fill = status)) +
 ```{r}
 if (mean(native_sat) < mean(alien_sat)) {
   cat("Native species saturate FASTER!\n")
-  cat("This means: native species are more evenly spread across the landscape.\n")
-  cat("Alien species are more clustered - often near human disturbance.\n")
+  cat("This means: we encounter most native species quickly across the landscape.\n")
+  cat("Different alien species occur in different regions — high spatial turnover.\n")
 } else {
   cat("Alien species saturate FASTER!\n")
   cat("This is unusual - aliens may be more widespread than expected.\n")
@@ -666,11 +666,11 @@ cat("===== ECOLOGICAL CONCLUSIONS =====\n\n")
 if (mean(native_sat) < mean(alien_sat)) {
   cat("FINDING: Native species saturate FASTER than aliens.\n\n")
   cat("INTERPRETATION:\n")
-  cat("- Native species are more evenly distributed across the landscape\n")
-  cat("- Alien species are more clustered/patchy in their distribution\n")
+  cat("- We encounter most native species quickly as we move across the landscape\n")
+  cat("- Alien species show high spatial turnover — different aliens in different regions\n")
   cat("- This is consistent with invasion biology theory:\n")
-  cat("  aliens often establish in disturbed areas (roads, urban, agriculture)\n")
-  cat("  which are spatially clustered\n\n")
+  cat("  different introduction pathways bring different species to different areas\n")
+  cat("  (e.g. garden escapes vs. agricultural weeds vs. transport corridors)\n\n")
 } else {
   cat("FINDING: Alien species saturate FASTER than natives.\n\n")
   cat("INTERPRETATION:\n")

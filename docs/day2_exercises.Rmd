@@ -1403,7 +1403,7 @@ ggplot(summary_data, aes(x = plots)) +
 
 <div class="en">
 
-**Concept:** **Saturation** is when we've found most of the species and the curve flattens. If natives saturate FASTER than aliens, it means natives are more evenly distributed (we find them everywhere). If aliens saturate SLOWER, they're more patchy (clustered in certain areas).
+**Concept:** **Saturation** is when we've found most of the species and the curve flattens. If natives saturate FASTER than aliens, it means we encounter most native species quickly as we move across the landscape. If aliens saturate SLOWER, different alien species occur in different regions — high spatial turnover.
 
 **New concept - Boxplots:**
 
@@ -1417,7 +1417,7 @@ ggplot(summary_data, aes(x = plots)) +
 
 <div class="de">
 
-**Konzept:** **Sättigung** ist wenn wir die meisten Arten gefunden haben und die Kurve abflacht. Wenn Heimische SCHNELLER saturieren, sind sie gleichmäßiger verteilt (wir finden sie überall). Wenn Aliens LANGSAMER saturieren, sind sie fleckenhafter (in bestimmten Gebieten geclustert).
+**Konzept:** **Sättigung** ist wenn wir die meisten Arten gefunden haben und die Kurve abflacht. Wenn Heimische SCHNELLER saturieren, bedeutet das, dass wir die meisten heimischen Arten schnell finden wenn wir durch die Landschaft gehen. Wenn Aliens LANGSAMER saturieren, kommen verschiedene Alien-Arten in verschiedenen Regionen vor — hoher räumlicher Turnover.
 
 **Neues Konzept - Boxplots:**
 
@@ -1751,8 +1751,8 @@ print(paste("  Alien:", round(mean(alien_sat)), "plots (",
 print("========== CONCLUSION ==========")
 if (mean(native_sat) < mean(alien_sat)) {
   print("Native species saturate FASTER than aliens!")
-  print("-> Natives are more evenly distributed")
-  print("-> Aliens are more patchy/clustered")
+  print("-> We find most native species quickly across the landscape")
+  print("-> Different alien species occur in different regions (high spatial turnover)")
 } else {
   print("Aliens saturate FASTER than natives!")
   print("-> Aliens are more widespread than expected")
@@ -1762,12 +1762,12 @@ if (mean(native_sat) < mean(alien_sat)) {
 <blockquote>
 <span class="en">**Discussion Questions:**
 1. Do natives really saturate faster? What does this mean ecologically?
-2. Why might aliens be more "patchy" (clustered in certain areas)?
+2. Why might different alien species occur in different regions? (Think about how they arrived)
 3. What would you investigate next? (Urban areas? Elevation? Climate?)
 </span>
 <span class="de">**Diskussionsfragen:**
 1. Saturieren Heimische wirklich schneller? Was bedeutet das ökologisch?
-2. Warum könnten Aliens "fleckenhafter" sein (in bestimmten Gebieten geclustert)?
+2. Warum könnten verschiedene Alien-Arten in verschiedenen Regionen vorkommen? (Denke daran wie sie angekommen sind)
 3. Was würdest du als nächstes untersuchen? (Städtische Gebiete? Höhenlage? Klima?)
 </span>
 </blockquote>

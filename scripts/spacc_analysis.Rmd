@@ -377,8 +377,9 @@ rds_startpoint <- file.path(comp_dir, "startpoint.rds")
 if (file.exists(rds_startpoint)) {
   sp_results <- readRDS(rds_startpoint)
 } else {
-  n_seeds_per_region <- 15
+  n_seeds_per_region <- 5
   set.seed(42)
+  nc <- parallel::detectCores(logical = FALSE)
 
   sp_results <- lapply(names(regions), function(nm) {
     idx <- region_indices[[nm]]
@@ -387,11 +388,11 @@ if (file.exists(rds_startpoint)) {
 
     # Run from these specific seeds on ALL sites (full dataset kNN walk)
     curves_all    <- spacc:::cpp_knn_kdtree_parallel_seeds(
-      all_mat, coords$x, coords$y, seeds, distance = "haversine")
+      all_mat, coords$x, coords$y, seeds, n_cores = nc)
     curves_native <- spacc:::cpp_knn_kdtree_parallel_seeds(
-      native_mat, coords$x, coords$y, seeds, distance = "haversine")
+      native_mat, coords$x, coords$y, seeds, n_cores = nc)
     curves_alien  <- spacc:::cpp_knn_kdtree_parallel_seeds(
-      alien_mat, coords$x, coords$y, seeds, distance = "haversine")
+      alien_mat, coords$x, coords$y, seeds, n_cores = nc)
 
     list(all = curves_all, native = curves_native, alien = curves_alien,
          seeds = seeds, n_seeds = length(seeds))
@@ -522,8 +523,8 @@ if (file.exists(rds_extrap)) {
   fit_native <- e$native; fit_alien <- e$alien
   rm(e)
 } else {
-  fit_native <- extrapolate(sac_native, model = "lomolino")
-  fit_alien  <- extrapolate(sac_alien,  model = "lomolino")
+  fit_native <- extrapolate(sac_native, model = "michaelis-menten")
+  fit_alien  <- extrapolate(sac_alien,  model = "michaelis-menten")
   saveRDS(list(native = fit_native, alien = fit_alien), rds_extrap)
 }
 

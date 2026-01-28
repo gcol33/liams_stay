@@ -11,7 +11,7 @@
 
 <meta name="author" content="Answer KeyLösungsschlüssel" />
 
-<meta name="date" content="2026-01-26" />
+<meta name="date" content="2026-01-28" />
 
 <title>Day 2: SolutionsTag 2: Lösungen</title>
 
@@ -1503,7 +1503,7 @@ Solutions</span><span class="de">Tag 2: Lösungen</span></h1>
 Project</span><span class="de">Fortgeschrittene Analyse &amp;
 Forschungsprojekt</span></h3>
 <h4 class="author"><span class="en">Answer Key</span><span class="de">Lösungsschlüssel</span></h4>
-<h4 class="date">2026-01-26</h4>
+<h4 class="date">2026-01-28</h4>
 
 </div>
 
@@ -1791,7 +1791,7 @@ IntegerVector build_accum_cpp(IntegerVector plot_obs_id, IntegerVector taxon_id,
                                IntegerVector plot_order) {
   int n_plots = plot_order.size();
   IntegerVector accum(n_plots);
-  std::set<int> found_species;
+  std::set&lt;int&gt; found_species;
 
   for (int i = 0; i &lt; n_plots; i++) {
     int target_plot = plot_order[i];
@@ -1805,7 +1805,7 @@ IntegerVector build_accum_cpp(IntegerVector plot_obs_id, IntegerVector taxon_id,
   }
   return accum;
 }
-&#39;, includes = &quot;#include <set>&quot;)
+&#39;, includes = &quot;#include &lt;set&gt;&quot;)
 
 # Wrapper function for nn_walk (drop-in replacement)
 nn_walk_fast &lt;- function(header_data, start_idx = NULL) {
@@ -1972,8 +1972,8 @@ ggplot(sat_data, aes(x = status, y = saturation_pct, fill = status)) +
 <h3><span class="en">4c: Scientific interpretation</span><span class="de">4c: Wissenschaftliche Interpretation</span></h3>
 <pre class="r"><code>if (mean(native_sat) &lt; mean(alien_sat)) {
   cat(&quot;Native species saturate FASTER!\n&quot;)
-  cat(&quot;This means: native species are more evenly spread across the landscape.\n&quot;)
-  cat(&quot;Alien species are more clustered - often near human disturbance.\n&quot;)
+  cat(&quot;This means: we encounter most native species quickly across the landscape.\n&quot;)
+  cat(&quot;Different alien species occur in different regions — high spatial turnover.\n&quot;)
 } else {
   cat(&quot;Alien species saturate FASTER!\n&quot;)
   cat(&quot;This is unusual - aliens may be more widespread than expected.\n&quot;)
@@ -2137,11 +2137,11 @@ cat(&quot;===== ECOLOGICAL CONCLUSIONS =====\n\n&quot;)
 if (mean(native_sat) &lt; mean(alien_sat)) {
   cat(&quot;FINDING: Native species saturate FASTER than aliens.\n\n&quot;)
   cat(&quot;INTERPRETATION:\n&quot;)
-  cat(&quot;- Native species are more evenly distributed across the landscape\n&quot;)
-  cat(&quot;- Alien species are more clustered/patchy in their distribution\n&quot;)
+  cat(&quot;- We encounter most native species quickly as we move across the landscape\n&quot;)
+  cat(&quot;- Alien species show high spatial turnover — different aliens in different regions\n&quot;)
   cat(&quot;- This is consistent with invasion biology theory:\n&quot;)
-  cat(&quot;  aliens often establish in disturbed areas (roads, urban, agriculture)\n&quot;)
-  cat(&quot;  which are spatially clustered\n\n&quot;)
+  cat(&quot;  different introduction pathways bring different species to different areas\n&quot;)
+  cat(&quot;  (e.g. garden escapes vs. agricultural weeds vs. transport corridors)\n\n&quot;)
 } else {
   cat(&quot;FINDING: Alien species saturate FASTER than natives.\n\n&quot;)
   cat(&quot;INTERPRETATION:\n&quot;)

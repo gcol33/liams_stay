@@ -774,6 +774,38 @@ Das Gleichgewicht zwischen diesen Komponenten verrät den *Prozess*, der Diversi
 
 </div>
 
+<div class="info-box">
+
+<div class="en">
+
+**How to read the plot below:**
+
+The x-axis shows the number of sites visited in a "spatial walk" across Austria -- starting at one random site and repeatedly adding the nearest unvisited site. The y-axis shows beta diversity (0--1 scale). There are three panels, one for each component:
+
+- **Total ($\beta_{sor}$):** Overall compositional difference among all visited sites so far. Rises quickly and plateaus near 1, meaning Austrian sites become very different once the walk spans enough environmental gradients.
+- **Turnover ($\beta_{sim}$):** The portion of that difference caused by species *replacement* (site A has species X, site B has species Y instead). If this panel is high, sites have genuinely different species.
+- **Nestedness ($\beta_{nes}$):** The portion caused by species *loss* without replacement (species-poor sites are just subsets of richer sites). If this panel is low, communities are not simply nested versions of each other.
+
+**Key comparison:** Since Total = Turnover + Nestedness, looking at which component is larger tells you *why* sites differ.
+
+</div>
+
+<div class="de">
+
+**Wie man die Grafik liest:**
+
+Die x-Achse zeigt die Anzahl der besuchten Standorte in einem "räumlichen Spaziergang" durch Österreich -- beginnend an einem zufälligen Standort und schrittweise den nächstgelegenen unbesuchten Standort hinzufügend. Die y-Achse zeigt die Beta-Diversität (Skala 0--1). Es gibt drei Panels, eines für jede Komponente:
+
+- **Total ($\beta_{sor}$):** Gesamte kompositorische Unterschiede zwischen allen bisher besuchten Standorten. Steigt schnell an und nähert sich 1, d.h. österreichische Standorte werden sehr unterschiedlich, sobald der Spaziergang genug Umweltgradienten abdeckt.
+- **Turnover ($\beta_{sim}$):** Der Anteil des Unterschieds, der durch Artenersatz entsteht (Standort A hat Art X, Standort B hat stattdessen Art Y). Wenn dieses Panel hoch ist, haben die Standorte tatsächlich verschiedene Arten.
+- **Nestedness ($\beta_{nes}$):** Der Anteil, der durch Artenverlust ohne Ersatz entsteht (artenarme Standorte sind nur Teilmengen reicherer Standorte). Wenn dieses Panel niedrig ist, sind die Gemeinschaften keine verschachtelten Versionen voneinander.
+
+**Wichtiger Vergleich:** Da Total = Turnover + Nestedness, zeigt der Vergleich der Komponenten, *warum* sich Standorte unterscheiden.
+
+</div>
+
+</div>
+
 ```{r beta-diversity, fig.height=6, fig.width=10}
 beta <- readRDS(file.path(comp_dir, "beta.rds"))
 

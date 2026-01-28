@@ -1,2 +1,12 @@
 # Large data files (exceed GitHub 100MB limit)
 data/*_halo.csv
+data/phylo_tree.rds
+
+# Cached computation results
+comp/
+
+# Windows artifacts
+NUL
+
+# Claude Code
+.claude/

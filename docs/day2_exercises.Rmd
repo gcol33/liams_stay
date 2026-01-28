@@ -1020,20 +1020,20 @@ NumericVector nn_walk_cpp(NumericVector lon, NumericVector lat, IntegerVector pl
 
   int current = start_idx - 1;  // Convert to 0-indexed
 
-  for (int i = 0; i < n; i++) {
+  for (int i = 0; i &lt; n; i++) {
     visited[current] = true;
     visit_order[i] = plot_ids[current];
 
-    if (i < n - 1) {
+    if (i &lt; n - 1) {
       double min_dist = R_PosInf;
       int next_idx = -1;
 
-      for (int j = 0; j < n; j++) {
+      for (int j = 0; j &lt; n; j++) {
         if (!visited[j]) {
           double dx = lon[j] - lon[current];
           double dy = lat[j] - lat[current];
           double dist = sqrt(dx*dx + dy*dy);
-          if (dist < min_dist) {
+          if (dist &lt; min_dist) {
             min_dist = dist;
             next_idx = j;
           }
@@ -1051,12 +1051,12 @@ IntegerVector build_accum_cpp(IntegerVector plot_obs_id, IntegerVector taxon_id,
                                IntegerVector plot_order) {
   int n_plots = plot_order.size();
   IntegerVector accum(n_plots);
-  std::set<int> found_species;
+  std::set&lt;int&gt; found_species;
 
-  for (int i = 0; i < n_plots; i++) {
+  for (int i = 0; i &lt; n_plots; i++) {
     int target_plot = plot_order[i];
 
-    for (int j = 0; j < plot_obs_id.size(); j++) {
+    for (int j = 0; j &lt; plot_obs_id.size(); j++) {
       if (plot_obs_id[j] == target_plot) {
         found_species.insert(taxon_id[j]);
       }
@@ -1065,30 +1065,30 @@ IntegerVector build_accum_cpp(IntegerVector plot_obs_id, IntegerVector taxon_id,
   }
   return accum;
 }
-', includes = "#include <set>")
+', includes = "#include &lt;set&gt;")
 
 # Wrapper function for nn_walk (drop-in replacement)
 # Wrapper-Funktion für nn_walk (direkter Ersatz)
-nn_walk_fast <- function(header_data, start_idx = NULL) {
-  if (is.null(start_idx)) start_idx <- sample(1:nrow(header_data), 1)
+nn_walk_fast &lt;- function(header_data, start_idx = NULL) {
+  if (is.null(start_idx)) start_idx &lt;- sample(1:nrow(header_data), 1)
   nn_walk_cpp(header_data$Longitude, header_data$Latitude,
               header_data$PlotObservationID, start_idx)
 }
 
 # Wrapper for build_accumulation (requires pre-processing)
 # Wrapper für build_accumulation (benötigt Vorverarbeitung)
-build_accumulation_fast <- function(species_data, plot_order, status_filter = NULL) {
+build_accumulation_fast &lt;- function(species_data, plot_order, status_filter = NULL) {
   if (!is.null(status_filter)) {
-    species_data <- species_data[species_data$STATUS == status_filter, ]
+    species_data &lt;- species_data[species_data$STATUS == status_filter, ]
   }
   # Convert taxon names to integers for speed
-  taxon_factor <- as.integer(factor(species_data$WFO_TAXON))
+  taxon_factor &lt;- as.integer(factor(species_data$WFO_TAXON))
   build_accum_cpp(species_data$PlotObservationID, taxon_factor, as.integer(plot_order))
 }
 
 # Replace the R functions / Ersetze die R-Funktionen
-nn_walk <- nn_walk_fast
-build_accumulation <- build_accumulation_fast
+nn_walk &lt;- nn_walk_fast
+build_accumulation &lt;- build_accumulation_fast
 
 print("⚡ Rcpp turbo mode activated! Functions are now 10-50x faster.")
 print("⚡ Rcpp Turbo-Modus aktiviert! Funktionen sind jetzt 10-50x schneller.")

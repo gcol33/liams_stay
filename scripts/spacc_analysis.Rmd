@@ -1,0 +1,736 @@
+---
+title: "Spatial Species Accumulation: Aliens vs Natives in Austria"
+author: "Gilles Colling & Liam"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: flatly
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE, message = FALSE, warning = FALSE,
+  fig.width = 9, fig.height = 6
+)
+comp_dir <- file.path(dirname(getwd()), "comp")
+dir.create(comp_dir, showWarnings = FALSE, recursive = TRUE)
+```
+
+# Setup
+
+```{r load-packages}
+library(spacc)
+library(data.table)
+library(ggplot2)
+
+data_path <- "../data/"
+```
+
+# 1. Load and Prepare Data
+
+```{r load-data}
+header  <- fread(file.path(data_path, "austria_header.csv"))
+species <- fread(file.path(data_path, "austria_species.csv"))
+
+cat(sprintf("Plots: %d\nSpecies records: %d\nUnique species: %d\n",
+            nrow(header), nrow(species), uniqueN(species$WFO_TAXON)))
+species[, .N, by = STATUS]
+```
+
+## Build species matrices
+
+Split by native/alien status and create separate site-by-species matrices sharing the same row order. We also assign each plot to a decade for temporal analysis.
+
+```{r build-matrices}
+rds_mats <- file.path(comp_dir, "matrices.rds")
+
+# Keep only plots present in both header and species
+common_ids <- intersect(header$PlotObservationID, species$PlotObservationID)
+header <- header[PlotObservationID %in% common_ids]
+
+# Assign decade
+header[, decade := ifelse(Year < 1970, "pre-1970",
+                          paste0(floor(Year / 10) * 10, "s"))]
+
+# Coordinates
+coords <- header[, .(x = Longitude, y = Latitude)]
+
+# Helper: long-form species table -> wide presence/absence matrix
+make_pa_matrix <- function(sp_data, plot_ids) {
+  sp_data <- sp_data[PlotObservationID %in% plot_ids]
+  wide <- dcast(sp_data, PlotObservationID ~ WFO_TAXON,
+                fun.aggregate = function(x) as.integer(length(x) > 0),
+                value.var = "WFO_TAXON")
+  wide <- wide[match(plot_ids, PlotObservationID)]
+  mat <- as.matrix(wide[, -1])
+  rownames(mat) <- wide$PlotObservationID
+  mat
+}
+
+if (file.exists(rds_mats)) {
+  cat("Loading cached matrices...\n")
+  mats <- readRDS(rds_mats)
+  native_mat <- mats$native; alien_mat <- mats$alien; all_mat <- mats$all
+  rm(mats)
+} else {
+  plot_ids <- header$PlotObservationID
+  native_mat <- make_pa_matrix(species[STATUS == "native"], plot_ids)
+  alien_mat  <- make_pa_matrix(species[STATUS == "neo"],    plot_ids)
+  all_mat    <- make_pa_matrix(species, plot_ids)
+  saveRDS(list(native = native_mat, alien = alien_mat, all = all_mat), rds_mats)
+}
+
+cat(sprintf("Native species: %d\nAlien species:  %d\nAll species:    %d\n",
+            ncol(native_mat), ncol(alien_mat), ncol(all_mat)))
+
+# Decade summary
+cat("\nPlots per decade:\n")
+print(header[, .N, by = decade][order(decade)])
+```
+
+---
+
+# 2. Temporal Accumulation Curves (per decade)
+
+By splitting into decades we get smaller matrices (1K-9K sites each), enabling high-seed-count runs with temporal resolution.
+
+```{r decade-spacc}
+decades <- sort(unique(header$decade))
+
+rds_decade <- file.path(comp_dir, "decade_results.rds")
+if (file.exists(rds_decade)) {
+  cat("Loading cached decade results...\n")
+  decade_results <- readRDS(rds_decade)
+} else {
+  decade_results <- lapply(decades, function(d) {
+    idx <- which(header$decade == d)
+    n <- length(idx)
+    cat(sprintf("  %s: %d sites\n", d, n))
+    spacc(all_mat[idx, , drop = FALSE], coords[idx, ],
+          n_seeds = min(100, n), method = "knn",
+          distance = "haversine", seed = 42)
+  })
+  names(decade_results) <- decades
+  saveRDS(decade_results, rds_decade)
+}
+decade_combined <- do.call(c, decade_results)
+```
+
+```{r plot-decades}
+plot(decade_combined) + ggtitle("Spatial accumulation by decade")
+```
+
+---
+
+# 3. Native vs Alien (per decade)
+
+Same spatial walks, different species tallies. Using the `groups` argument for efficiency.
+
+```{r native-alien-decades}
+status_vec <- species[match(colnames(all_mat), WFO_TAXON), STATUS]
+
+rds_decade_na <- file.path(comp_dir, "decade_na_results.rds")
+if (file.exists(rds_decade_na)) {
+  cat("Loading cached decade native/alien results...\n")
+  decade_na_results <- readRDS(rds_decade_na)
+} else {
+  decade_na_results <- lapply(decades, function(d) {
+    idx <- which(header$decade == d)
+    n <- length(idx)
+    spacc(all_mat[idx, , drop = FALSE], coords[idx, ],
+          n_seeds = min(100, n), method = "knn",
+          distance = "haversine", groups = status_vec, seed = 42)
+  })
+  names(decade_na_results) <- decades
+  saveRDS(decade_na_results, rds_decade_na)
+}
+```
+
+```{r plot-native-alien-decades, fig.height=10}
+for (d in decades) {
+  print(plot(decade_na_results[[d]]) +
+          ggtitle(sprintf("%s: Native vs Alien", d)))
+}
+```
+
+---
+
+# 4. Pooled Analysis (all decades combined)
+
+For overall comparisons we use the full dataset with moderate seed counts.
+
+```{r run-spacc-pooled}
+rds_pooled <- file.path(comp_dir, "pooled.rds")
+if (file.exists(rds_pooled)) {
+  cat("Loading cached pooled results...\n")
+  p <- readRDS(rds_pooled)
+  sac_native <- p$native; sac_alien <- p$alien; sac_all <- p$all
+  rm(p)
+} else {
+  sac_native <- spacc(native_mat, coords, n_seeds = 30, method = "knn",
+                      distance = "haversine", seed = 42)
+  sac_alien  <- spacc(alien_mat,  coords, n_seeds = 30, method = "knn",
+                      distance = "haversine", seed = 42)
+  sac_all    <- spacc(all_mat,    coords, n_seeds = 30, method = "knn",
+                      distance = "haversine", seed = 42)
+  saveRDS(list(native = sac_native, alien = sac_alien, all = sac_all), rds_pooled)
+}
+```
+
+```{r plot-pooled}
+combined <- c(Native = sac_native, Alien = sac_alien, All = sac_all)
+plot(combined)
+```
+
+## Compare native vs alien statistically
+
+```{r compare-curves}
+rds_compare <- file.path(comp_dir, "compare.rds")
+if (file.exists(rds_compare)) {
+  comp <- readRDS(rds_compare)
+} else {
+  comp <- compare(sac_native, sac_alien, method = "permutation", n_perm = 999)
+  saveRDS(comp, rds_compare)
+}
+print(comp)
+plot(comp)
+```
+
+---
+
+# 5. Extrapolation
+
+Fit asymptotic models to estimate total richness for each group.
+
+```{r extrapolate}
+rds_extrap <- file.path(comp_dir, "extrapolate.rds")
+if (file.exists(rds_extrap)) {
+  e <- readRDS(rds_extrap)
+  fit_native <- e$native; fit_alien <- e$alien
+  rm(e)
+} else {
+  fit_native <- extrapolate(sac_native, model = "lomolino")
+  fit_alien  <- extrapolate(sac_alien,  model = "lomolino")
+  saveRDS(list(native = fit_native, alien = fit_alien), rds_extrap)
+}
+
+cat("Native:\n"); print(fit_native)
+cat("\nAlien:\n");  print(fit_alien)
+```
+
+```{r plot-extrapolation}
+plot(fit_native)
+plot(fit_alien)
+```
+
+---
+
+# 6. Methods Comparison
+
+Compare kNN (spatially structured) vs random (null model) accumulation. We use the 1990s decade (largest chunk) for speed.
+
+```{r methods-comparison}
+idx_90s <- which(header$decade == "1990s")
+
+rds_methods <- file.path(comp_dir, "methods_comparison.rds")
+if (file.exists(rds_methods)) {
+  m <- readRDS(rds_methods)
+  sac_knn_m <- m$knn; sac_random_m <- m$random
+  rm(m)
+} else {
+  sac_knn_m    <- spacc(all_mat[idx_90s, , drop = FALSE], coords[idx_90s, ],
+                        method = "knn",    n_seeds = 50,
+                        distance = "haversine", seed = 42)
+  sac_random_m <- spacc(all_mat[idx_90s, , drop = FALSE], coords[idx_90s, ],
+                        method = "random", n_seeds = 50,
+                        distance = "haversine", seed = 42)
+  saveRDS(list(knn = sac_knn_m, random = sac_random_m), rds_methods)
+}
+
+methods_combined <- c(kNN = sac_knn_m, Random = sac_random_m)
+plot(methods_combined) + ggtitle("kNN vs Random (1990s subset)")
+```
+
+---
+
+# 7. Hill Numbers
+
+Track effective species diversity (q = 0, 1, 2) as sites accumulate. Using 1990s decade.
+
+```{r hill-numbers}
+rds_hill <- file.path(comp_dir, "hill.rds")
+if (file.exists(rds_hill)) {
+  hill <- readRDS(rds_hill)
+} else {
+  hill <- spaccHill(all_mat[idx_90s, , drop = FALSE], coords[idx_90s, ],
+                    q = c(0, 1, 2), n_seeds = 30,
+                    method = "knn", distance = "haversine", seed = 42)
+  saveRDS(hill, rds_hill)
+}
+print(hill)
+plot(hill)
+```
+
+---
+
+# 8. Beta Diversity Accumulation
+
+Track how turnover and nestedness change as the sampling window expands.
+
+```{r beta-diversity}
+rds_beta <- file.path(comp_dir, "beta.rds")
+if (file.exists(rds_beta)) {
+  beta <- readRDS(rds_beta)
+} else {
+  beta <- spaccBeta(all_mat[idx_90s, , drop = FALSE], coords[idx_90s, ],
+                    n_seeds = 30, index = "sorensen",
+                    distance = "haversine", seed = 42)
+  saveRDS(beta, rds_beta)
+}
+print(beta)
+plot(beta)
+```
+
+---
+
+# 9. Coverage-Based Rarefaction
+
+How many sites do we need for 90%, 95%, 99% completeness?
+
+```{r coverage}
+rds_cov <- file.path(comp_dir, "coverage.rds")
+if (file.exists(rds_cov)) {
+  cov <- readRDS(rds_cov)
+} else {
+  cov <- spaccCoverage(all_mat[idx_90s, , drop = FALSE], coords[idx_90s, ],
+                       n_seeds = 30,
+                       distance = "haversine", seed = 42)
+  saveRDS(cov, rds_cov)
+}
+print(cov)
+plot(cov)
+
+# Interpolate to standard coverage targets
+interp <- interpolateCoverage(cov, target = c(0.90, 0.95, 0.99))
+cat("\nSites needed for target coverage:\n")
+print(round(colMeans(interp, na.rm = TRUE), 1))
+```
+
+---
+
+# 10. Per-Site Metrics & Spatial Map
+
+Compute accumulation metrics for every site as a starting point. Using 1990s subset.
+
+```{r metrics}
+rds_metrics <- file.path(comp_dir, "metrics.rds")
+if (file.exists(rds_metrics)) {
+  metrics <- readRDS(rds_metrics)
+} else {
+  metrics <- spaccMetrics(all_mat[idx_90s, , drop = FALSE], coords[idx_90s, ],
+                          metrics = c("slope_10", "half_richness", "auc"),
+                          method = "knn", distance = "haversine")
+  saveRDS(metrics, rds_metrics)
+}
+print(metrics)
+summary(metrics)
+```
+
+```{r metrics-map, fig.width=10, fig.height=8}
+plot(metrics, type = "points")
+```
+
+---
+
+# 11. Diversity Partitioning
+
+Decompose regional diversity into alpha, beta, and gamma components.
+
+```{r diversity-partition}
+rds_part <- file.path(comp_dir, "partition.rds")
+if (file.exists(rds_part)) {
+  partition <- readRDS(rds_part)
+} else {
+  partition <- diversityPartition(all_mat[idx_90s, , drop = FALSE], q = c(0, 1, 2),
+                                  coords = data.frame(x = coords$x[idx_90s], y = coords$y[idx_90s]))
+  saveRDS(partition, rds_part)
+}
+print(partition)
+plot(partition)
+```
+
+## Alpha diversity per site
+
+```{r alpha-diversity}
+rds_alpha <- file.path(comp_dir, "alpha.rds")
+if (file.exists(rds_alpha)) {
+  alpha <- readRDS(rds_alpha)
+} else {
+  alpha <- alphaDiversity(all_mat[idx_90s, , drop = FALSE], q = c(0, 1, 2),
+                          coords = data.frame(x = coords$x[idx_90s], y = coords$y[idx_90s]))
+  saveRDS(alpha, rds_alpha)
+}
+print(alpha)
+plot(alpha)
+```
+
+---
+
+# 12. Analytical Benchmarks
+
+Compare simulation-based curves to exact analytical expectations. Using 1990s subset.
+
+```{r analytical, eval=FALSE}
+cole <- coleman(all_mat[idx_90s, , drop = FALSE])
+mt   <- mao_tau(all_mat[idx_90s, , drop = FALSE])
+
+plot(sac_knn_m)
+# Overlay analytical curves for comparison
+```
+
+---
+
+# 13. Grouped Accumulation by Status
+
+Use the `groups` argument to run a single accumulation with automatic native/alien splitting. Using 1990s subset.
+
+```{r grouped-status}
+rds_grouped <- file.path(comp_dir, "grouped_status.rds")
+if (file.exists(rds_grouped)) {
+  sac_grouped <- readRDS(rds_grouped)
+} else {
+  sac_grouped <- spacc(all_mat[idx_90s, , drop = FALSE], coords[idx_90s, ],
+                       n_seeds = 50, method = "knn",
+                       distance = "haversine", groups = status_vec, seed = 42)
+  saveRDS(sac_grouped, rds_grouped)
+}
+plot(sac_grouped)
+```
+
+---
+
+# 14. Habitat-Level Analysis (EUNIS)
+
+Compare accumulation curves across broad habitat types (EUNIS level 1). We subset to habitats with at least 100 plots.
+
+```{r habitat-prep}
+habitat <- header$Eunis_lvl1
+
+hab_counts <- table(habitat)
+keep_habs  <- names(hab_counts[hab_counts >= 100])
+cat(sprintf("Habitats with >= 100 plots: %s\n", paste(keep_habs, collapse = ", ")))
+cat("Plot counts:\n")
+print(hab_counts[keep_habs])
+```
+
+```{r habitat-curves}
+rds_hab <- file.path(comp_dir, "habitat_curves.rds")
+if (file.exists(rds_hab)) {
+  hab_results <- readRDS(rds_hab)
+} else {
+  hab_results <- lapply(keep_habs, function(h) {
+    idx <- which(habitat == h)
+    spacc(all_mat[idx, , drop = FALSE],
+          coords[idx, ],
+          n_seeds = 50, method = "knn",
+          distance = "haversine", seed = 42)
+  })
+  names(hab_results) <- keep_habs
+  saveRDS(hab_results, rds_hab)
+}
+hab_combined <- do.call(c, hab_results)
+plot(hab_combined) + ggtitle("Accumulation by EUNIS habitat (level 1)")
+```
+
+## Native vs alien within habitats
+
+Are aliens more concentrated in certain habitats?
+
+```{r habitat-alien-share}
+hab_alien <- header[, .(PlotObservationID, Eunis_lvl1)]
+hab_alien <- merge(hab_alien,
+                   species[, .(n_native = sum(STATUS == "native"),
+                               n_alien  = sum(STATUS == "neo")),
+                           by = PlotObservationID],
+                   by = "PlotObservationID")
+hab_summary <- hab_alien[Eunis_lvl1 %in% keep_habs,
+                         .(mean_native = mean(n_native),
+                           mean_alien  = mean(n_alien),
+                           alien_pct   = mean(n_alien / (n_native + n_alien)) * 100),
+                         by = Eunis_lvl1]
+print(hab_summary[order(-alien_pct)])
+```
+
+```{r habitat-native-alien, fig.height=8}
+rds_hab_na <- file.path(comp_dir, "habitat_native_alien.rds")
+if (file.exists(rds_hab_na)) {
+  hab_na_results <- readRDS(rds_hab_na)
+} else {
+  hab_na_results <- lapply(keep_habs, function(h) {
+    nm <- native_mat[which(habitat == h), , drop = FALSE]
+    am <- alien_mat[which(habitat == h), , drop = FALSE]
+    nm <- nm[, colSums(nm) > 0, drop = FALSE]
+    am <- am[, colSums(am) > 0, drop = FALSE]
+    if (ncol(nm) < 2 || ncol(am) < 2 || nrow(nm) < 3) return(NULL)
+    idx <- which(habitat == h)
+    list(
+      native = spacc(nm, coords[idx, ],
+                     n_seeds = 30, method = "knn",
+                     distance = "haversine", seed = 42),
+      alien  = spacc(am, coords[idx, ],
+                     n_seeds = 30, method = "knn",
+                     distance = "haversine", seed = 42)
+    )
+  })
+  names(hab_na_results) <- keep_habs
+  saveRDS(hab_na_results, rds_hab_na)
+}
+
+for (h in keep_habs) {
+  if (is.null(hab_na_results[[h]])) next
+  comb <- c(Native = hab_na_results[[h]]$native,
+            Alien  = hab_na_results[[h]]$alien)
+  print(plot(comb) + ggtitle(sprintf("Habitat %s: Native vs Alien", h)))
+}
+```
+
+```{r cleanup-main, include=FALSE}
+# Free main matrices before phylo/func/halo sections
+rm(native_mat, alien_mat, all_mat, decade_results, decade_na_results,
+   sac_native, sac_alien, sac_all, hab_results, hab_na_results)
+invisible(gc())
+```
+
+---
+
+# 15. Phylogenetic Diversity Accumulation
+
+Track phylogenetic diversity (MPD, MNTD) as the sampling window expands spatially. Using 1990s subset for speed.
+
+```{r phylo-tree}
+library(ape)
+tree_cache <- file.path(data_path, "phylo_tree.rds")
+
+if (file.exists(tree_cache)) {
+  cat("Loading cached phylogeny...\n")
+  tree <- readRDS(tree_cache)
+  run_phylo <- TRUE
+} else if (!requireNamespace("V.PhyloMaker2", quietly = TRUE)) {
+  cat("V.PhyloMaker2 not installed and no cached tree found - skipping.\n",
+      "Install with: remotes::install_github('jinyizju/V.PhyloMaker2')\n")
+  run_phylo <- FALSE
+} else {
+  run_phylo <- TRUE
+  library(V.PhyloMaker2)
+
+  sp_lookup <- unique(species[, .(species = WFO_TAXON, family = WFO_FAMILY)])
+  sp_lookup[, genus := sub(" .*", "", species)]
+
+  cat(sprintf("Placing %d species on mega-tree (first run, will cache)...\n",
+              nrow(sp_lookup)))
+  phylo_result <- phylo.maker(
+    sp.list = as.data.frame(sp_lookup[, .(species, genus, family)]),
+    scenarios = "S3"
+  )
+  tree <- phylo_result$scenario.3
+  tree$tip.label <- gsub("_", " ", tree$tip.label)
+
+  saveRDS(tree, tree_cache)
+  cat(sprintf("Tree saved to %s\n", tree_cache))
+}
+
+if (run_phylo) {
+  # Reload matrices for subsetting (freed above)
+  mats <- readRDS(file.path(comp_dir, "matrices.rds"))
+  all_mat_phylo <- mats$all; native_mat_phylo <- mats$native; alien_mat_phylo <- mats$alien
+  rm(mats); invisible(gc())
+
+  in_tree <- colnames(all_mat_phylo) %in% tree$tip.label
+  cat(sprintf("Species matched to tree: %d / %d (%.0f%%)\n",
+              sum(in_tree), ncol(all_mat_phylo), mean(in_tree) * 100))
+
+  phylo_mat <- all_mat_phylo[idx_90s, in_tree, drop = FALSE]
+  tree <- keep.tip(tree, colnames(all_mat_phylo)[in_tree])
+}
+```
+
+
+```{r phylo-accumulation}
+if (run_phylo) {
+  rds_phylo <- file.path(comp_dir, "phylo_sac.rds")
+  if (file.exists(rds_phylo)) {
+    phylo_sac <- readRDS(rds_phylo)
+  } else {
+    phylo_sac <- spaccPhylo(phylo_mat, coords[idx_90s, ], tree = tree,
+                             metric = c("mpd", "mntd"),
+                             n_seeds = 30, method = "knn",
+                             distance = "haversine", seed = 42)
+    saveRDS(phylo_sac, rds_phylo)
+  }
+  print(phylo_sac)
+  plot(phylo_sac)
+}
+```
+
+## Phylogenetic diversity: native vs alien
+
+```{r phylo-native-alien}
+if (run_phylo) {
+  rds_phylo_na <- file.path(comp_dir, "phylo_native_alien.rds")
+  if (file.exists(rds_phylo_na)) {
+    pna <- readRDS(rds_phylo_na)
+    phylo_native <- pna$native; phylo_alien <- pna$alien
+    rm(pna)
+  } else {
+    native_in_tree <- colnames(native_mat_phylo) %in% tree$tip.label
+    alien_in_tree  <- colnames(alien_mat_phylo) %in% tree$tip.label
+
+    phylo_native <- spaccPhylo(native_mat_phylo[idx_90s, native_in_tree, drop = FALSE],
+                                coords[idx_90s, ], tree = tree, metric = "mpd",
+                                n_seeds = 30, method = "knn",
+                                distance = "haversine", seed = 42)
+    phylo_alien  <- spaccPhylo(alien_mat_phylo[idx_90s, alien_in_tree, drop = FALSE],
+                                coords[idx_90s, ], tree = tree, metric = "mpd",
+                                n_seeds = 30, method = "knn",
+                                distance = "haversine", seed = 42)
+    saveRDS(list(native = phylo_native, alien = phylo_alien), rds_phylo_na)
+  }
+
+  cat("Native MPD accumulation:\n"); print(phylo_native)
+  cat("\nAlien MPD accumulation:\n"); print(phylo_alien)
+}
+```
+
+```{r cleanup-phylo, include=FALSE}
+rm(list = intersect(ls(), c("all_mat_phylo", "native_mat_phylo", "alien_mat_phylo",
+                             "phylo_mat", "tree", "phylo_sac", "phylo_native", "phylo_alien")))
+invisible(gc())
+```
+
+---
+
+# 16. Functional Diversity Accumulation
+
+Track functional diversity (FDis) as sites accumulate. Using family + status as proxy traits. Using 1990s subset.
+
+```{r func-traits}
+if (!requireNamespace("FD", quietly = TRUE)) {
+  cat("FD package not installed - skipping functional analysis.\n",
+      "Install with: install.packages('FD')\n")
+  run_func <- FALSE
+} else {
+  run_func <- TRUE
+
+  # Reload all_mat for subsetting
+  mats <- readRDS(file.path(comp_dir, "matrices.rds"))
+  all_mat_func <- mats$all
+  rm(mats); invisible(gc())
+
+  sp_info <- unique(species[, .(species = WFO_TAXON, family = WFO_FAMILY,
+                                 status = STATUS)])
+  sp_info <- sp_info[species %in% colnames(all_mat_func)]
+  sp_info <- sp_info[!duplicated(species)]
+  setkey(sp_info, species)
+
+  trait_df <- data.frame(
+    family = as.factor(sp_info$family),
+    status = as.factor(sp_info$status),
+    row.names = sp_info$species
+  )
+
+  shared_sp <- intersect(colnames(all_mat_func), rownames(trait_df))
+  func_mat  <- all_mat_func[idx_90s, shared_sp, drop = FALSE]
+  trait_df  <- trait_df[shared_sp, , drop = FALSE]
+
+  # Convert factors to numeric dummy variables for distance computation
+  trait_mat <- model.matrix(~ family + status - 1, data = trait_df)
+  rownames(trait_mat) <- rownames(trait_df)
+
+  cat(sprintf("Functional analysis: %d species with traits, %d sites\n",
+              length(shared_sp), nrow(func_mat)))
+  rm(all_mat_func); invisible(gc())
+}
+```
+
+```{r func-accumulation}
+if (run_func) {
+  rds_func <- file.path(comp_dir, "func_sac.rds")
+  if (file.exists(rds_func)) {
+    func_sac <- readRDS(rds_func)
+  } else {
+    func_sac <- spaccFunc(func_mat, coords[idx_90s, ], traits = trait_mat,
+                           metric = "fdis",
+                           n_seeds = 30, method = "knn",
+                           distance = "haversine", seed = 42)
+    saveRDS(func_sac, rds_func)
+  }
+  print(func_sac)
+  plot(func_sac)
+}
+```
+
+```{r cleanup-func, include=FALSE}
+rm(list = intersect(ls(), c("func_mat", "trait_df", "trait_mat", "func_sac")))
+invisible(gc())
+```
+
+---
+
+# 17. Halo Analysis (Area of Effect)
+
+Use the halo dataset (Austria + surrounding buffer) to see how edge effects influence accumulation.
+
+```{r halo-data}
+# Load areaOfEffect countries data (needed for support = "Austria")
+data(countries, package = "areaOfEffect", envir = environment())
+
+header_halo  <- fread(file.path(data_path, "austria_header_halo.csv"))
+species_halo <- fread(file.path(data_path, "austria_species_halo.csv"))
+
+cat(sprintf("Total plots: %d (core: %d, halo: %d)\n",
+            nrow(header_halo),
+            sum(header_halo$aoe_class == "core"),
+            sum(header_halo$aoe_class == "halo")))
+```
+
+```{r halo-matrices}
+common_halo <- intersect(header_halo$PlotObservationID,
+                         species_halo$PlotObservationID)
+header_halo <- header_halo[PlotObservationID %in% common_halo]
+coords_halo <- header_halo[, .(x = Longitude, y = Latitude)]
+plot_ids_halo <- header_halo$PlotObservationID
+
+halo_mat <- make_pa_matrix(species_halo[, .(PlotObservationID, WFO_TAXON)],
+                           plot_ids_halo)
+```
+
+```{r halo-spacc}
+rds_halo <- file.path(comp_dir, "halo.rds")
+if (file.exists(rds_halo)) {
+  h <- readRDS(rds_halo)
+  sac_halo <- h$halo; sac_core <- h$core
+  rm(h)
+} else {
+  sac_halo <- spacc(halo_mat, coords_halo, n_seeds = 30, method = "knn",
+                    distance = "haversine", support = "Austria",
+                    include_halo = TRUE, seed = 42)
+  sac_core <- spacc(halo_mat, coords_halo, n_seeds = 30, method = "knn",
+                    distance = "haversine", support = "Austria",
+                    include_halo = FALSE, seed = 42)
+  saveRDS(list(halo = sac_halo, core = sac_core), rds_halo)
+}
+
+halo_combined <- c(`With halo` = sac_halo, `Core only` = sac_core)
+plot(halo_combined)
+```
+
+---
+
+# Session Info
+
+```{r session-info}
+sessionInfo()
+```

@@ -220,7 +220,7 @@ These five findings were chosen because they each address a different aspect of 
 
 | # | Finding | Why it matters |
 |---|---------|----------------|
-| 1 | **Where species live** — Hotspot maps | Spatial patterns reveal the geography of invasion |
+| 1 | **Sampling & richness overview** — Hotspot maps | Where was data collected and what does raw richness look like? |
 | 2 | **How species accumulate** — Native vs. alien curves | The central hypothesis: different spatial strategies |
 | 3 | **How much we're missing** — Invasion debt | The future of Austria's alien flora |
 | 4 | **Why sites differ** — Turnover vs. nestedness | What drives Austria's high beta diversity |
@@ -236,7 +236,7 @@ Die fünf Ergebnisse wurden ausgewählt, weil sie jeweils einen eigenständigen 
 
 | # | Ergebnis | Warum es wichtig ist |
 |---|----------|---------------------|
-| 1 | **Wo Arten leben** — Hotspot-Karten | Räumliche Muster offenbaren die Geografie der Invasion |
+| 1 | **Beprobung & Artenreichtum** — Hotspot-Karten | Wo wurde beprobt und wie sieht der beobachtete Artenreichtum aus? |
 | 2 | **Wie Arten akkumulieren** — Heimische vs. Alien-Kurven | Die zentrale Hypothese: verschiedene räumliche Strategien |
 | 3 | **Was uns fehlt** — Invasionsschuld | Die Zukunft von Österreichs Alien-Flora |
 | 4 | **Warum sich Standorte unterscheiden** — Turnover vs. Nestedness | Was Österreichs hohe Beta-Diversität antreibt |
@@ -246,7 +246,7 @@ Die fünf Ergebnisse wurden ausgewählt, weil sie jeweils einen eigenständigen 
 
 ---
 
-# <span class="en">1. The Geography of Invasion: Hotspot Maps</span><span class="de">1. Die Geografie der Invasion: Hotspot-Karten</span>
+# <span class="en">1. Sampling & Richness Overview: Hotspot Maps</span><span class="de">1. Beprobung & Artenreichtum: Hotspot-Karten</span>
 
 ## <span class="en">The Maps</span><span class="de">Die Karten</span>
 
@@ -740,6 +740,77 @@ Diese Karten übersetzen die Invasionsschuld in Geografie. Während die erste Ka
 
 ---
 
+## <span class="en">3c. Sampling Gaps: How Many Species Are We Missing?</span><span class="de">3c. Beprobungslücken: Wie viele Arten fehlen uns?</span>
+
+<div class="en">
+
+Sections 3a--b showed estimated richness and completeness separately. Here we place the **observed** and **estimated** total species counts side by side on the same colour scale, making the sampling gap immediately visible. Where the estimated map is darker than the observed map, there are likely unrecorded species.
+
+</div>
+
+<div class="de">
+
+Abschnitte 3a--b zeigten geschätzten Reichtum und Vollständigkeit getrennt. Hier stellen wir die **beobachteten** und **geschätzten** Gesamtartenzahlen nebeneinander auf derselben Farbskala dar, sodass die Beprobungslücke sofort sichtbar wird. Wo die geschätzte Karte dunkler ist als die beobachtete, gibt es wahrscheinlich unerfasste Arten.
+
+</div>
+
+```{r sampling-gaps, fig.height=10, fig.width=10}
+# Total observed vs total estimated per hexagon
+hex_polys_sac$obs_total <- hex_estimates$obs_native + hex_estimates$obs_alien
+hex_polys_sac$est_total <- hex_estimates$est_native + hex_estimates$est_alien
+
+# Shared colour range for direct comparison
+total_range <- range(c(hex_polys_sac$obs_total, hex_polys_sac$est_total), na.rm = TRUE)
+
+p_obs <- ggplot() +
+  geom_sf(data = austria_sf, fill = "grey95", color = "#333333", linewidth = 0.8) +
+  geom_sf(data = hex_undersampled, fill = "#BDBDBD", color = "grey70", linewidth = 0.3) +
+  geom_sf(data = hex_polys_sac, aes(fill = obs_total), color = "white", linewidth = 0.3) +
+  geom_sf(data = austria_sf, fill = NA, color = "#333333", linewidth = 1) +
+  scale_fill_viridis_c(option = "viridis", direction = 1,
+                       name = "Species\ncount",
+                       limits = total_range) +
+  labs(title = "Observed Total Richness / Beobachteter Gesamtreichtum",
+       subtitle = "Native + alien species actually recorded per hexagon",
+       x = "Longitude", y = "Latitude") +
+  theme_minimal(base_size = 13) +
+  coord_sf(xlim = c(9.3, 17.2), ylim = c(46.3, 49.1))
+
+p_est <- ggplot() +
+  geom_sf(data = austria_sf, fill = "grey95", color = "#333333", linewidth = 0.8) +
+  geom_sf(data = hex_undersampled, fill = "#BDBDBD", color = "grey70", linewidth = 0.3) +
+  geom_sf(data = hex_polys_sac, aes(fill = est_total), color = "white", linewidth = 0.3) +
+  geom_sf(data = austria_sf, fill = NA, color = "#333333", linewidth = 1) +
+  scale_fill_viridis_c(option = "viridis", direction = 1,
+                       name = "Species\ncount",
+                       limits = total_range) +
+  labs(title = "Estimated Total Richness (Michaelis-Menten) / Geschätzter Gesamtreichtum",
+       subtitle = "Extrapolated total species (S_max) per hexagon",
+       x = "Longitude", y = "Latitude") +
+  theme_minimal(base_size = 13) +
+  coord_sf(xlim = c(9.3, 17.2), ylim = c(46.3, 49.1))
+
+gridExtra::grid.arrange(p_obs, p_est, ncol = 1)
+```
+
+<div class="discussion-box">
+
+<div class="en">
+
+Comparing the two maps on the same scale reveals the sampling gap at a glance. Hexagons where the estimated map is noticeably darker harbour undetected species. The overall pattern shows that most hexagons have not yet reached their predicted asymptote, especially in the Alpine interior and along lowland transport corridors. This reinforces the message from section 3a: Austria's alien flora in particular remains incompletely sampled.
+
+</div>
+
+<div class="de">
+
+Der Vergleich beider Karten auf derselben Skala macht die Beprobungslücke auf einen Blick sichtbar. Hexagone, in denen die geschätzte Karte deutlich dunkler ist, beherbergen unentdeckte Arten. Das Gesamtmuster zeigt, dass die meisten Hexagone ihre vorhergesagte Asymptote noch nicht erreicht haben, besonders im alpinen Innenraum und entlang der Tiefland-Verkehrskorridore. Dies bekräftigt die Botschaft aus Abschnitt 3a: Insbesondere Österreichs Alien-Flora ist noch unvollständig beprobt.
+
+</div>
+
+</div>
+
+---
+
 # <span class="en">4. Turnover, Not Nestedness: What Drives Austrian Beta Diversity</span><span class="de">4. Turnover, nicht Nestedness: Was Österreichs Beta-Diversität antreibt</span>
 
 ## <span class="en">Decomposing Beta Diversity</span><span class="de">Zerlegung der Beta-Diversität</span>
@@ -837,7 +908,7 @@ ggplot(df_beta, aes(x = sites, y = value, colour = group)) +
   scale_colour_manual(values = c("Native / Heimisch" = "#2E7D32", "Alien / Alien" = "#C62828")) +
   labs(
     title = "Beta Diversity Decomposition: Native vs Alien (1990s)",
-    subtitle = "Baselga (2010): bsor = bsim + bnes. Each row-column panel has its own y-axis.",
+    subtitle = "Baselga (2010) decomposition: \u03b2sor = \u03b2sim (turnover) + \u03b2nes (nestedness)",
     x = "Number of sites in spatial walk / Anzahl Standorte",
     y = "Beta diversity"
   ) +
@@ -854,7 +925,7 @@ ggplot(df_beta, aes(x = sites, y = value, colour = group)) +
 
 **Turnover dominates for natives -- but what about aliens?**
 
-The beta diversity decomposition now separates **native** and **alien** species. Both groups show turnover-dominated patterns, but with important differences.
+The beta diversity decomposition reveals distinct patterns for **native** and **alien** species. Both groups are turnover-dominated, but with important differences.
 
 **Natives:** Turnover is high and nestedness is low. This reflects Austria's 3,683 m elevation gradient (115 m Neusiedler See to 3,798 m Grossglockner), which creates distinct vegetation belts hosting genuinely **different species**, not nested subsets. A lowland *Quercus*-*Carpinus* forest and a high-alpine *Carex curvula* grassland share almost no species.
 
@@ -872,7 +943,7 @@ In a turnover-dominated system, **no single reserve can capture the full flora**
 
 **Turnover dominiert bei Einheimischen -- aber was ist mit Neophyten?**
 
-Die Beta-Diversitäts-Zerlegung trennt nun **heimische** und **gebietsfremde** Arten. Beide Gruppen zeigen Turnover-dominierte Muster, aber mit wichtigen Unterschieden.
+Die Beta-Diversitäts-Zerlegung zeigt unterschiedliche Muster für **heimische** und **gebietsfremde** Arten. Beide Gruppen sind Turnover-dominiert, aber mit wichtigen Unterschieden.
 
 **Einheimische:** Turnover ist hoch und Nestedness niedrig. Dies spiegelt Österreichs 3.683-m-Höhengradienten (115 m Neusiedler See bis 3.798 m Großglockner) wider, der verschiedene Vegetationsgürtel mit **tatsächlich verschiedenen Arten** schafft. Ein Tiefland-*Quercus*-*Carpinus*-Wald und ein hochalpines *Carex curvula*-Grasland teilen praktisch keine Arten.
 
@@ -1172,7 +1243,7 @@ ggplot(df_hill, aes(x = sites, y = value, colour = group)) +
   scale_colour_manual(values = c("Native / Heimisch" = "#2E7D32", "Alien / Alien" = "#C62828")) +
   labs(
     title = "Hill Numbers: Native vs Alien Species Accumulation",
-    subtitle = "Each panel shows a different diversity order (free y-axis) / Jedes Panel zeigt eine andere Diversitätsordnung",
+    subtitle = "q=0: species richness, q=1: Shannon, q=2: Simpson / Artenreichtum, Shannon, Simpson",
     x = "Number of sites in spatial walk / Anzahl Standorte",
     y = "Effective number of species",
     colour = NULL
@@ -1230,7 +1301,7 @@ ggplot(df_phylo_all, aes(x = sites, y = value, colour = metric)) +
     "MNTD (Mean Nearest Taxon Distance)" = "#E65100")) +
   labs(
     title = "Phylogenetic Diversity Accumulation (1990s)",
-    subtitle = "Each panel uses its own y-axis / Jedes Panel hat eine eigene y-Achse",
+    subtitle = "MPD and MNTD accumulation across spatial walk / MPD- und MNTD-Akkumulation",
     x = "Number of sites in spatial walk / Anzahl Standorte",
     y = "Phylogenetic distance"
   ) +
@@ -1258,7 +1329,7 @@ ggplot(df_phylo, aes(x = sites, y = mpd, colour = group)) +
   scale_colour_manual(values = c("Native / Heimisch" = "#2E7D32", "Alien / Alien" = "#C62828")) +
   labs(
     title = "Phylogenetic Diversity: Native vs Alien MPD Accumulation",
-    subtitle = "Each panel uses its own y-axis scale / Jedes Panel hat eine eigene y-Achsen-Skalierung",
+    subtitle = "Spatial accumulation of MPD for native vs alien species / MPD-Akkumulation: heimisch vs. gebietsfremd",
     x = "Number of sites in spatial walk / Anzahl Standorte im räumlichen Walk",
     y = "Mean Pairwise Distance (MPD)"
   ) +
@@ -1303,7 +1374,7 @@ ggplot(df_phylo, aes(x = sites, y = mpd, colour = group)) +
 
 The six findings connect:
 
-**1. Geography.** Native and alien richness follow different spatial rules. Natives peak in topographically complex pre-Alpine zones; aliens concentrate around human infrastructure in the lowlands.
+**1. Sampling & raw richness.** The hotspot maps reflect where data was collected and what observed richness looks like. Natives peak in topographically complex pre-Alpine zones; aliens concentrate around human infrastructure in the lowlands. These patterns partly reflect sampling effort.
 
 **2. Accumulation curves.** Aliens have higher spatial beta diversity than natives; you need to sample more area to find the same proportion of species. This confirms quantitatively what the maps show.
 
@@ -1323,7 +1394,7 @@ These results show that **spatial species accumulation curves** are more than a 
 
 Diese sechs Ergebnisse bilden ein Gesamtbild über Österreichs Pflanzendiversität und ihre Invasion durch Alien-Arten:
 
-**1. Geografie.** Die Hotspot-Karten zeigen, dass heimischer und Alien-Artenreichtum verschiedenen räumlichen Regeln folgen. Einheimische erreichen ihren Höhepunkt in den topografisch komplexen Voralpen; Aliens konzentrieren sich um menschliche Infrastruktur im Tiefland.
+**1. Beprobung & beobachteter Reichtum.** Die Hotspot-Karten zeigen, wo beprobt wurde und wie der beobachtete Artenreichtum aussieht. Einheimische erreichen ihren Höhepunkt in den topografisch komplexen Voralpen; Aliens konzentrieren sich um menschliche Infrastruktur im Tiefland. Diese Muster spiegeln teilweise den Beprobungsaufwand wider.
 
 **2. Räumliche Akkumulation.** Die normalisierten Kurven zeigen, dass Aliens eine höhere räumliche Beta-Diversität haben als Einheimische.
 

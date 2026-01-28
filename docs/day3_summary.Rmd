@@ -656,13 +656,13 @@ Der Michaelis-Menten-Schätzer nimmt an, dass die Akkumulationskurve einer besti
 
 <div class="en">
 
-The Michaelis-Menten extrapolation above estimated **total** richness for all of Austria. Here we apply the same approach per hexagon: for each cell in the equal-area grid, we run a spatial accumulation with 10 seeds on the within-hex plots, fit Michaelis-Menten, and extract the estimated total species richness ($S_{max}$). This gives a map of *estimated* richness rather than raw observed counts.
+The Michaelis-Menten extrapolation above estimated **total** richness for all of Austria. Here we apply the same approach per hexagon: for each cell in the equal-area grid, we run a spatial accumulation with 10 seeds on the within-hex plots, fit Michaelis-Menten, and extract the estimated total species richness ($S_{max}$). This gives a map of *estimated* richness rather than raw observed counts. Hexagons with fewer than 20 plots (shown in light grey) are excluded because accumulation curves fitted to so few samples produce unreliable extrapolations.
 
 </div>
 
 <div class="de">
 
-Die Michaelis-Menten-Extrapolation oben schätzte den **Gesamt**-Artenreichtum für ganz Österreich. Hier wenden wir denselben Ansatz pro Hexagon an: Für jede Zelle im flächengleichen Gitter führen wir eine räumliche Akkumulation mit 10 Seeds auf den Plots innerhalb des Hexagons durch, passen Michaelis-Menten an und extrahieren den geschätzten Gesamtartenreichtum ($S_{max}$).
+Die Michaelis-Menten-Extrapolation oben schätzte den **Gesamt**-Artenreichtum für ganz Österreich. Hier wenden wir denselben Ansatz pro Hexagon an: Für jede Zelle im flächengleichen Gitter führen wir eine räumliche Akkumulation mit 10 Seeds auf den Plots innerhalb des Hexagons durch, passen Michaelis-Menten an und extrahieren den geschätzten Gesamtartenreichtum ($S_{max}$). Hexagone mit weniger als 20 Plots (in Hellgrau dargestellt) sind ausgeschlossen, da Akkumulationskurven mit so wenigen Stichproben unzuverlässige Extrapolationen liefern.
 
 </div>
 
@@ -672,15 +672,19 @@ hex_estimates <- readRDS(file.path(comp_dir, "hex_sac_estimates.rds"))
 hex_polys_sac <- cell_to_sf(hex_estimates$cell_id, grid = grid)
 hex_polys_sac <- merge(hex_polys_sac, hex_estimates, by = "cell_id")
 
+# Under-sampled hexagons (<20 plots) shown as light grey
+hex_undersampled <- hex_polys[!hex_polys$cell_id %in% hex_estimates$cell_id, ]
+
 # Estimated native richness
 p1 <- ggplot() +
   geom_sf(data = austria_sf, fill = "grey95", color = "#333333", linewidth = 0.8) +
+  geom_sf(data = hex_undersampled, fill = "#D9D9D9", color = "white", linewidth = 0.3) +
   geom_sf(data = hex_polys_sac, aes(fill = est_native), color = "white", linewidth = 0.3) +
   geom_sf(data = austria_sf, fill = NA, color = "#333333", linewidth = 1) +
   scale_fill_gradient(low = "white", high = "#2E7D32",
                       name = "Estimated\nnative S_max") +
   labs(title = "Estimated Native Richness (Michaelis-Menten) / Geschätzter heimischer Reichtum",
-       subtitle = "Per-hexagon SAC extrapolation, 10 seeds each",
+       subtitle = "Per-hexagon SAC extrapolation, 10 seeds each (grey = <20 plots, excluded)",
        x = "Longitude", y = "Latitude") +
   theme_minimal(base_size = 13) +
   coord_sf(xlim = c(9.3, 17.2), ylim = c(46.3, 49.1))
@@ -688,12 +692,13 @@ p1 <- ggplot() +
 # Estimated alien richness
 p2 <- ggplot() +
   geom_sf(data = austria_sf, fill = "grey95", color = "#333333", linewidth = 0.8) +
+  geom_sf(data = hex_undersampled, fill = "#D9D9D9", color = "white", linewidth = 0.3) +
   geom_sf(data = hex_polys_sac, aes(fill = est_alien), color = "white", linewidth = 0.3) +
   geom_sf(data = austria_sf, fill = NA, color = "#333333", linewidth = 1) +
   scale_fill_gradient(low = "white", high = "#D32F2F",
                       name = "Estimated\nalien S_max") +
   labs(title = "Estimated Alien Richness (Michaelis-Menten) / Geschätzter Alien-Reichtum",
-       subtitle = "Per-hexagon SAC extrapolation, 10 seeds each",
+       subtitle = "Per-hexagon SAC extrapolation, 10 seeds each (grey = <20 plots, excluded)",
        x = "Longitude", y = "Latitude") +
   theme_minimal(base_size = 13) +
   coord_sf(xlim = c(9.3, 17.2), ylim = c(46.3, 49.1))
@@ -703,12 +708,13 @@ hex_polys_sac$completeness_alien <- hex_estimates$obs_alien / hex_estimates$est_
 
 p3 <- ggplot() +
   geom_sf(data = austria_sf, fill = "grey95", color = "#333333", linewidth = 0.8) +
+  geom_sf(data = hex_undersampled, fill = "#D9D9D9", color = "white", linewidth = 0.3) +
   geom_sf(data = hex_polys_sac, aes(fill = completeness_alien), color = "white", linewidth = 0.3) +
   geom_sf(data = austria_sf, fill = NA, color = "#333333", linewidth = 1) +
   scale_fill_distiller(palette = "YlOrRd", direction = 1,
                        name = "Alien\ncompleteness %") +
   labs(title = "Alien Sampling Completeness / Alien-Beprobungsvollständigkeit",
-       subtitle = "Observed / estimated species per hexagon",
+       subtitle = "Observed / estimated species per hexagon (grey = <20 plots, excluded)",
        x = "Longitude", y = "Latitude") +
   theme_minimal(base_size = 13) +
   coord_sf(xlim = c(9.3, 17.2), ylim = c(46.3, 49.1))
@@ -768,12 +774,40 @@ Das Gleichgewicht zwischen diesen Komponenten verrät den *Prozess*, der Diversi
 
 </div>
 
-```{r beta-diversity}
+```{r beta-diversity, fig.height=6, fig.width=10}
 beta <- readRDS(file.path(comp_dir, "beta.rds"))
-print(beta)
-plot(beta) +
-  ggtitle("Beta Diversity Accumulation: Turnover vs Nestedness (1990s)") +
-  theme_minimal(base_size = 13)
+
+# Build data frame from the three beta components
+n <- ncol(beta$beta_total)
+df_beta <- data.frame(
+  sites     = rep(seq_len(n), 3),
+  value     = c(colMeans(beta$beta_turnover),
+                colMeans(beta$beta_nestedness),
+                colMeans(beta$beta_total)),
+  component = factor(
+    rep(c("Turnover (bsim)", "Nestedness (bnes)", "Total (bsor)"), each = n),
+    levels = c("Total (bsor)", "Turnover (bsim)", "Nestedness (bnes)")
+  )
+)
+
+# Panel plot: each component on its own y-axis scale
+ggplot(df_beta, aes(x = sites, y = value, colour = component)) +
+  geom_line(linewidth = 0.9) +
+  facet_wrap(~ component, scales = "free_y", ncol = 1) +
+  scale_colour_manual(values = c(
+    "Total (bsor)"       = "#1565C0",
+    "Turnover (bsim)"    = "#E65100",
+    "Nestedness (bnes)"  = "#6A1B9A"
+  )) +
+  labs(
+    title = "Beta Diversity Decomposition: Turnover vs Nestedness (1990s)",
+    subtitle = "Baselga (2010): bsor = bsim + bnes. Each panel uses its own y-axis.",
+    x = "Number of sites in spatial walk / Anzahl Standorte",
+    y = "Beta diversity"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(legend.position = "none",
+        strip.text = element_text(face = "bold", size = 12))
 ```
 
 ## <span class="en">Discussion</span><span class="de">Diskussion</span>
@@ -1129,13 +1163,32 @@ plot(phylo_sac) +
   theme_minimal(base_size = 13)
 ```
 
-```{r phylo-native-alien, fig.height=5}
+```{r phylo-native-alien, fig.height=5, fig.width=10}
 pna <- readRDS(file.path(comp_dir, "phylo_native_alien.rds"))
-phylo_native <- pna$native; phylo_alien <- pna$alien
-rm(pna)
 
-cat("Native MPD accumulation:\n"); print(phylo_native)
-cat("\nAlien MPD accumulation:\n"); print(phylo_alien)
+# Extract mean MPD curves across seeds
+native_mpd <- colMeans(pna$native$curves$mpd)
+alien_mpd  <- colMeans(pna$alien$curves$mpd)
+
+df_phylo <- data.frame(
+  sites = rep(seq_along(native_mpd), 2),
+  mpd   = c(native_mpd, alien_mpd),
+  group = rep(c("Native / Heimisch", "Alien / Alien"), each = length(native_mpd))
+)
+
+ggplot(df_phylo, aes(x = sites, y = mpd, colour = group)) +
+  geom_line(linewidth = 0.8, alpha = 0.8) +
+  facet_wrap(~ group, scales = "free_y") +
+  scale_colour_manual(values = c("Native / Heimisch" = "#2E7D32", "Alien / Alien" = "#C62828")) +
+  labs(
+    title = "Phylogenetic Diversity: Native vs Alien MPD Accumulation",
+    subtitle = "Each panel uses its own y-axis scale / Jedes Panel hat eine eigene y-Achsen-Skalierung",
+    x = "Number of sites in spatial walk / Anzahl Standorte im räumlichen Walk",
+    y = "Mean Pairwise Distance (MPD)"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(legend.position = "none",
+        strip.text = element_text(face = "bold", size = 13))
 ```
 
 ## <span class="en">Discussion</span><span class="de">Diskussion</span>

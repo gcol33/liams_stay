@@ -806,34 +806,38 @@ Die x-Achse zeigt die Anzahl der besuchten Standorte in einem "räumlichen Spazi
 
 </div>
 
-```{r beta-diversity, fig.height=6, fig.width=10}
-beta <- readRDS(file.path(comp_dir, "beta.rds"))
+```{r beta-diversity, fig.height=8, fig.width=12}
+beta_na <- readRDS(file.path(comp_dir, "beta_native_alien.rds"))
 
-# Build data frame from the three beta components
-n <- ncol(beta$beta_total)
-df_beta <- data.frame(
-  sites     = rep(seq_len(n), 3),
-  value     = c(colMeans(beta$beta_turnover),
-                colMeans(beta$beta_nestedness),
-                colMeans(beta$beta_total)),
-  component = factor(
-    rep(c("Turnover (bsim)", "Nestedness (bnes)", "Total (bsor)"), each = n),
-    levels = c("Total (bsor)", "Turnover (bsim)", "Nestedness (bnes)")
+# Helper: extract beta components into a data frame
+build_beta_df <- function(b, group_label) {
+  n <- ncol(b$beta_total)
+  data.frame(
+    sites     = rep(seq_len(n), 3),
+    value     = c(colMeans(b$beta_total),
+                  colMeans(b$beta_turnover),
+                  colMeans(b$beta_nestedness)),
+    component = factor(
+      rep(c("Total (bsor)", "Turnover (bsim)", "Nestedness (bnes)"), each = n),
+      levels = c("Total (bsor)", "Turnover (bsim)", "Nestedness (bnes)")
+    ),
+    group = group_label
   )
+}
+
+df_beta <- rbind(
+  build_beta_df(beta_na$native, "Native / Heimisch"),
+  build_beta_df(beta_na$alien,  "Alien / Alien")
 )
 
-# Panel plot: each component on its own y-axis scale
-ggplot(df_beta, aes(x = sites, y = value, colour = component)) +
+# 2-row x 3-column panel: Native on top, Alien on bottom, one column per component
+ggplot(df_beta, aes(x = sites, y = value, colour = group)) +
   geom_line(linewidth = 0.9) +
-  facet_wrap(~ component, scales = "free_y", ncol = 1) +
-  scale_colour_manual(values = c(
-    "Total (bsor)"       = "#1565C0",
-    "Turnover (bsim)"    = "#E65100",
-    "Nestedness (bnes)"  = "#6A1B9A"
-  )) +
+  facet_grid(group ~ component, scales = "free_y") +
+  scale_colour_manual(values = c("Native / Heimisch" = "#2E7D32", "Alien / Alien" = "#C62828")) +
   labs(
-    title = "Beta Diversity Decomposition: Turnover vs Nestedness (1990s)",
-    subtitle = "Baselga (2010): bsor = bsim + bnes. Each panel uses its own y-axis.",
+    title = "Beta Diversity Decomposition: Native vs Alien (1990s)",
+    subtitle = "Baselga (2010): bsor = bsim + bnes. Each row-column panel has its own y-axis.",
     x = "Number of sites in spatial walk / Anzahl Standorte",
     y = "Beta diversity"
   ) +
@@ -848,58 +852,37 @@ ggplot(df_beta, aes(x = sites, y = value, colour = component)) +
 
 <div class="en">
 
-**Turnover dominates.**
+**Turnover dominates for natives -- but what about aliens?**
 
-The beta diversity decomposition shows that **species turnover** accounts for most compositional differences between sites. Nestedness plays a minor role.
+The beta diversity decomposition now separates **native** and **alien** species. Both groups show turnover-dominated patterns, but with important differences.
 
-**What this tells us:**
+**Natives:** Turnover is high and nestedness is low. This reflects Austria's 3,683 m elevation gradient (115 m Neusiedler See to 3,798 m Grossglockner), which creates distinct vegetation belts hosting genuinely **different species**, not nested subsets. A lowland *Quercus*-*Carpinus* forest and a high-alpine *Carex curvula* grassland share almost no species.
 
-Austria spans 115 m (Neusiedler See) to 3,798 m (Grossglockner) in a country only ~575 km wide. This 3,683 m elevation range produces a series of vegetation belts, from Pannonian steppe grasslands through deciduous and coniferous forests to alpine meadows and nival cushion plants. These belts host genuinely **different species**, not nested subsets. A lowland *Quercus*-*Carpinus* forest and a high-alpine *Carex curvula* grassland share almost no species.
+**Aliens:** Turnover also dominates, but the overall beta diversity is lower than for natives, and nestedness may be relatively more important. Alien species are drawn from a smaller pool concentrated in lowland and disturbed habitats. Some alien-poor sites (e.g., alpine areas) are effectively subsets of the richer alien floras in lowland cities -- a more nested pattern than natives show.
 
-**Why nestedness is low:**
-
-Species-poor alpine sites (15--30 species per plot) are not impoverished versions of richer lowland sites (40--80 species). They have entirely different species, selected by entirely different environmental filters. This contrasts with island systems where nestedness dominates (small islands contain subsets of large-island floras).
+**Key contrast:** Natives show high turnover because different elevations have different species (environmental filtering). Aliens show turnover because different lowland regions receive different introduced species (introduction history), but also some nestedness because alien-poor sites simply lack the conditions for establishment rather than hosting alternative alien species.
 
 **For conservation:**
 
-In a turnover-dominated system, **no single reserve can capture the full flora**. An alpine national park protects alpine specialists but misses Pannonian steppe species, and vice versa. This supports a distributed network of reserves across elevations and biogeographic regions (the "Several Small" side of the SLOSS debate; Tjorve 2010). Austria's existing network (Neusiedler See to Hohe Tauern) partly does this already.
-
-**Link to the alien pattern:**
-
-Because turnover dominates, the alien flora at each site reflects local conditions and introduction history. Different lowland regions receive different aliens; these aliens barely penetrate the alpine zone. Invasion is not a uniform wave but a mosaic of local events shaped by land use and environment.
+In a turnover-dominated system, **no single reserve can capture the full flora**. This supports a distributed network of reserves across elevations and biogeographic regions (the "Several Small" side of the SLOSS debate; Tjorve 2010). For alien management, the comparison suggests that urban lowlands are not just richer in aliens but also harbour *different* aliens depending on the region.
 
 </div>
 
 <div class="de">
 
-**Turnover dominiert überwältigend.**
+**Turnover dominiert bei Einheimischen -- aber was ist mit Neophyten?**
 
-Wenn sich das räumliche Beprobungsfenster über Österreich erweitert, zeigt die Beta-Diversitäts-Zerlegung, dass **Artenersatz** den Großteil der kompositorischen Unterschiede zwischen Standorten ausmacht. Nestedness trägt vergleichsweise wenig bei.
+Die Beta-Diversitäts-Zerlegung trennt nun **heimische** und **gebietsfremde** Arten. Beide Gruppen zeigen Turnover-dominierte Muster, aber mit wichtigen Unterschieden.
 
-**Was das über Österreichs Ökologie aussagt:**
+**Einheimische:** Turnover ist hoch und Nestedness niedrig. Dies spiegelt Österreichs 3.683-m-Höhengradienten (115 m Neusiedler See bis 3.798 m Großglockner) wider, der verschiedene Vegetationsgürtel mit **tatsächlich verschiedenen Arten** schafft. Ein Tiefland-*Quercus*-*Carpinus*-Wald und ein hochalpines *Carex curvula*-Grasland teilen praktisch keine Arten.
 
-Österreich umfasst einen außergewöhnlichen Höhengradienten von 115 m (Neusiedler See) bis 3.798 m (Großglockner) innerhalb eines nur ~575 km breiten Landes. Dieser 3.683-m-Höhenbereich schafft eine nahezu kontinuierliche Reihe von Vegetationsgürteln:
+**Neophyten:** Auch hier dominiert Turnover, aber die Gesamt-Beta-Diversität ist niedriger als bei Einheimischen, und Nestedness könnte relativ wichtiger sein. Neophyten stammen aus einem kleineren Pool, der sich auf Tiefland- und Störungshabitate konzentriert. Einige neophytenarme Standorte (z.B. alpine Gebiete) sind effektiv Teilmengen der reicheren Neophyten-Flora in Tieflandstädten -- ein stärker verschachteltes Muster als bei Einheimischen.
 
-1. **Pannonische Steppen** (115--300 m): thermophile, trockenheitstolerante Arten
-2. **Kolline Laubwälder** (300--700 m): *Quercus*, *Carpinus*, *Tilia*
-3. **Montaner Übergang** (700--1200 m): *Fagus sylvatica* weicht *Picea abies*
-4. **Subalpine Nadelwälder** (1200--1800 m): *Picea*, *Larix decidua*, *Pinus cembra*
-5. **Alpine Wiesen** (1800--2500 m): *Carex curvula*, *Loiseleuria procumbens*
-6. **Subnival-nival** (>2500 m): *Ranunculus glacialis*, *Saxifraga* spp.
-
-Diese Zonen beherbergen **tatsächlich verschiedene Arten**, nicht einfach verschachtelte Teilmengen derselben Flora. Ein Tiefland-*Quercus*-*Carpinus*-Wald und ein hochalpines *Carex curvula*-Grasland teilen praktisch keine Arten.
-
-**Warum Nestedness niedrig ist:**
-
-Geringe Nestedness bedeutet, dass artenarme Standorte (z.B. hochalpine Gebiete mit 15--30 Arten pro Plot) nicht einfach verarmte Versionen artenreicher Tieflandstandorte (40--80 Arten) sind. Stattdessen beherbergen sie völlig andere Arten. Eine alpine Wiese fehlt Tieflandarten nicht, weil sie sie "verloren" hat, sondern weil die Umweltbedingungen sie vollständig ausschließen.
+**Zentraler Kontrast:** Einheimische zeigen hohen Turnover, weil verschiedene Höhenlagen verschiedene Arten beherbergen (Umweltfilterung). Neophyten zeigen Turnover, weil verschiedene Tieflandregionen verschiedene eingeführte Arten erhalten (Einführungsgeschichte), aber auch etwas Nestedness, weil neophytenarme Standorte einfach die Bedingungen für Etablierung fehlen.
 
 **Naturschutzimplikationen:**
 
-Die Dominanz des Turnover hat eine direkte Konsequenz für die Naturschutzplanung. In einem turnover-dominierten System **kann kein einzelnes Schutzgebiet die gesamte Flora erfassen**. Dies unterstützt die "**Several Small**"-Position in der SLOSS-Debatte (Tjorve 2010) für Österreich: Ein verteiltes Netzwerk kleinerer Reservate, das verschiedene Höhenlagen und biogeografische Regionen umfasst, wird mehr Gesamtdiversität erfassen als ein einzelnes großes Reservat äquivalenter Gesamtfläche.
-
-**Verbindung zur Invasionsgeschichte:**
-
-Das Turnover-Ergebnis kontextualisiert auch das Alien-Artenmuster. Weil Turnover dominiert, spiegelt die Alien-Flora an jedem Standort die spezifische Kombination aus lokalen Umweltbedingungen und Einführungsgeschichte wider. Die Invasion ist keine gleichmäßige Welle; sie ist ein Mosaik lokaler Invasionen.
+In einem turnover-dominierten System **kann kein einzelnes Schutzgebiet die gesamte Flora erfassen**. Dies unterstützt ein verteiltes Netzwerk von Reservaten über verschiedene Höhenlagen und biogeografische Regionen (die "Several Small"-Position in der SLOSS-Debatte; Tjorve 2010). Für das Neophyten-Management zeigt der Vergleich, dass städtische Tieflandgebiete nicht nur mehr Neophyten beherbergen, sondern auch *verschiedene* Neophyten je nach Region.
 
 </div>
 
@@ -1157,13 +1140,6 @@ As $q$ increases, rare species contribute less. If the curves diverge strongly, 
 </div>
 
 </div>
-
-```{r hill-numbers, fig.height=5}
-hill <- readRDS(file.path(comp_dir, "hill.rds"))
-plot(hill) +
-  ggtitle("Hill Number Accumulation (1990s, q = 0, 1, 2)") +
-  theme_minimal(base_size = 13)
-```
 
 ```{r hill-native-alien, fig.height=8, fig.width=10}
 hill_na <- readRDS(file.path(comp_dir, "hill_native_alien.rds"))

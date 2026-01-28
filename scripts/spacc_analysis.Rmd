@@ -850,6 +850,30 @@ print(beta)
 plot(beta)
 ```
 
+## 10b. Beta Diversity: Native vs Alien
+
+Do natives and aliens show the same turnover-dominance pattern?
+
+```{r beta-native-alien}
+rds_beta_na <- file.path(comp_dir, "beta_native_alien.rds")
+if (file.exists(rds_beta_na)) {
+  beta_na <- readRDS(rds_beta_na)
+} else {
+  beta_native <- spaccBeta(native_mat[idx_90s, , drop = FALSE], coords[idx_90s, ],
+                           n_seeds = 30, index = "sorensen",
+                           distance = "haversine", seed = 42)
+  beta_alien  <- spaccBeta(alien_mat[idx_90s, , drop = FALSE], coords[idx_90s, ],
+                           n_seeds = 30, index = "sorensen",
+                           distance = "haversine", seed = 42)
+  beta_na <- list(native = beta_native, alien = beta_alien)
+  saveRDS(beta_na, rds_beta_na)
+}
+cat("Native beta:\n"); print(beta_na$native)
+cat("\nAlien beta:\n"); print(beta_na$alien)
+plot(beta_na$native)
+plot(beta_na$alien)
+```
+
 ---
 
 # 11. Coverage-Based Rarefaction

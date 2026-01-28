@@ -652,6 +652,88 @@ Der Michaelis-Menten-Schätzer nimmt an, dass die Akkumulationskurve einer besti
 
 ---
 
+## <span class="en">3b. Mapping the Invasion Debt: Estimated Richness per Hexagon</span><span class="de">3b. Kartierung der Invasionsschuld: Geschätzter Artenreichtum pro Hexagon</span>
+
+<div class="en">
+
+The Michaelis-Menten extrapolation above estimated **total** richness for all of Austria. Here we apply the same approach per hexagon: for each cell in the equal-area grid, we run a spatial accumulation with 10 seeds on the within-hex plots, fit Michaelis-Menten, and extract the estimated total species richness ($S_{max}$). This gives a map of *estimated* richness rather than raw observed counts.
+
+</div>
+
+<div class="de">
+
+Die Michaelis-Menten-Extrapolation oben schätzte den **Gesamt**-Artenreichtum für ganz Österreich. Hier wenden wir denselben Ansatz pro Hexagon an: Für jede Zelle im flächengleichen Gitter führen wir eine räumliche Akkumulation mit 10 Seeds auf den Plots innerhalb des Hexagons durch, passen Michaelis-Menten an und extrahieren den geschätzten Gesamtartenreichtum ($S_{max}$).
+
+</div>
+
+```{r hex-sac-maps, fig.height=14, fig.width=10}
+hex_estimates <- readRDS(file.path(comp_dir, "hex_sac_estimates.rds"))
+
+hex_polys_sac <- cell_to_sf(hex_estimates$cell_id, grid = grid)
+hex_polys_sac <- merge(hex_polys_sac, hex_estimates, by = "cell_id")
+
+# Estimated native richness
+p1 <- ggplot() +
+  geom_sf(data = austria_sf, fill = "grey95", color = "#333333", linewidth = 0.8) +
+  geom_sf(data = hex_polys_sac, aes(fill = est_native), color = "white", linewidth = 0.3) +
+  geom_sf(data = austria_sf, fill = NA, color = "#333333", linewidth = 1) +
+  scale_fill_gradient(low = "white", high = "#2E7D32",
+                      name = "Estimated\nnative S_max") +
+  labs(title = "Estimated Native Richness (Michaelis-Menten) / Geschätzter heimischer Reichtum",
+       subtitle = "Per-hexagon SAC extrapolation, 10 seeds each",
+       x = "Longitude", y = "Latitude") +
+  theme_minimal(base_size = 13) +
+  coord_sf(xlim = c(9.3, 17.2), ylim = c(46.3, 49.1))
+
+# Estimated alien richness
+p2 <- ggplot() +
+  geom_sf(data = austria_sf, fill = "grey95", color = "#333333", linewidth = 0.8) +
+  geom_sf(data = hex_polys_sac, aes(fill = est_alien), color = "white", linewidth = 0.3) +
+  geom_sf(data = austria_sf, fill = NA, color = "#333333", linewidth = 1) +
+  scale_fill_gradient(low = "white", high = "#D32F2F",
+                      name = "Estimated\nalien S_max") +
+  labs(title = "Estimated Alien Richness (Michaelis-Menten) / Geschätzter Alien-Reichtum",
+       subtitle = "Per-hexagon SAC extrapolation, 10 seeds each",
+       x = "Longitude", y = "Latitude") +
+  theme_minimal(base_size = 13) +
+  coord_sf(xlim = c(9.3, 17.2), ylim = c(46.3, 49.1))
+
+# Alien sampling completeness
+hex_polys_sac$completeness_alien <- hex_estimates$obs_alien / hex_estimates$est_alien * 100
+
+p3 <- ggplot() +
+  geom_sf(data = austria_sf, fill = "grey95", color = "#333333", linewidth = 0.8) +
+  geom_sf(data = hex_polys_sac, aes(fill = completeness_alien), color = "white", linewidth = 0.3) +
+  geom_sf(data = austria_sf, fill = NA, color = "#333333", linewidth = 1) +
+  scale_fill_distiller(palette = "YlOrRd", direction = 1,
+                       name = "Alien\ncompleteness %") +
+  labs(title = "Alien Sampling Completeness / Alien-Beprobungsvollständigkeit",
+       subtitle = "Observed / estimated species per hexagon",
+       x = "Longitude", y = "Latitude") +
+  theme_minimal(base_size = 13) +
+  coord_sf(xlim = c(9.3, 17.2), ylim = c(46.3, 49.1))
+
+gridExtra::grid.arrange(p1, p2, p3, ncol = 1)
+```
+
+<div class="discussion-box">
+
+<div class="en">
+
+These maps translate the invasion debt into geography. While the first map (estimated native richness) echoes the observed raw-count maps from section 1, the alien map adds information: it shows where the Michaelis-Menten model predicts more species than we have actually found. The completeness map (bottom) highlights where the alien flora is least well-sampled. Regions with low completeness are where we should expect to find new alien records in coming years.
+
+</div>
+
+<div class="de">
+
+Diese Karten übersetzen die Invasionsschuld in Geografie. Während die erste Karte (geschätzter heimischer Reichtum) die beobachteten Rohzählungskarten aus Abschnitt 1 widerspiegelt, fügt die Alien-Karte Information hinzu: Sie zeigt, wo das Michaelis-Menten-Modell mehr Arten vorhersagt, als wir tatsächlich gefunden haben. Die Vollständigkeitskarte (unten) hebt hervor, wo die Alien-Flora am wenigsten gut beprobt ist.
+
+</div>
+
+</div>
+
+---
+
 # <span class="en">4. Turnover, Not Nestedness: What Drives Austrian Beta Diversity</span><span class="de">4. Turnover, nicht Nestedness: Was Österreichs Beta-Diversität antreibt</span>
 
 ## <span class="en">Decomposing Beta Diversity</span><span class="de">Zerlegung der Beta-Diversität</span>
@@ -847,6 +929,48 @@ plots_hab <- plots_hab[!vapply(plots_hab, is.null, logical(1))]
 gridExtra::grid.arrange(grobs = plots_hab, ncol = 2)
 ```
 
+## <span class="en">Estimated Richness by Habitat (SAC-based)</span><span class="de">Geschätzter Artenreichtum nach Habitat (SAC-basiert)</span>
+
+```{r habitat-sac-chart, fig.width=10, fig.height=6}
+hab_estimates <- readRDS(file.path(comp_dir, "habitat_sac_estimates.rds"))
+
+hab_estimates[, habitat_name := ifelse(
+  habitat %in% names(eunis_labels),
+  paste0(habitat, " \u2013 ", eunis_labels[habitat]),
+  habitat
+)]
+
+hab_long <- melt(hab_estimates,
+                 id.vars = c("habitat", "habitat_name", "n_plots"),
+                 measure.vars = c("obs_native", "est_native", "obs_alien", "est_alien"),
+                 variable.name = "metric", value.name = "species")
+
+hab_long[, group := ifelse(grepl("native", metric), "Native", "Alien")]
+hab_long[, type := ifelse(grepl("obs_", metric), "Observed", "Estimated (MM)")]
+
+setorder(hab_long, -species)
+hab_long[, habitat_name := factor(habitat_name,
+                                   levels = unique(hab_estimates[order(est_native)]$habitat_name))]
+
+ggplot(hab_long, aes(x = habitat_name, y = species, fill = interaction(group, type))) +
+  geom_col(position = position_dodge(width = 0.7), width = 0.6) +
+  coord_flip(clip = "off") +
+  scale_fill_manual(
+    values = c("Native.Observed" = "#66BB6A", "Native.Estimated (MM)" = "#2E7D32",
+               "Alien.Observed"  = "#EF9A9A", "Alien.Estimated (MM)"  = "#C62828"),
+    labels = c("Native.Observed" = "Native (observed)", "Native.Estimated (MM)" = "Native (estimated)",
+               "Alien.Observed"  = "Alien (observed)",  "Alien.Estimated (MM)"  = "Alien (estimated)"),
+    name = NULL
+  ) +
+  labs(x = NULL,
+       y = "Species count / Artenzahl",
+       title = "Observed vs Estimated Richness by Habitat / Beobachteter vs geschätzter Reichtum") +
+  theme_minimal(base_size = 13) +
+  theme(plot.title = element_text(face = "bold", size = 14),
+        panel.grid.major.y = element_blank(),
+        legend.position = "bottom")
+```
+
 ## <span class="en">Discussion</span><span class="de">Diskussion</span>
 
 <div class="discussion-box">
@@ -926,23 +1050,141 @@ Chytry et al. (2008) zeigten, dass europäische Habitate sich 100-fach in ihrer 
 
 ---
 
+# <span class="en">6. Beyond Species Counts: Diversity Partitioning and Phylogeny</span><span class="de">6. Jenseits der Artenzahlen: Diversitätspartitionierung und Phylogenie</span>
+
+<div class="en">
+
+Species accumulation curves count species, but biodiversity has multiple dimensions. Here we present three additional analyses from the `spacc` pipeline: **Hill numbers** (effective diversity at different weighting), **alpha/beta/gamma partitioning**, and **phylogenetic diversity accumulation**.
+
+</div>
+
+<div class="de">
+
+Artenakkumulationskurven zählen Arten, aber Biodiversität hat mehrere Dimensionen. Hier präsentieren wir drei zusätzliche Analysen aus der `spacc`-Pipeline: **Hill-Zahlen** (effektive Diversität bei verschiedener Gewichtung), **Alpha/Beta/Gamma-Partitionierung** und **phylogenetische Diversitätsakkumulation**.
+
+</div>
+
+## <span class="en">Hill Numbers: How Dominance Shapes Diversity</span><span class="de">Hill-Zahlen: Wie Dominanz Diversität formt</span>
+
+<div class="theory-box">
+
+<div class="en">
+
+**Hill numbers** (or effective number of species) weight species differently by their abundance:
+
+- $q = 0$: All species count equally (= species richness)
+- $q = 1$: Species weighted by their frequency (= exponential of Shannon entropy)
+- $q = 2$: Dominant species count most (= inverse Simpson)
+
+As $q$ increases, rare species contribute less. If the curves diverge strongly, rare species drive the pattern.
+
+</div>
+
+<div class="de">
+
+**Hill-Zahlen** gewichten Arten unterschiedlich nach ihrer Häufigkeit:
+
+- $q = 0$: Alle Arten gleich gewichtet (= Artenreichtum)
+- $q = 1$: Arten nach Frequenz gewichtet (= Exponential der Shannon-Entropie)
+- $q = 2$: Dominante Arten zählen am meisten (= inverser Simpson)
+
+</div>
+
+</div>
+
+```{r hill-numbers, fig.height=5}
+hill <- readRDS(file.path(comp_dir, "hill.rds"))
+plot(hill) +
+  ggtitle("Hill Number Accumulation (1990s, q = 0, 1, 2)") +
+  theme_minimal(base_size = 13)
+```
+
+## <span class="en">Alpha, Beta, Gamma Partition</span><span class="de">Alpha-, Beta-, Gamma-Partitionierung</span>
+
+```{r diversity-partition, fig.height=5}
+partition <- readRDS(file.path(comp_dir, "partition.rds"))
+plot(partition) +
+  ggtitle("Diversity Partitioning: Alpha, Beta, Gamma") +
+  theme_minimal(base_size = 13)
+```
+
+## <span class="en">Phylogenetic Diversity Accumulation</span><span class="de">Phylogenetische Diversitätsakkumulation</span>
+
+<div class="en">
+
+Phylogenetic diversity captures the evolutionary breadth of a community. We tracked **Mean Pairwise Distance (MPD)** as the spatial accumulation expands: as more distantly related species are added, MPD increases. We also compared native vs alien phylogenetic diversity separately.
+
+</div>
+
+<div class="de">
+
+Phylogenetische Diversität erfasst die evolutionäre Breite einer Gemeinschaft. Wir haben die **mittlere paarweise Distanz (MPD)** verfolgt, während sich die räumliche Akkumulation ausdehnt. Wir haben auch die phylogenetische Diversität für Einheimische und Aliens getrennt verglichen.
+
+</div>
+
+```{r phylo-accumulation, fig.height=5}
+phylo_sac <- readRDS(file.path(comp_dir, "phylo_sac.rds"))
+plot(phylo_sac) +
+  ggtitle("Phylogenetic Diversity Accumulation (MPD & MNTD, 1990s)") +
+  theme_minimal(base_size = 13)
+```
+
+```{r phylo-native-alien, fig.height=5}
+pna <- readRDS(file.path(comp_dir, "phylo_native_alien.rds"))
+phylo_native <- pna$native; phylo_alien <- pna$alien
+rm(pna)
+
+cat("Native MPD accumulation:\n"); print(phylo_native)
+cat("\nAlien MPD accumulation:\n"); print(phylo_alien)
+```
+
+## <span class="en">Discussion</span><span class="de">Diskussion</span>
+
+<div class="discussion-box">
+
+<div class="en">
+
+**Hill numbers** show that the gap between $q=0$ (all species) and $q=2$ (dominant species) widens as sampling extends. This means many of the species added in later stages of the spatial walk are rare, occurring at only a few sites. The early accumulation is driven by common species shared broadly; the late accumulation adds rare specialists that inflate richness ($q=0$) without affecting dominance-weighted diversity ($q=2$) much.
+
+**Diversity partitioning** confirms that beta diversity (among-site turnover) accounts for a large share of total (gamma) diversity. This is consistent with the turnover dominance found in section 4 using Baselga's decomposition.
+
+**Phylogenetic results** show that MPD rises as the sampling window expands geographically: distant sites add not just different species but species from different lineages. This is expected in a country spanning lowland steppe to alpine tundra. The native flora covers broader phylogenetic space than the alien flora, which is concentrated in a few families (Asteraceae, Poaceae, Brassicaceae). Alien species tend to be phylogenetically clustered, consistent with trait-based filters favouring particular lineages for successful invasion (Cadotte et al. 2009).
+
+</div>
+
+<div class="de">
+
+**Hill-Zahlen** zeigen, dass die Lücke zwischen $q=0$ (alle Arten) und $q=2$ (dominante Arten) sich erweitert, wenn die Beprobung zunimmt. Viele der spät hinzugefügten Arten sind selten. Die frühe Akkumulation wird von häufigen, breit geteilten Arten angetrieben; die späte Akkumulation fügt seltene Spezialisten hinzu.
+
+**Diversitätspartitionierung** bestätigt, dass Beta-Diversität (Turnover zwischen Standorten) einen großen Anteil an der gesamten Gamma-Diversität ausmacht.
+
+**Phylogenetische Ergebnisse** zeigen, dass MPD mit zunehmender geografischer Ausdehnung ansteigt: Entfernte Standorte fügen nicht nur andere Arten hinzu, sondern Arten aus anderen Abstammungslinien. Die heimische Flora umfasst einen breiteren phylogenetischen Raum als die Alien-Flora, die sich auf wenige Familien konzentriert (Asteraceae, Poaceae, Brassicaceae).
+
+</div>
+
+</div>
+
+---
+
 # <span class="en">Synthesis</span><span class="de">Synthese</span>
 
 <div class="results-box">
 
 <div class="en">
 
-The five findings connect:
+The six findings connect:
 
 **1. Geography.** Native and alien richness follow different spatial rules. Natives peak in topographically complex pre-Alpine zones; aliens concentrate around human infrastructure in the lowlands.
 
 **2. Accumulation curves.** Aliens have higher spatial beta diversity than natives; you need to sample more area to find the same proportion of species. This confirms quantitatively what the maps show.
 
-**3. Incomplete sampling.** We know ~94% of the native flora but only ~79% of the alien flora. The gap represents invasion debt: species already present but not yet found, or species still arriving.
+**3. Incomplete sampling.** We know ~94% of the native flora but only ~79% of the alien flora. The gap represents invasion debt: species already present but not yet found, or species still arriving. The per-hexagon extrapolation maps show where in Austria that debt is concentrated.
 
 **4. Turnover, not nestedness.** Austria's high beta diversity comes from genuine species replacement along the elevation gradient, not from impoverished subsets. No single reserve can capture the full flora.
 
 **5. Habitat filters.** Invasion concentrates in disturbed, nutrient-rich, well-connected habitats and is excluded from alpine, oligotrophic, and closed-canopy environments.
+
+**6. Multiple dimensions of diversity.** Hill numbers, diversity partitioning, and phylogenetic accumulation all tell the same story from different angles: rare species drive the tail of the accumulation curve, beta diversity dominates gamma, and alien species are phylogenetically more clustered than natives.
 
 These results show that **spatial species accumulation curves** are more than a sampling tool. They connect biogeography, invasion ecology, and conservation planning. The `spacc` package makes this type of analysis available for any georeferenced community dataset.
 
@@ -950,19 +1192,21 @@ These results show that **spatial species accumulation curves** are more than a 
 
 <div class="de">
 
-Diese fünf Ergebnisse bilden eine kohärente Geschichte über Österreichs Pflanzendiversität und ihre Invasion durch Alien-Arten:
+Diese sechs Ergebnisse bilden ein Gesamtbild über Österreichs Pflanzendiversität und ihre Invasion durch Alien-Arten:
 
-**1. Geografie setzt die Bühne.** Die Hotspot-Karten zeigen, dass heimischer und Alien-Artenreichtum grundlegend verschiedenen räumlichen Regeln folgen. Einheimische erreichen ihren Höhepunkt in den topografisch komplexen Voralpen; Aliens konzentrieren sich um menschliche Infrastruktur im Tiefland.
+**1. Geografie.** Die Hotspot-Karten zeigen, dass heimischer und Alien-Artenreichtum verschiedenen räumlichen Regeln folgen. Einheimische erreichen ihren Höhepunkt in den topografisch komplexen Voralpen; Aliens konzentrieren sich um menschliche Infrastruktur im Tiefland.
 
-**2. Räumliche Akkumulation bestätigt den Unterschied.** Die normalisierten Kurven zeigen, dass Aliens eine höhere räumliche Beta-Diversität haben als Einheimische. Dies ist die quantitative Bestätigung dessen, was die Karten qualitativ zeigen.
+**2. Räumliche Akkumulation.** Die normalisierten Kurven zeigen, dass Aliens eine höhere räumliche Beta-Diversität haben als Einheimische.
 
-**3. Die Geschichte ist nicht zu Ende.** Die Extrapolation zeigt, dass wir nur ~79% der Alien-Flora kennen gegenüber ~94% der Einheimischen. Die 21%-Lücke repräsentiert eine Invasionsschuld.
+**3. Unvollständige Beprobung.** Die Extrapolation zeigt, dass wir nur ~79% der Alien-Flora kennen gegenüber ~94% der Einheimischen. Die Hexagon-Karten lokalisieren, wo diese Schuld konzentriert ist.
 
-**4. Höhenlage treibt Diversität.** Die Dominanz von Turnover über Nestedness zeigt, dass Österreichs hohe Beta-Diversität durch echten Artenersatz entlang des Höhengradienten erzeugt wird. Kein einzelnes Reservat kann die gesamte Flora erfassen.
+**4. Turnover, nicht Nestedness.** Österreichs hohe Beta-Diversität entsteht durch echten Artenersatz entlang des Höhengradienten. Kein einzelnes Reservat kann die gesamte Flora erfassen.
 
-**5. Habitat filtert Invasion.** Alien-Invasion konzentriert sich in gestörten, nährstoffreichen Habitaten und wird aus rauen, oligotrophen Umgebungen ausgeschlossen. Diese Heterogenität liefert umsetzbare Ziele für das Naturschutzmanagement.
+**5. Habitatfilter.** Alien-Invasion konzentriert sich in gestörten, nährstoffreichen Habitaten und wird aus rauen, oligotrophen Umgebungen ausgeschlossen.
 
-Zusammen zeigen diese Ergebnisse, dass **räumliche Artenakkumulationskurven** weit mehr als eine Beprobungsmethode sind. Sie sind eine Linse, durch die das Zusammenspiel von Biogeografie, Invasionsökologie, Naturschutzbiologie und Umweltfilterung sichtbar wird.
+**6. Mehrere Diversitätsdimensionen.** Hill-Zahlen, Diversitätspartitionierung und phylogenetische Akkumulation erzählen dieselbe Geschichte aus verschiedenen Blickwinkeln: Seltene Arten treiben das Ende der Akkumulationskurve, Beta-Diversität dominiert Gamma, und Alien-Arten sind phylogenetisch stärker geclustert als Einheimische.
+
+Zusammen zeigen diese Ergebnisse, dass **räumliche Artenakkumulationskurven** weit mehr als eine Beprobungsmethode sind.
 
 </div>
 
@@ -975,6 +1219,7 @@ Zusammen zeigen diese Ergebnisse, dass **räumliche Artenakkumulationskurven** w
 <div class="lit-box">
 
 - Baselga, A. (2010). Partitioning the turnover and nestedness components of beta diversity. *Global Ecology and Biogeography*, 19, 134--143.
+- Cadotte, M.W. et al. (2009). Using phylogenetic, functional and trait diversity to understand patterns of plant community productivity. *PLoS ONE*, 4, e5695.
 - Chao, A. & Jost, L. (2012). Coverage-based rarefaction and extrapolation. *Methods in Ecology and Evolution*, 3, 217--226.
 - Chytry, M. et al. (2008). Habitat invasions by alien plants: a quantitative comparison among Mediterranean, subcontinental and oceanic regions of Europe. *Journal of Applied Ecology*, 45, 448--458.
 - Chytry, M. et al. (2009). European map of alien plant invasions based on the quantitative assessment across habitats. *Diversity and Distributions*, 15, 98--107.
@@ -983,6 +1228,8 @@ Zusammen zeigen diese Ergebnisse, dass **räumliche Artenakkumulationskurven** w
 - Davis, M.A. et al. (2000). Fluctuating resources in plant communities: a general theory of invasibility. *Journal of Ecology*, 88, 528--534.
 - Essl, F. et al. (2011). Socioeconomic legacy yields an invasion debt. *Proceedings of the National Academy of Sciences*, 108, 203--207.
 - Grabherr, G. et al. (2003). *Die Pflanzengesellschaften Osterreichs*. Gustav Fischer Verlag.
+- Hill, M.O. (1973). Diversity and evenness: a unifying notation and its consequences. *Ecology*, 54, 427--432.
+- Jost, L. (2006). Entropy and diversity. *Oikos*, 113, 363--375.
 - Kier, G. et al. (2009). A global assessment of endemism and species richness across island and mainland regions. *PNAS*, 106, 9322--9327.
 - Lockwood, J.L. et al. (2005). The role of propagule pressure in explaining species invasions. *Trends in Ecology & Evolution*, 20, 223--228.
 - Partel, M. et al. (2011). Dark diversity: shedding light on absent species. *Trends in Ecology & Evolution*, 26, 596--600.

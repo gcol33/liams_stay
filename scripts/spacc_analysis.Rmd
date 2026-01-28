@@ -539,6 +539,226 @@ plot(fit_alien)
 
 ---
 
+# 7b. Per-Hexagon Estimated Richness Maps (SAC-based)
+
+For each hexagon in an equal-area grid, run a spatial accumulation with 10 seeds on the within-hex plots, then fit Michaelis-Menten to estimate total species richness (S_max). This gives *estimated* richness per hexagon rather than raw observed counts.
+
+```{r hex-sac-setup}
+library(hexify)
+library(sf)
+library(rnaturalearth)
+
+austria_sf <- ne_countries(scale = "medium", country = "Austria", returnclass = "sf")
+grid <- hex_grid(area_km2 = 750)
+
+# Assign plots to hexagons using hexify()
+hx <- hexify(data.frame(lon = header$Longitude, lat = header$Latitude), grid = grid)
+plot_hex <- data.table(
+  PlotObservationID = header$PlotObservationID,
+  lon = header$Longitude,
+  lat = header$Latitude,
+  cell_id = hx[["cell_id"]]
+)
+
+# Count plots per hex
+hex_counts <- plot_hex[, .N, by = cell_id]
+# Keep hexagons with >= 20 plots (need enough for meaningful SAC + extrapolation)
+keep_cells <- hex_counts[N >= 20]$cell_id
+cat(sprintf("Hexagons with >= 20 plots: %d (out of %d)\n",
+            length(keep_cells), nrow(hex_counts)))
+```
+
+```{r hex-sac-compute}
+rds_hex_sac <- file.path(comp_dir, "hex_sac_estimates.rds")
+
+if (file.exists(rds_hex_sac)) {
+  cat("Loading cached per-hexagon SAC estimates...\n")
+  hex_estimates <- readRDS(rds_hex_sac)
+} else {
+  hex_estimates <- rbindlist(lapply(keep_cells, function(cid) {
+    idx <- which(plot_hex$cell_id == cid)
+    n <- length(idx)
+
+    # Run spacc within this hexagon
+    result <- tryCatch({
+      sac_nat <- spacc(native_mat[idx, , drop = FALSE],
+                       coords[idx, ], n_seeds = 10, method = "knn",
+                       distance = "haversine", seed = 42)
+      sac_ali <- spacc(alien_mat[idx, , drop = FALSE],
+                       coords[idx, ], n_seeds = 10, method = "knn",
+                       distance = "haversine", seed = 42)
+      sac_tot <- spacc(all_mat[idx, , drop = FALSE],
+                       coords[idx, ], n_seeds = 10, method = "knn",
+                       distance = "haversine", seed = 42)
+
+      # Extrapolate Michaelis-Menten
+      fit_nat <- tryCatch(extrapolate(sac_nat, model = "michaelis-menten"),
+                          error = function(e) NULL)
+      fit_ali <- tryCatch(extrapolate(sac_ali, model = "michaelis-menten"),
+                          error = function(e) NULL)
+      fit_tot <- tryCatch(extrapolate(sac_tot, model = "michaelis-menten"),
+                          error = function(e) NULL)
+
+      # Observed species counts
+      obs_native <- ncol(native_mat[idx, colSums(native_mat[idx, , drop = FALSE]) > 0,
+                                     drop = FALSE])
+      obs_alien  <- ncol(alien_mat[idx, colSums(alien_mat[idx, , drop = FALSE]) > 0,
+                                    drop = FALSE])
+      obs_total  <- ncol(all_mat[idx, colSums(all_mat[idx, , drop = FALSE]) > 0,
+                                  drop = FALSE])
+
+      data.table(
+        cell_id     = cid,
+        n_plots     = n,
+        obs_native  = obs_native,
+        obs_alien   = obs_alien,
+        obs_total   = obs_total,
+        est_native  = if (!is.null(fit_nat)) fit_nat$asymptote else NA_real_,
+        est_alien   = if (!is.null(fit_ali)) fit_ali$asymptote else NA_real_,
+        est_total   = if (!is.null(fit_tot)) fit_tot$asymptote else NA_real_
+      )
+    }, error = function(e) {
+      data.table(cell_id = cid, n_plots = n,
+                 obs_native = NA, obs_alien = NA, obs_total = NA,
+                 est_native = NA, est_alien = NA, est_total = NA)
+    })
+    cat(sprintf("  hex %s: %d plots, est_native=%.0f, est_alien=%.0f\n",
+                cid, n,
+                result$est_native, result$est_alien))
+    result
+  }))
+  saveRDS(hex_estimates, rds_hex_sac)
+}
+
+cat(sprintf("Estimated richness for %d hexagons\n", nrow(hex_estimates)))
+cat(sprintf("  Native range: %.0f - %.0f\n",
+            min(hex_estimates$est_native, na.rm = TRUE),
+            max(hex_estimates$est_native, na.rm = TRUE)))
+cat(sprintf("  Alien range:  %.0f - %.0f\n",
+            min(hex_estimates$est_alien, na.rm = TRUE),
+            max(hex_estimates$est_alien, na.rm = TRUE)))
+```
+
+```{r hex-sac-completeness}
+hex_estimates[, completeness_native := obs_native / est_native * 100]
+hex_estimates[, completeness_alien  := obs_alien / est_alien * 100]
+hex_estimates[, completeness_total  := obs_total / est_total * 100]
+
+cat(sprintf("Median completeness: native=%.1f%%, alien=%.1f%%\n",
+            median(hex_estimates$completeness_native, na.rm = TRUE),
+            median(hex_estimates$completeness_alien, na.rm = TRUE)))
+```
+
+```{r hex-sac-maps, fig.height=12, fig.width=10}
+hex_polys <- cell_to_sf(hex_estimates$cell_id, grid = grid)
+hex_polys <- merge(hex_polys, hex_estimates, by = "cell_id")
+
+# Estimated native richness
+p1 <- ggplot() +
+  geom_sf(data = austria_sf, fill = "grey95", color = "#333333", linewidth = 0.8) +
+  geom_sf(data = hex_polys, aes(fill = est_native), color = "white", linewidth = 0.3) +
+  geom_sf(data = austria_sf, fill = NA, color = "#333333", linewidth = 1) +
+  scale_fill_gradient(low = "white", high = "#2E7D32",
+                      name = "Estimated\nnative S_max") +
+  labs(title = "Estimated Native Species Richness (Michaelis-Menten S_max per hexagon)",
+       x = "Longitude", y = "Latitude") +
+  theme_minimal(base_size = 12) +
+  coord_sf(xlim = c(9.3, 17.2), ylim = c(46.3, 49.1))
+
+# Estimated alien richness
+p2 <- ggplot() +
+  geom_sf(data = austria_sf, fill = "grey95", color = "#333333", linewidth = 0.8) +
+  geom_sf(data = hex_polys, aes(fill = est_alien), color = "white", linewidth = 0.3) +
+  geom_sf(data = austria_sf, fill = NA, color = "#333333", linewidth = 1) +
+  scale_fill_gradient(low = "white", high = "#D32F2F",
+                      name = "Estimated\nalien S_max") +
+  labs(title = "Estimated Alien Species Richness (Michaelis-Menten S_max per hexagon)",
+       x = "Longitude", y = "Latitude") +
+  theme_minimal(base_size = 12) +
+  coord_sf(xlim = c(9.3, 17.2), ylim = c(46.3, 49.1))
+
+# Completeness: % observed / estimated
+p3 <- ggplot() +
+  geom_sf(data = austria_sf, fill = "grey95", color = "#333333", linewidth = 0.8) +
+  geom_sf(data = hex_polys, aes(fill = completeness_alien), color = "white", linewidth = 0.3) +
+  geom_sf(data = austria_sf, fill = NA, color = "#333333", linewidth = 1) +
+  scale_fill_distiller(palette = "YlOrRd", direction = 1,
+                       name = "Alien\ncompleteness %") +
+  labs(title = "Alien Sampling Completeness per Hexagon (observed / estimated)",
+       x = "Longitude", y = "Latitude") +
+  theme_minimal(base_size = 12) +
+  coord_sf(xlim = c(9.3, 17.2), ylim = c(46.3, 49.1))
+
+gridExtra::grid.arrange(p1, p2, p3, ncol = 1)
+```
+
+## Per-Habitat Estimated Richness
+
+Same approach but grouping by EUNIS habitat type rather than hexagon.
+
+```{r habitat-sac-estimates}
+# Define habitat variables (also used later in section 16)
+habitat    <- header$Eunis_lvl1
+hab_counts <- table(habitat)
+keep_habs  <- names(hab_counts[hab_counts >= 100])
+keep_habs  <- keep_habs[!keep_habs %in% c("", "~")]
+
+rds_hab_sac <- file.path(comp_dir, "habitat_sac_estimates.rds")
+
+if (file.exists(rds_hab_sac)) {
+  cat("Loading cached per-habitat SAC estimates...\n")
+  hab_estimates <- readRDS(rds_hab_sac)
+} else {
+  hab_estimates <- rbindlist(lapply(keep_habs, function(h) {
+    idx <- which(habitat == h)
+    n <- length(idx)
+
+    result <- tryCatch({
+      sac_nat <- spacc(native_mat[idx, , drop = FALSE],
+                       coords[idx, ], n_seeds = 10, method = "knn",
+                       distance = "haversine", seed = 42)
+      sac_ali <- spacc(alien_mat[idx, , drop = FALSE],
+                       coords[idx, ], n_seeds = 10, method = "knn",
+                       distance = "haversine", seed = 42)
+
+      fit_nat <- tryCatch(extrapolate(sac_nat, model = "michaelis-menten"),
+                          error = function(e) NULL)
+      fit_ali <- tryCatch(extrapolate(sac_ali, model = "michaelis-menten"),
+                          error = function(e) NULL)
+
+      obs_native <- ncol(native_mat[idx, colSums(native_mat[idx, , drop = FALSE]) > 0,
+                                     drop = FALSE])
+      obs_alien  <- ncol(alien_mat[idx, colSums(alien_mat[idx, , drop = FALSE]) > 0,
+                                    drop = FALSE])
+
+      data.table(
+        habitat     = h,
+        n_plots     = n,
+        obs_native  = obs_native,
+        obs_alien   = obs_alien,
+        est_native  = if (!is.null(fit_nat)) fit_nat$asymptote else NA_real_,
+        est_alien   = if (!is.null(fit_ali)) fit_ali$asymptote else NA_real_,
+        completeness_native = if (!is.null(fit_nat)) obs_native / fit_nat$asymptote * 100 else NA,
+        completeness_alien  = if (!is.null(fit_ali)) obs_alien / fit_ali$asymptote * 100 else NA
+      )
+    }, error = function(e) {
+      data.table(habitat = h, n_plots = n,
+                 obs_native = NA, obs_alien = NA,
+                 est_native = NA, est_alien = NA,
+                 completeness_native = NA, completeness_alien = NA)
+    })
+    cat(sprintf("  %s: %d plots, est_native=%.0f, est_alien=%.0f\n",
+                h, n, result$est_native, result$est_alien))
+    result
+  }))
+  saveRDS(hab_estimates, rds_hab_sac)
+}
+
+print(hab_estimates)
+```
+
+---
+
 # 8. Methods Comparison
 
 Compare kNN (spatially structured) vs random (null model) accumulation. We use the 1990s decade (largest chunk) for speed.

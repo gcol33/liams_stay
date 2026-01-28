@@ -1,7 +1,7 @@
 ---
-title: '<span class="en">Day 3: Key Findings — Five Stories from Austrian Plant Diversity</span><span class="de">Tag 3: Schlüsselergebnisse — Fünf Geschichten der österreichischen Pflanzendiversität</span>'
-subtitle: '<span class="en">A Discussion of the Most Compelling Results</span><span class="de">Eine Diskussion der überzeugendsten Ergebnisse</span>'
-author: '<span class="en">Ecology Workshop</span><span class="de">Ökologie-Workshop</span>'
+title: '<span class="en">Day 3: Key Findings from the Austrian Vegetation Data</span><span class="de">Tag 3: Wichtigste Ergebnisse aus den österreichischen Vegetationsdaten</span>'
+subtitle: '<span class="en">What the spacc analysis tells us</span><span class="de">Was uns die spacc-Analyse verrät</span>'
+author: "Liam's Stay - Results"
 date: "`r Sys.Date()`"
 output:
   html_document:
@@ -214,9 +214,9 @@ n_alien   <- uniqueN(species[STATUS == "neo"]$WFO_TAXON)
 
 <div class="en">
 
-This document distils the **five most compelling findings** from our comprehensive analysis of ~`r format(n_plots, big.mark = ",")` Austrian vegetation plots. Each finding is presented with its figure, followed by an extended discussion that connects the result to broader ecological theory, conservation practice, and open questions.
+This document presents **five key findings** from our analysis of ~`r format(n_plots, big.mark = ",")` Austrian vegetation plots (EVA database). Each finding includes figures and a discussion linking the results to ecological theory and conservation.
 
-The five findings were selected because they each tell a distinct part of the Austrian biodiversity story:
+These five findings were chosen because they each address a different aspect of Austrian plant diversity:
 
 | # | Finding | Why it matters |
 |---|---------|----------------|
@@ -331,23 +331,21 @@ ggplot() +
 
 **What the maps show:**
 
-These three hexagonal heatmaps reveal a striking spatial decoupling between native and alien plant richness across Austria. Native species richness peaks in the pre-Alpine foothills and montane zones, where overlapping vegetation belts create high habitat heterogeneity. Alien richness, by contrast, concentrates in the eastern lowlands, the Danube corridor, and around major urban centres.
+Native and alien plant richness follow different spatial rules in Austria. Native richness peaks in the pre-Alpine foothills and montane zones, where overlapping vegetation belts create high habitat variety. Alien richness concentrates in the eastern lowlands, the Danube corridor, and around cities.
 
-**Why natives and aliens peak in different places:**
+**Why they peak in different places:**
 
-The native richness pattern reflects Austria's topographic complexity. Between 500 and 1500 m elevation, multiple vegetation zones converge: sub-montane deciduous forests, montane coniferous forests, and sub-alpine meadows. This elevational compression creates high local species richness through niche partitioning along temperature, moisture, and soil gradients (Rahbek 1995). The mid-elevation diversity peak is one of the most robust patterns in mountain ecology.
+Native richness reflects topographic complexity. Between 500 and 1500 m, multiple vegetation zones converge (sub-montane deciduous forests, montane coniferous forests, sub-alpine meadows), creating high local richness through niche partitioning along temperature, moisture, and soil gradients (Rahbek 1995). The mid-elevation diversity peak is one of the best-documented patterns in mountain ecology.
 
-The alien pattern tells a different story. Alien species require **introduction pathways**: trade routes, transport infrastructure, gardens, agricultural imports. These pathways converge on cities and lowland corridors. The Danube valley serves as a continental-scale dispersal highway, connecting central Europe's botanical gardens, ports, and agricultural hinterlands. Vienna alone has been a gateway for ornamental and crop-associated aliens since the 18th century. The Pannonian Basin in eastern Austria adds warm, continental conditions that favour many thermophilic alien species from southern Europe and Asia.
+Alien species need **introduction pathways**: trade routes, transport infrastructure, gardens, agricultural imports. These converge on cities and lowland corridors. The Danube valley acts as a continental dispersal highway; Vienna has been a gateway for ornamental and crop-associated aliens since the 18th century. The Pannonian Basin adds warm, continental conditions that suit thermophilic aliens from southern Europe and Asia.
 
-**The proportion map is the most informative:**
+**The proportion map matters most:**
 
-While absolute richness maps can be confounded by sampling intensity (more plots in accessible areas), the alien *proportion* map controls for this by expressing aliens as a fraction of total diversity at each site. The clear east-west gradient confirms that the invasion pattern is not a sampling artefact. In the Pannonian lowlands, aliens can constitute 10--15% of local plot flora, while in the Alpine core they remain below 2%. This 5-fold difference in invasion intensity across a single country illustrates why national-scale analyses need spatial methods.
+Absolute richness maps can be confounded by sampling intensity. The alien *proportion* map corrects for this. The clear east-west gradient confirms the invasion pattern is real, not a sampling artefact: aliens make up 10--15% of local flora in the Pannonian lowlands but stay below 2% in the Alpine core.
 
-**Connections to invasion theory:**
+**Links to invasion theory:**
 
-The spatial concentration of aliens around human infrastructure supports the **propagule pressure** hypothesis (Lockwood et al. 2005): invasion success depends not just on species traits but on the rate at which individuals arrive. Urban areas, transport corridors, and agricultural land receive a continuous rain of alien propagules through trade goods, garden escapes, and contaminated soil. Alpine areas, though not intrinsically resistant, simply receive far fewer propagules.
-
-This also connects to the **fluctuating resource** hypothesis (Davis et al. 2000): disturbed, nutrient-enriched lowland habitats experience regular resource pulses (tilling, fertilisation, construction) that create invasion windows. In contrast, the nutrient-poor, climatically harsh Alpine environment offers few such windows.
+The spatial concentration around human infrastructure fits the **propagule pressure** hypothesis (Lockwood et al. 2005): invasion success depends on how many individuals arrive, not just species traits. It also fits the **fluctuating resource** hypothesis (Davis et al. 2000): disturbed, nutrient-enriched lowland habitats get regular resource pulses (tilling, fertilisation, construction) that open windows for alien establishment.
 
 </div>
 
@@ -474,29 +472,29 @@ plot_grouped_normalized(sac_grouped,
 
 **The core result:**
 
-When we normalize both curves to their respective totals, the alien curve lies consistently below the native curve. This means that as we walk across the Austrian landscape sampling plots in spatial order, we discover a *smaller fraction* of the alien flora at each step compared to the native flora. The permutation test confirms this difference is statistically significant (p < 0.05), and the grouped analysis (where both groups are accumulated along the exact same spatial paths) eliminates any confounding from different walk trajectories.
+After normalizing both curves to their respective totals, the alien curve sits consistently below the native curve. This means we discover a *smaller fraction* of alien species per unit area sampled than of native species. The permutation test confirms this (p < 0.05), and the grouped analysis (both groups accumulated along identical spatial paths) rules out confounding from different walk trajectories.
 
-**What does a lower normalized curve mean biologically?**
+**What a lower normalized curve means:**
 
-A lower normalized curve indicates higher **spatial beta diversity**: the species composition changes more between distant sites. For natives, many widespread generalist species (common grasses, widespread forest herbs) appear early in the spatial walk and are shared across much of the landscape. Once you have sampled a few hundred plots from different regions, you have already encountered 50-60% of native species. For aliens, the story differs: each region harbours a partly different set of aliens, reflecting their distinct introduction histories and habitat preferences. A spatial walk through the Vienna Basin encounters different aliens than one through the Inn Valley or the Klagenfurt Basin.
+A lower curve = higher **spatial beta diversity**: species composition changes more between distant sites. Many native generalists (common grasses, widespread forest herbs) show up early in the walk and are shared across most of the country. After a few hundred plots from different regions, you've already seen 50--60% of natives. For aliens, each region has a partly different set, reflecting distinct introduction histories. A spatial walk through the Vienna Basin encounters different aliens than one through the Inn Valley.
 
 **The multi-focus introduction model:**
 
-This pattern is best explained by what we call the **multi-focus introduction model**. Native species have had millennia to reach equilibrium distributions governed by climate and soil. Alien species, by contrast, arrived at specific introduction points (ports, cities, botanical gardens, agricultural areas) at different times and from different source regions. Each introduction point acts as a separate focus of establishment and local spread:
+Native species had millennia to reach equilibrium distributions shaped by climate and soil. Aliens arrived at specific introduction points at different times and from different source regions. Each point acts as a separate focus of local spread:
 
-- **Vienna and eastern Austria** received Pannonian and Eurasian steppe aliens through trade along the Danube
-- **Innsbruck and western Austria** received Mediterranean and Alpine-pass aliens through the Brenner corridor
-- **Graz and southern Austria** received Balkan and sub-Mediterranean aliens through southern trade routes
+- **Eastern Austria**: Pannonian and Eurasian steppe aliens via the Danube
+- **Western Austria**: Mediterranean aliens via the Brenner corridor
+- **Southern Austria**: Balkan and sub-Mediterranean aliens via southern trade routes
 
-Because each region received a partly different alien species pool, more of the landscape must be traversed to encounter the full complement. This spatial heterogeneity in alien composition is the signature of a flora still in the process of range expansion.
+Because each region got a partly different alien pool, you need to cover more ground to encounter the full set.
 
-**Temporal robustness:**
+**Stability over time:**
 
-The decade-by-decade analysis (shown in the full results) confirms this pattern is stable across all sampling periods from the 1970s to the 2010s. The alien curve shape does not converge toward the native shape over time, suggesting that alien species are not homogenizing across the landscape, at least not yet. This challenges the expectation that with time, aliens would spread everywhere and erase spatial differences.
+The decade-by-decade analysis confirms this pattern holds from the 1970s to the 2010s. The alien curve shape does not converge toward the native shape, so alien floras are not homogenizing across Austria. At least not yet.
 
-**Implications for monitoring:**
+**For monitoring:**
 
-This finding has practical consequences for biodiversity monitoring. If a monitoring programme samples only a single region, it will systematically underestimate alien diversity more than native diversity. To achieve the same proportional coverage of alien species as natives, a monitoring network must span more of Austria's geographic and environmental extent. This argues for spatially distributed monitoring designs over intensive local surveys.
+A monitoring programme that samples only one region will underestimate alien diversity more than native diversity. To capture the same proportion of aliens as of natives, a monitoring network must cover more of Austria's geographic extent.
 
 </div>
 
@@ -591,31 +589,29 @@ plot(fit_alien) + ggtitle("Alien Species: Observed vs Extrapolated")
 - **Native species:** ~2,378 observed out of ~2,525 estimated = **~94% completeness**
 - **Alien species:** ~323 observed out of ~411 estimated = **~79% completeness**
 
-The 15-percentage-point gap in sampling completeness between natives and aliens is one of the most striking results from the entire analysis. It is not simply that we have fewer alien species; we are also proportionally *further from knowing them all*.
+The 15-point gap is one of the clearest results from the analysis. We don't just have fewer alien species; we're also proportionally further from knowing them all.
 
 **Why is the alien flora less complete?**
 
-Three complementary mechanisms explain this gap:
+Three mechanisms explain this:
 
-1. **Ongoing introductions.** New alien species continue arriving in Austria through international trade, horticulture, and climate-driven range shifts. The global accumulation of alien plant species shows no sign of saturation (Seebens et al. 2017). Each year brings new garden escapes, contaminants in seed lots, and hitchhikers on imported goods. The "missing" ~88 alien species are not necessarily undiscovered in nature; some may not have arrived yet but will under current trade regimes.
+1. **Ongoing introductions.** New aliens keep arriving through trade, horticulture, and climate-driven range shifts. Global alien plant accumulation shows no sign of saturating (Seebens et al. 2017). Some of the "missing" ~88 species may not have arrived yet.
 
-2. **Dispersal lag.** Many alien species already present in Austria have not yet spread to all suitable habitats. A species introduced to a Viennese botanical garden in the 1990s may take decades to colonize the Danube floodplains, the railway embankments of Upper Austria, or the ruderal sites of Carinthia. During this spreading phase, the species exists in Austria but is detectable only at a few sites. With 52,000 plots spread unevenly across the country, many such early-stage colonizers are missed.
+2. **Dispersal lag.** Aliens already in Austria haven't reached all suitable habitats. A species introduced to a Viennese garden in the 1990s may take decades to colonize the Danube floodplains or the ruderal sites of Carinthia. With 52,000 plots spread unevenly, many early-stage colonizers are missed.
 
-3. **Detection difficulty.** Some alien species are taxonomically challenging (critical groups where identification requires specialist knowledge) or occupy habitats that are under-sampled (urban wastelands, industrial sites, private gardens). These species are present but effectively invisible to standard vegetation surveys.
+3. **Detection difficulty.** Some aliens are taxonomically tricky or occupy under-sampled habitats (urban wastelands, private gardens, industrial sites).
 
-**The concept of invasion debt:**
+**Invasion debt:**
 
-Essl et al. (2011) introduced the concept of **invasion debt** by analogy with extinction debt: just as habitat loss creates a time-delayed wave of extinctions, past introductions create a time-delayed wave of invasions. Species that have been introduced but not yet spread represent a "debt" that will be "paid" through future range expansion, even if no new species are introduced.
+Essl et al. (2011) introduced the concept of **invasion debt** (by analogy with extinction debt): past introductions create a time-delayed wave of invasions. Our ~88 "missing" alien species represent the upper bound of this debt. Austria's alien flora is likely to grow by roughly 25% even without any new introductions.
 
-For Austria, our estimate of ~88 "missing" alien species represents the upper bound of this debt. Some of these species may already be present in under-sampled areas (they are dark diversity), while others may arrive through future introductions. Either way, Austria's alien flora is likely to grow by approximately 25% from its current observed level, even under a hypothetical scenario of zero new introductions.
+**For conservation:**
 
-**What this means for conservation planning:**
+Species lists are not static. Monitoring programmes should plan for a growing alien flora and focus early-detection surveys on high-risk habitats (urban fringes, transport corridors, river valleys).
 
-Conservation strategies that use current alien species lists as static baselines will underestimate future management needs. Monitoring programmes should plan for a growing alien flora and allocate resources for early detection surveys in high-risk habitats (urban fringes, transport corridors, river valleys). The invasion debt concept also means that the success of biosecurity measures cannot be judged by current invasion levels alone; the effects of today's introductions may not manifest for decades.
+**Model caveat:**
 
-**A cautionary note on the model:**
-
-The Michaelis-Menten estimator assumes that the accumulation curve follows a specific functional form. If the true relationship between sampling effort and species discovery is more complex (e.g., if there is a long tail of very rare species), the asymptote may be underestimated. Chao-type estimators and Good-Turing corrections could provide alternative estimates. The 94% and 79% figures should be treated as reasonable approximations rather than precise values.
+The Michaelis-Menten estimator assumes a specific functional form. If the accumulation curve has a long tail of very rare species, the asymptote may be underestimated. The 94% and 79% figures are reasonable approximations, not exact values.
 
 </div>
 
@@ -704,38 +700,25 @@ plot(beta) +
 
 <div class="en">
 
-**Turnover dominates overwhelmingly.**
+**Turnover dominates.**
 
-As the spatial sampling window expands across Austria, the beta diversity decomposition reveals that **species turnover** accounts for the vast majority of compositional differences between sites. Nestedness contributes comparatively little.
+The beta diversity decomposition shows that **species turnover** accounts for most compositional differences between sites. Nestedness plays a minor role.
 
-**What this tells us about Austria's ecology:**
+**What this tells us:**
 
-Austria spans an extraordinary elevation gradient from 115 m (Neusiedler See, Burgenland) to 3,798 m (Grossglockner, Carinthia) within a country only ~575 km wide. This 3,683 m elevation range creates a near-continuous series of vegetation belts:
-
-1. **Pannonian steppe grasslands** (115--300 m): thermophilic, drought-tolerant species like *Festuca rupicola*, *Stipa* spp.
-2. **Colline deciduous forests** (300--700 m): *Quercus*, *Carpinus*, *Tilia* with rich herb layers
-3. **Montane conifer-broadleaf transition** (700--1200 m): *Fagus sylvatica* gives way to *Picea abies*
-4. **Subalpine coniferous forests** (1200--1800 m): *Picea*, *Larix decidua*, *Pinus cembra*
-5. **Alpine meadows and dwarf shrubs** (1800--2500 m): *Carex curvula*, *Loiseleuria procumbens*, *Salix* spp.
-6. **Subnival and nival zone** (>2500 m): *Ranunculus glacialis*, *Saxifraga* spp., cushion plants
-
-These zones host genuinely **different species**, not just nested subsets of the same flora. A lowland *Quercus*-*Carpinus* forest and a high-alpine *Carex curvula* grassland share virtually no species. This species replacement along elevation gradients is the classic signature of environmental filtering through temperature, growing season length, snow cover duration, and soil development.
+Austria spans 115 m (Neusiedler See) to 3,798 m (Grossglockner) in a country only ~575 km wide. This 3,683 m elevation range produces a series of vegetation belts, from Pannonian steppe grasslands through deciduous and coniferous forests to alpine meadows and nival cushion plants. These belts host genuinely **different species**, not nested subsets. A lowland *Quercus*-*Carpinus* forest and a high-alpine *Carex curvula* grassland share almost no species.
 
 **Why nestedness is low:**
 
-Low nestedness means that species-poor sites (e.g., high alpine areas with 15--30 species per plot) are not simply impoverished versions of species-rich lowland sites (40--80 species per plot). Instead, they host entirely different species. An alpine meadow lacks lowland species not because it has "lost" them but because the environmental conditions exclude them entirely and support a distinct, cold-adapted community.
+Species-poor alpine sites (15--30 species per plot) are not impoverished versions of richer lowland sites (40--80 species). They have entirely different species, selected by entirely different environmental filters. This contrasts with island systems where nestedness dominates (small islands contain subsets of large-island floras).
 
-This contrasts with archipelago systems where nestedness dominates: small islands contain subsets of the species found on large islands, reflecting area-dependent extinction. Austria's flora is shaped by environmental gradients, not by area-dependent processes.
+**For conservation:**
 
-**Conservation implications:**
+In a turnover-dominated system, **no single reserve can capture the full flora**. An alpine national park protects alpine specialists but misses Pannonian steppe species, and vice versa. This supports a distributed network of reserves across elevations and biogeographic regions (the "Several Small" side of the SLOSS debate; Tjorve 2010). Austria's existing network (Neusiedler See to Hohe Tauern) partly does this already.
 
-The dominance of turnover has a direct and important consequence for conservation planning. In a turnover-dominated system, **no single protected area can capture the full flora**. A large national park in the Alps protects alpine specialists but misses Pannonian steppe species entirely. Conversely, a lowland nature reserve near the Neusiedler See captures thermophilic specialists absent from any mountain reserve.
+**Link to the alien pattern:**
 
-This supports the "**Several Small**" position in the SLOSS debate (Tjorve 2010) for Austria: a distributed network of smaller reserves spanning different elevations and biogeographic regions will capture more total diversity than a single large reserve of equivalent total area. Austria's existing protected area network partially reflects this, with reserves spanning from the Neusiedler See-Seewinkel National Park (lowland Pannonian) through the Kalkalpen National Park (montane) to the Hohe Tauern National Park (alpine-nival). Our analysis provides quantitative support for maintaining and expanding this distributed approach.
-
-**Connection to the invasion story:**
-
-The turnover result also contextualizes the alien species pattern. Because turnover dominates, the alien flora at each location reflects the specific combination of local environmental conditions and introduction history. Different lowland regions receive different aliens (Pannonian vs. continental vs. sub-Mediterranean), and these aliens barely penetrate the alpine zone. The invasion is not a uniform wave spreading outward; it is a mosaic of local invasions, each shaped by the local environment and human land use.
+Because turnover dominates, the alien flora at each site reflects local conditions and introduction history. Different lowland regions receive different aliens; these aliens barely penetrate the alpine zone. Invasion is not a uniform wave but a mosaic of local events shaped by land use and environment.
 
 </div>
 
@@ -780,7 +763,7 @@ Das Turnover-Ergebnis kontextualisiert auch das Alien-Artenmuster. Weil Turnover
 
 ## <span class="en">Alien Species Share by Habitat</span><span class="de">Alien-Artenanteil nach Habitat</span>
 
-```{r habitat-alien-share}
+```{r habitat-alien-share, fig.width=9, fig.height=5}
 hab_alien <- header[, .(PlotObservationID, Eunis_lvl1)]
 hab_alien <- merge(hab_alien,
                    species[, .(n_native = sum(STATUS == "native"),
@@ -793,11 +776,49 @@ hab_summary <- hab_alien[Eunis_lvl1 %in% keep_habs,
                            mean_alien  = round(mean(n_alien), 1),
                            alien_pct   = round(mean(n_alien / (n_native + n_alien)) * 100, 1)),
                          by = Eunis_lvl1]
-setorder(hab_summary, -alien_pct)
-knitr::kable(hab_summary,
-             col.names = c("EUNIS Habitat", "Mean Native / Mittl. Heimisch",
-                           "Mean Alien / Mittl. Alien", "Alien % / Alien %"),
-             align = "lrrr")
+
+# Add human-readable EUNIS level 1 labels
+eunis_labels <- c(
+  C = "Inland surface waters",
+  D = "Mires, bogs & fens",
+  E = "Grasslands",
+  F = "Shrub heathlands",
+  G = "Woodland & forest",
+  H = "Inland unvegetated",
+  I = "Arable land & gardens",
+  J = "Urban & industrial",
+  K = "Not applicable",
+  MA = "Coastal saltmarshes",
+  N = "Coastal habitats",
+  Q = "Wetlands",
+  R = "Grasslands & tall forbs",
+  S = "Arctic/alpine scrub",
+  T = "Forests",
+  U = "Inland cliffs & screes",
+  V = "Man-made habitats"
+)
+hab_summary[, habitat_name := ifelse(
+  Eunis_lvl1 %in% names(eunis_labels),
+  paste0(Eunis_lvl1, " \u2013 ", eunis_labels[Eunis_lvl1]),
+  Eunis_lvl1
+)]
+
+setorder(hab_summary, alien_pct)
+hab_summary[, habitat_name := factor(habitat_name, levels = habitat_name)]
+
+# Bar chart
+ggplot(hab_summary, aes(x = habitat_name, y = alien_pct)) +
+  geom_col(fill = "#D32F2F", width = 0.7) +
+  geom_text(aes(label = paste0(alien_pct, "%")),
+            hjust = -0.15, size = 3.5) +
+  coord_flip(clip = "off") +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
+  labs(x = NULL,
+       y = "Alien species share (%) / Alien-Artenanteil (%)",
+       title = "Alien share by EUNIS habitat / Alien-Anteil nach EUNIS-Habitat") +
+  theme_minimal(base_size = 13) +
+  theme(plot.title = element_text(face = "bold", size = 14),
+        panel.grid.major.y = element_blank())
 ```
 
 ## <span class="en">Accumulation Curves by Habitat</span><span class="de">Akkumulationskurven nach Habitat</span>
@@ -815,9 +836,10 @@ hab_na_results <- readRDS(file.path(comp_dir, "habitat_native_alien.rds"))
 
 plots_hab <- lapply(keep_habs, function(h) {
   if (is.null(hab_na_results[[h]])) return(NULL)
+  lab <- if (h %in% names(eunis_labels)) paste0(h, " \u2013 ", eunis_labels[h]) else h
   plot_normalized(Native = hab_na_results[[h]]$native,
                   Alien  = hab_na_results[[h]]$alien,
-                  title = sprintf("Habitat %s: Native vs Alien (normalized)", h)) +
+                  title = sprintf("%s: Native vs Alien (normalized)", lab)) +
     scale_color_manual(values = c("Native" = "#2E7D32", "Alien" = "#D32F2F")) +
     scale_fill_manual(values = c("Native" = "#2E7D32", "Alien" = "#D32F2F"))
 })
@@ -831,49 +853,33 @@ gridExtra::grid.arrange(grobs = plots_hab, ncol = 2)
 
 <div class="en">
 
-**Invasion is not uniform across habitats.**
+**Invasion varies hugely between habitats.**
 
-The EUNIS habitat-level analysis reveals that alien species invasion is highly heterogeneous. Some habitats show alien proportions exceeding 10%, while others remain virtually alien-free. This heterogeneity is not random: it follows clear ecological rules.
+The bar chart makes this clear: some habitats have alien proportions above 10%, others are almost alien-free. This is not random.
 
-**Which habitats are most invaded and why?**
+**Most invaded habitats** share three traits:
 
-The most invaded habitats in Austria share several characteristics:
+- **Frequent disturbance** (ploughing, mowing, flooding) creates open niches. Repeated disturbance prevents native competitive exclusion.
+- **High nutrient availability.** Fertilised grasslands, floodplains, roadside verges get regular resource pulses that favour alien establishment (Davis et al. 2000).
+- **Human connectivity.** Railway embankments, highway margins, and canal banks receive a steady supply of alien propagules.
 
-- **High disturbance frequency.** Habitats subject to regular physical disturbance (ploughing, mowing, trampling, flooding) create open niches that aliens can colonize. Agricultural fields, ruderal sites, and urban wastelands experience repeated disturbance cycles that prevent competitive exclusion by established natives.
+**Least invaded habitats** include:
 
-- **High resource availability.** Nutrient-rich habitats (fertilised grasslands, floodplains with sediment deposition, roadside verges with runoff accumulation) provide the resources needed for rapid alien establishment. The fluctuating resource hypothesis (Davis et al. 2000) predicts that invasion peaks during resource pulses, and these habitats experience such pulses regularly.
+- **Alpine grasslands** (short growing seasons, frost, thin soils exclude most aliens)
+- **Oligotrophic bogs and fens** (nutrient-poor, waterlogged; most aliens can't cope)
+- **Closed-canopy forests** (light limitation at ground level blocks alien germination, though gaps and edges show higher alien presence)
 
-- **Strong human connectivity.** Habitats along transport corridors (railway embankments, highway margins, canal banks) receive a continuous supply of alien propagules. The combination of disturbance, propagule pressure, and resource availability makes these habitats ideal invasion gateways.
+Chytry et al. (2008) showed that European habitats differ 100-fold in invasion susceptibility. Our data confirms this for Austria: **habitat type matters more than climate, geography, or propagule pressure**.
 
-**Which habitats resist invasion?**
+**Within-habitat accumulation curves:**
 
-The least invaded habitats include:
+In heavily invaded habitats, the alien curve approaches the native curve (aliens have spread broadly). In lightly invaded habitats, the alien curve is steeper and erratic (a few occurrences at a few sites, typical of early-stage invasion).
 
-- **Alpine and subalpine grasslands.** Harsh climatic conditions (short growing seasons, frost, high UV radiation, thin soils) exclude most alien species, which tend to be adapted to temperate lowland conditions. The few aliens that reach alpine elevations are typically cold-tolerant ruderals that remain confined to disturbed microsites (ski areas, mountain huts, construction sites).
+**Management priorities:**
 
-- **Oligotrophic bogs and fens.** Nutrient-poor, waterlogged conditions create strong environmental filters. The specialised native flora (Sphagnum mosses, carnivorous plants, sedges) is adapted to these extreme conditions; most alien species cannot tolerate them.
-
-- **Closed-canopy forests.** Light limitation is a powerful filter against alien establishment. Dense spruce forests or beech forests with closed canopies receive very little light at ground level, preventing alien germination. However, forest edges, gaps, and managed forests with thinning operations show higher alien presence.
-
-**The 100-fold variation:**
-
-Chytry et al. (2008) demonstrated that European habitats vary 100-fold in their susceptibility to alien plant invasions. Our Austrian data confirms this continental pattern at a national scale. The most invaded habitat type can harbour 50--100 times more aliens (proportionally) than the least invaded type. This variation is far larger than differences between countries or biogeographic regions, indicating that **habitat type is the primary determinant of invasion susceptibility**, more important than climate, geography, or even propagule pressure.
-
-**Accumulation curve shapes differ between habitats:**
-
-The within-habitat native vs. alien accumulation curves reveal additional detail:
-
-- In heavily invaded habitats, the alien curve shape approaches the native curve shape, indicating that aliens have spread broadly within those habitat types and achieved a relatively even spatial distribution. These aliens behave almost like "honorary natives" within their preferred habitats.
-
-- In lightly invaded habitats, the alien curve is steeper and more erratic, reflecting a few spatially clustered occurrences rather than widespread presence. This is the signature of early-stage invasion: a species arrives at one or two sites but has not yet had time (or conditions) to spread.
-
-**Practical application for conservation:**
-
-This habitat-level analysis provides a prioritisation framework for invasion management:
-
-1. **High priority:** Monitor and manage the most invaded habitat types, where aliens are already abundant and spreading. Early intervention here can prevent further entrenchment.
-2. **Moderate priority:** Watch habitats at the transition zone, where aliens are present but not yet dominant. These are the "invasion frontiers" where management can be most cost-effective.
-3. **Lower priority:** Alpine and oligotrophic habitats currently resist invasion. However, climate change may erode this resistance by warming alpine conditions and altering hydrological regimes in wetlands. Long-term monitoring is still warranted.
+1. **High:** Most invaded habitats, where aliens are already abundant. Early action prevents further establishment.
+2. **Medium:** Transition habitats where aliens are present but not yet dominant.
+3. **Lower:** Alpine and oligotrophic habitats resist invasion for now, but climate change may weaken that resistance.
 
 </div>
 
@@ -920,25 +926,25 @@ Chytry et al. (2008) zeigten, dass europäische Habitate sich 100-fach in ihrer 
 
 ---
 
-# <span class="en">Synthesis: Five Stories, One Landscape</span><span class="de">Synthese: Fünf Geschichten, eine Landschaft</span>
+# <span class="en">Synthesis</span><span class="de">Synthese</span>
 
 <div class="results-box">
 
 <div class="en">
 
-These five findings form a coherent narrative about Austrian plant diversity and its invasion by alien species:
+The five findings connect:
 
-**1. Geography sets the stage.** The hotspot maps reveal that native and alien species richness follow fundamentally different spatial rules. Natives peak in the topographically complex pre-Alpine zones; aliens concentrate around human infrastructure in the lowlands. This spatial decoupling is the geographic expression of two different species pools shaped by two different sets of processes.
+**1. Geography.** Native and alien richness follow different spatial rules. Natives peak in topographically complex pre-Alpine zones; aliens concentrate around human infrastructure in the lowlands.
 
-**2. Spatial accumulation confirms the difference.** The normalized accumulation curves demonstrate that aliens have higher spatial beta diversity than natives, requiring more landscape coverage to detect the same proportion of species. This is the quantitative confirmation of what the maps show qualitatively: aliens are spatially heterogeneous in composition.
+**2. Accumulation curves.** Aliens have higher spatial beta diversity than natives; you need to sample more area to find the same proportion of species. This confirms quantitatively what the maps show.
 
-**3. The story is not over.** The Michaelis-Menten extrapolation reveals that we know only ~79% of the alien flora, compared to ~94% of natives. The 21% gap represents an invasion debt — aliens already present but not yet detected, or species en route through ongoing trade and climate change. Austria's alien flora will continue to grow.
+**3. Incomplete sampling.** We know ~94% of the native flora but only ~79% of the alien flora. The gap represents invasion debt: species already present but not yet found, or species still arriving.
 
-**4. Elevation drives diversity.** The dominance of turnover over nestedness reveals that Austria's high beta diversity is generated by genuine species replacement along the elevation gradient, not by differential species loss. This has direct consequences for conservation: no single reserve can capture the full flora; a distributed network is essential.
+**4. Turnover, not nestedness.** Austria's high beta diversity comes from genuine species replacement along the elevation gradient, not from impoverished subsets. No single reserve can capture the full flora.
 
-**5. Habitat filters invasion.** Alien invasion is not a uniform process. It concentrates in disturbed, nutrient-rich, well-connected habitats and is excluded from harsh, oligotrophic, and closed-canopy environments. This habitat-level heterogeneity provides actionable targets for conservation management.
+**5. Habitat filters.** Invasion concentrates in disturbed, nutrient-rich, well-connected habitats and is excluded from alpine, oligotrophic, and closed-canopy environments.
 
-Together, these findings demonstrate that **spatial species accumulation curves** are far more than a sampling methodology. They are a lens through which the interplay of biogeography, invasion ecology, conservation biology, and environmental filtering becomes visible. The `spacc` package makes this lens accessible for any community dataset with geographic coordinates.
+These results show that **spatial species accumulation curves** are more than a sampling tool. They connect biogeography, invasion ecology, and conservation planning. The `spacc` package makes this type of analysis available for any georeferenced community dataset.
 
 </div>
 

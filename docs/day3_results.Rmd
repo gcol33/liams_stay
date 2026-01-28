@@ -1457,7 +1457,7 @@ plot(hab_combined) +
 
 ## <span class="en">Alien Species Share by Habitat</span><span class="de">Alien-Artenanteil nach Habitat</span>
 
-```{r habitat-alien-share}
+```{r habitat-alien-share, fig.width=9, fig.height=5}
 hab_alien <- header[, .(PlotObservationID, Eunis_lvl1)]
 hab_alien <- merge(hab_alien,
                    species[, .(n_native = sum(STATUS == "native"),
@@ -1470,11 +1470,49 @@ hab_summary <- hab_alien[Eunis_lvl1 %in% keep_habs,
                            mean_alien  = round(mean(n_alien), 1),
                            alien_pct   = round(mean(n_alien / (n_native + n_alien)) * 100, 1)),
                          by = Eunis_lvl1]
-setorder(hab_summary, -alien_pct)
-knitr::kable(hab_summary,
-             col.names = c("EUNIS Habitat", "Mean Native / Mittl. Heimisch",
-                           "Mean Alien / Mittl. Alien", "Alien % / Alien %"),
-             align = "lrrr")
+
+# Add human-readable EUNIS level 1 labels
+eunis_labels <- c(
+  C = "Inland surface waters",
+  D = "Mires, bogs & fens",
+  E = "Grasslands",
+  F = "Shrub heathlands",
+  G = "Woodland & forest",
+  H = "Inland unvegetated",
+  I = "Arable land & gardens",
+  J = "Urban & industrial",
+  K = "Not applicable",
+  MA = "Coastal saltmarshes",
+  N = "Coastal habitats",
+  Q = "Wetlands",
+  R = "Grasslands & tall forbs",
+  S = "Arctic/alpine scrub",
+  T = "Forests",
+  U = "Inland cliffs & screes",
+  V = "Man-made habitats"
+)
+hab_summary[, habitat_name := ifelse(
+  Eunis_lvl1 %in% names(eunis_labels),
+  paste0(Eunis_lvl1, " \u2013 ", eunis_labels[Eunis_lvl1]),
+  Eunis_lvl1
+)]
+
+setorder(hab_summary, alien_pct)
+hab_summary[, habitat_name := factor(habitat_name, levels = habitat_name)]
+
+# Bar chart
+ggplot(hab_summary, aes(x = habitat_name, y = alien_pct)) +
+  geom_col(fill = "#D32F2F", width = 0.7) +
+  geom_text(aes(label = paste0(alien_pct, "%")),
+            hjust = -0.15, size = 3.5) +
+  coord_flip(clip = "off") +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
+  labs(x = NULL,
+       y = "Alien species share (%) / Alien-Artenanteil (%)",
+       title = "Alien share by EUNIS habitat / Alien-Anteil nach EUNIS-Habitat") +
+  theme_minimal(base_size = 13) +
+  theme(plot.title = element_text(face = "bold", size = 14),
+        panel.grid.major.y = element_blank())
 ```
 
 ## <span class="en">Native vs. Alien Within Habitats</span><span class="de">Heimisch vs. Alien innerhalb von Habitaten</span>
@@ -1484,9 +1522,10 @@ hab_na_results <- readRDS(file.path(comp_dir, "habitat_native_alien.rds"))
 
 plots_hab <- lapply(keep_habs, function(h) {
   if (is.null(hab_na_results[[h]])) return(NULL)
+  lab <- if (h %in% names(eunis_labels)) paste0(h, " \u2013 ", eunis_labels[h]) else h
   plot_normalized(Native = hab_na_results[[h]]$native,
                   Alien  = hab_na_results[[h]]$alien,
-                  title = sprintf("Habitat %s: Native vs Alien (normalized)", h)) +
+                  title = sprintf("%s: Native vs Alien (normalized)", lab)) +
     scale_color_manual(values = c("Native" = "#2E7D32", "Alien" = "#D32F2F")) +
     scale_fill_manual(values = c("Native" = "#2E7D32", "Alien" = "#D32F2F"))
 })

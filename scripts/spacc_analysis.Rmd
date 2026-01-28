@@ -128,6 +128,7 @@ make_pa_matrix <- function(sp_data, plot_ids) {
                 value.var = "WFO_TAXON")
   wide <- wide[match(plot_ids, PlotObservationID)]
   mat <- as.matrix(wide[, -1])
+  mat[is.na(mat)] <- 0L
   rownames(mat) <- wide$PlotObservationID
   mat
 }
@@ -484,6 +485,7 @@ habitat <- header$Eunis_lvl1
 
 hab_counts <- table(habitat)
 keep_habs  <- names(hab_counts[hab_counts >= 100])
+keep_habs  <- keep_habs[!keep_habs %in% c("", "~")]  # drop junk codes
 cat(sprintf("Habitats with >= 100 plots: %s\n", paste(keep_habs, collapse = ", ")))
 cat("Plot counts:\n")
 print(hab_counts[keep_habs])

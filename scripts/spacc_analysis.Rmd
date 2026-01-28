@@ -388,11 +388,14 @@ if (file.exists(rds_startpoint)) {
 
     # Run from these specific seeds on ALL sites (full dataset kNN walk)
     curves_all    <- spacc:::cpp_knn_kdtree_parallel_seeds(
-      all_mat, coords$x, coords$y, seeds, n_cores = nc)
+      all_mat, coords$x, coords$y, seeds, n_cores = nc,
+      progress = FALSE, distance = "haversine")
     curves_native <- spacc:::cpp_knn_kdtree_parallel_seeds(
-      native_mat, coords$x, coords$y, seeds, n_cores = nc)
+      native_mat, coords$x, coords$y, seeds, n_cores = nc,
+      progress = FALSE, distance = "haversine")
     curves_alien  <- spacc:::cpp_knn_kdtree_parallel_seeds(
-      alien_mat, coords$x, coords$y, seeds, n_cores = nc)
+      alien_mat, coords$x, coords$y, seeds, n_cores = nc,
+      progress = FALSE, distance = "haversine")
 
     list(all = curves_all, native = curves_native, alien = curves_alien,
          seeds = seeds, n_seeds = length(seeds))
@@ -803,6 +806,28 @@ if (file.exists(rds_hill)) {
 }
 print(hill)
 plot(hill)
+```
+
+## 9b. Hill Numbers: Native vs Alien
+
+Compare Hill number accumulation separately for native and alien species.
+
+```{r hill-native-alien}
+rds_hill_na <- file.path(comp_dir, "hill_native_alien.rds")
+if (file.exists(rds_hill_na)) {
+  hill_na <- readRDS(rds_hill_na)
+} else {
+  hill_native <- spaccHill(native_mat[idx_90s, , drop = FALSE], coords[idx_90s, ],
+                           q = c(0, 1, 2), n_seeds = 30,
+                           method = "knn", distance = "haversine", seed = 42)
+  hill_alien  <- spaccHill(alien_mat[idx_90s, , drop = FALSE], coords[idx_90s, ],
+                           q = c(0, 1, 2), n_seeds = 30,
+                           method = "knn", distance = "haversine", seed = 42)
+  hill_na <- list(native = hill_native, alien = hill_alien)
+  saveRDS(hill_na, rds_hill_na)
+}
+cat("Native Hill:", class(hill_na$native), "\n")
+cat("Alien Hill:", class(hill_na$alien), "\n")
 ```
 
 ---

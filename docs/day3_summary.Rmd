@@ -678,7 +678,7 @@ hex_undersampled <- hex_polys[!hex_polys$cell_id %in% hex_estimates$cell_id, ]
 # Estimated native richness
 p1 <- ggplot() +
   geom_sf(data = austria_sf, fill = "grey95", color = "#333333", linewidth = 0.8) +
-  geom_sf(data = hex_undersampled, fill = "#D9D9D9", color = "white", linewidth = 0.3) +
+  geom_sf(data = hex_undersampled, fill = "#BDBDBD", color = "grey70", linewidth = 0.3) +
   geom_sf(data = hex_polys_sac, aes(fill = est_native), color = "white", linewidth = 0.3) +
   geom_sf(data = austria_sf, fill = NA, color = "#333333", linewidth = 1) +
   scale_fill_gradient(low = "white", high = "#2E7D32",
@@ -692,7 +692,7 @@ p1 <- ggplot() +
 # Estimated alien richness
 p2 <- ggplot() +
   geom_sf(data = austria_sf, fill = "grey95", color = "#333333", linewidth = 0.8) +
-  geom_sf(data = hex_undersampled, fill = "#D9D9D9", color = "white", linewidth = 0.3) +
+  geom_sf(data = hex_undersampled, fill = "#BDBDBD", color = "grey70", linewidth = 0.3) +
   geom_sf(data = hex_polys_sac, aes(fill = est_alien), color = "white", linewidth = 0.3) +
   geom_sf(data = austria_sf, fill = NA, color = "#333333", linewidth = 1) +
   scale_fill_gradient(low = "white", high = "#D32F2F",
@@ -708,7 +708,7 @@ hex_polys_sac$completeness_alien <- hex_estimates$obs_alien / hex_estimates$est_
 
 p3 <- ggplot() +
   geom_sf(data = austria_sf, fill = "grey95", color = "#333333", linewidth = 0.8) +
-  geom_sf(data = hex_undersampled, fill = "#D9D9D9", color = "white", linewidth = 0.3) +
+  geom_sf(data = hex_undersampled, fill = "#BDBDBD", color = "grey70", linewidth = 0.3) +
   geom_sf(data = hex_polys_sac, aes(fill = completeness_alien), color = "white", linewidth = 0.3) +
   geom_sf(data = austria_sf, fill = NA, color = "#333333", linewidth = 1) +
   scale_fill_distiller(palette = "YlOrRd", direction = 1,
@@ -1133,6 +1133,47 @@ plot(hill) +
   theme_minimal(base_size = 13)
 ```
 
+```{r hill-native-alien, fig.height=8, fig.width=10}
+hill_na <- readRDS(file.path(comp_dir, "hill_native_alien.rds"))
+
+# Build a combined data frame for native and alien Hill curves
+build_hill_df <- function(h, group_label) {
+  q_names <- names(h$curves)
+  n <- ncol(h$curves[[1]])
+  do.call(rbind, lapply(q_names, function(qn) {
+    data.frame(
+      sites = seq_len(n),
+      value = colMeans(h$curves[[qn]]),
+      q     = qn,
+      group = group_label
+    )
+  }))
+}
+
+df_hill <- rbind(
+  build_hill_df(hill_na$native, "Native / Heimisch"),
+  build_hill_df(hill_na$alien,  "Alien / Alien")
+)
+df_hill$q <- factor(df_hill$q,
+                    levels = c("q0.0", "q1.0", "q2.0"),
+                    labels = c("q = 0 (Richness)", "q = 1 (Shannon)", "q = 2 (Simpson)"))
+
+ggplot(df_hill, aes(x = sites, y = value, colour = group)) +
+  geom_line(linewidth = 0.8, alpha = 0.9) +
+  facet_wrap(~ q, scales = "free_y", ncol = 1) +
+  scale_colour_manual(values = c("Native / Heimisch" = "#2E7D32", "Alien / Alien" = "#C62828")) +
+  labs(
+    title = "Hill Numbers: Native vs Alien Species Accumulation",
+    subtitle = "Each panel shows a different diversity order (free y-axis) / Jedes Panel zeigt eine andere Diversitätsordnung",
+    x = "Number of sites in spatial walk / Anzahl Standorte",
+    y = "Effective number of species",
+    colour = NULL
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(legend.position = "top",
+        strip.text = element_text(face = "bold", size = 12))
+```
+
 ## <span class="en">Alpha, Beta, Gamma Partition</span><span class="de">Alpha-, Beta-, Gamma-Partitionierung</span>
 
 ```{r diversity-partition, fig.height=5}
@@ -1156,11 +1197,38 @@ Phylogenetische Diversität erfasst die evolutionäre Breite einer Gemeinschaft.
 
 </div>
 
-```{r phylo-accumulation, fig.height=5}
+```{r phylo-accumulation, fig.height=6, fig.width=10}
 phylo_sac <- readRDS(file.path(comp_dir, "phylo_sac.rds"))
-plot(phylo_sac) +
-  ggtitle("Phylogenetic Diversity Accumulation (MPD & MNTD, 1990s)") +
-  theme_minimal(base_size = 13)
+
+# Extract mean curves across seeds
+mpd_mean  <- colMeans(phylo_sac$curves$mpd)
+mntd_mean <- colMeans(phylo_sac$curves$mntd)
+
+df_phylo_all <- data.frame(
+  sites  = rep(seq_along(mpd_mean), 2),
+  value  = c(mpd_mean, mntd_mean),
+  metric = factor(
+    rep(c("MPD (Mean Pairwise Distance)",
+          "MNTD (Mean Nearest Taxon Distance)"), each = length(mpd_mean)),
+    levels = c("MPD (Mean Pairwise Distance)",
+               "MNTD (Mean Nearest Taxon Distance)"))
+)
+
+ggplot(df_phylo_all, aes(x = sites, y = value, colour = metric)) +
+  geom_line(linewidth = 0.9) +
+  facet_wrap(~ metric, scales = "free_y", ncol = 1) +
+  scale_colour_manual(values = c(
+    "MPD (Mean Pairwise Distance)" = "#1565C0",
+    "MNTD (Mean Nearest Taxon Distance)" = "#E65100")) +
+  labs(
+    title = "Phylogenetic Diversity Accumulation (1990s)",
+    subtitle = "Each panel uses its own y-axis / Jedes Panel hat eine eigene y-Achse",
+    x = "Number of sites in spatial walk / Anzahl Standorte",
+    y = "Phylogenetic distance"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(legend.position = "none",
+        strip.text = element_text(face = "bold", size = 12))
 ```
 
 ```{r phylo-native-alien, fig.height=5, fig.width=10}

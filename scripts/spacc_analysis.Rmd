@@ -17,6 +17,68 @@ knitr::opts_chunk$set(
 )
 comp_dir <- file.path(dirname(getwd()), "comp")
 dir.create(comp_dir, showWarnings = FALSE, recursive = TRUE)
+
+# Helper: plot multiple spacc objects normalized to proportion of total species
+plot_normalized <- function(..., title = "Species Accumulation Curves (normalized)",
+                            ci = TRUE, ci_alpha = 0.3) {
+  objs <- list(...)
+  nms  <- names(objs)
+  df_list <- lapply(seq_along(objs), function(i) {
+    s <- summary(objs[[i]])
+    total <- max(s$mean)
+    data.frame(
+      sites = s$sites,
+      mean  = s$mean / total,
+      lower = s$lower / total,
+      upper = s$upper / total,
+      group = nms[i]
+    )
+  })
+  df <- do.call(rbind, df_list)
+  df$group <- factor(df$group, levels = nms)
+  p <- ggplot(df, aes(x = sites, y = mean, color = group, fill = group))
+  if (ci) {
+    p <- p + geom_ribbon(aes(ymin = lower, ymax = upper),
+                         alpha = ci_alpha, color = NA)
+  }
+  p + geom_line(linewidth = 1) +
+    scale_y_continuous(labels = scales::percent) +
+    labs(x = "Sites sampled", y = "Proportion of total species",
+         title = title, color = "Group", fill = "Group") +
+    theme_minimal(base_size = 12)
+}
+
+# Helper: plot grouped spacc object with normalized y-axis
+plot_grouped_normalized <- function(x, title = "Normalized Accumulation",
+                                     ci = TRUE, ci_level = 0.95, ci_alpha = 0.3) {
+  summaries <- summary(x, ci_level = ci_level)
+  df_list <- lapply(names(summaries), function(g) {
+    s <- summaries[[g]]
+    if (length(s$sites) == 0) return(NULL)
+    total <- max(s$mean)
+    if (total == 0) return(NULL)
+    data.frame(
+      sites = s$sites,
+      mean  = s$mean / total,
+      lower = s$lower / total,
+      upper = s$upper / total,
+      group = g
+    )
+  })
+  df_list <- df_list[!vapply(df_list, is.null, logical(1))]
+  df <- do.call(rbind, df_list)
+  df$group <- factor(df$group, levels = x$group_names)
+  p <- ggplot(df, aes(x = sites, y = mean, color = group, fill = group))
+  if (ci) {
+    p <- p + geom_ribbon(aes(ymin = lower, ymax = upper),
+                         alpha = ci_alpha, color = NA)
+  }
+  p + geom_line(linewidth = 1) +
+    scale_y_continuous(labels = scales::percent) +
+    labs(x = "Sites sampled", y = "Proportion of total species",
+         title = title, color = "Group", fill = "Group") +
+    theme_minimal(base_size = 12)
+}
 ```
 
 # Setup
@@ -151,8 +213,8 @@ if (file.exists(rds_decade_na)) {
 
 ```{r plot-native-alien-decades, fig.height=10}
 for (d in decades) {
-  print(plot(decade_na_results[[d]]) +
-          ggtitle(sprintf("%s: Native vs Alien", d)))
+  print(plot_grouped_normalized(decade_na_results[[d]],
+          title = sprintf("%s: Native vs Alien (normalized)", d)))
 }
 ```
 
@@ -181,8 +243,8 @@ if (file.exists(rds_pooled)) {
 ```
 
 ```{r plot-pooled}
-combined <- c(Native = sac_native, Alien = sac_alien, All = sac_all)
-plot(combined)
+plot_normalized(Native = sac_native, Alien = sac_alien,
+                title = "Pooled: Native vs Alien (normalized)")
 ```
 
 ## Compare native vs alien statistically
@@ -407,7 +469,8 @@ if (file.exists(rds_grouped)) {
                        distance = "haversine", groups = status_vec, seed = 42)
   saveRDS(sac_grouped, rds_grouped)
 }
-plot(sac_grouped)
+plot_grouped_normalized(sac_grouped,
+                        title = "Grouped by Status (normalized)")
 ```
 
 ---
@@ -491,9 +554,9 @@ if (file.exists(rds_hab_na)) {
 
 for (h in keep_habs) {
   if (is.null(hab_na_results[[h]])) next
-  comb <- c(Native = hab_na_results[[h]]$native,
-            Alien  = hab_na_results[[h]]$alien)
-  print(plot(comb) + ggtitle(sprintf("Habitat %s: Native vs Alien", h)))
+  print(plot_normalized(Native = hab_na_results[[h]]$native,
+                        Alien  = hab_na_results[[h]]$alien,
+                        title = sprintf("Habitat %s: Native vs Alien (normalized)", h)))
 }
 ```
 

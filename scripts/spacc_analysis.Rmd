@@ -264,7 +264,254 @@ plot(comp)
 
 ---
 
-# 5. Extrapolation
+# 5. Species Richness Heatmaps
+
+Map per-site species richness across Austria to reveal spatial hotspots. These are the real data equivalent of the simulated heatmaps from Day 2 theory.
+
+```{r hotspot-maps, fig.height=10, fig.width=10}
+library(sf)
+library(rnaturalearth)
+
+austria_sf <- ne_countries(scale = "medium", country = "Austria", returnclass = "sf")
+
+# Per-site richness from the matrices
+site_richness <- data.frame(
+  x = coords$x,
+  y = coords$y,
+  native  = rowSums(native_mat),
+  alien   = rowSums(alien_mat),
+  total   = rowSums(all_mat)
+)
+site_richness$alien_pct <- site_richness$alien / site_richness$total * 100
+
+# Native heatmap
+p_native <- ggplot() +
+  geom_sf(data = austria_sf, fill = "grey95", color = "#666666", linewidth = 0.8) +
+  geom_point(data = site_richness, aes(x = x, y = y, color = native),
+             size = 0.4, alpha = 0.6) +
+  geom_sf(data = austria_sf, fill = NA, color = "#333333", linewidth = 1) +
+  scale_color_gradient(low = "#E8F5E9", high = "#1B5E20", name = "Native\nSpecies") +
+  labs(title = "Native Species Richness per Plot",
+       x = "Longitude", y = "Latitude") +
+  theme_minimal(base_size = 12) +
+  coord_sf(xlim = c(9.3, 17.2), ylim = c(46.3, 49.1))
+
+# Alien heatmap
+p_alien <- ggplot() +
+  geom_sf(data = austria_sf, fill = "grey95", color = "#666666", linewidth = 0.8) +
+  geom_point(data = site_richness, aes(x = x, y = y, color = alien),
+             size = 0.4, alpha = 0.6) +
+  geom_sf(data = austria_sf, fill = NA, color = "#333333", linewidth = 1) +
+  scale_color_gradient(low = "#FFEBEE", high = "#B71C1C", name = "Alien\nSpecies") +
+  labs(title = "Alien Species Richness per Plot",
+       x = "Longitude", y = "Latitude") +
+  theme_minimal(base_size = 12) +
+  coord_sf(xlim = c(9.3, 17.2), ylim = c(46.3, 49.1))
+
+gridExtra::grid.arrange(p_native, p_alien, ncol = 1)
+```
+
+```{r hotspot-alien-pct, fig.height=5, fig.width=10}
+# Proportion alien map
+ggplot() +
+  geom_sf(data = austria_sf, fill = "grey95", color = "#666666", linewidth = 0.8) +
+  geom_point(data = site_richness, aes(x = x, y = y, color = alien_pct),
+             size = 0.4, alpha = 0.6) +
+  geom_sf(data = austria_sf, fill = NA, color = "#333333", linewidth = 1) +
+  scale_color_gradient2(low = "#1B5E20", mid = "#FFF9C4", high = "#B71C1C",
+                        midpoint = median(site_richness$alien_pct, na.rm = TRUE),
+                        name = "Alien %") +
+  labs(title = "Alien Species as % of Total Richness",
+       x = "Longitude", y = "Latitude") +
+  theme_minimal(base_size = 12) +
+  coord_sf(xlim = c(9.3, 17.2), ylim = c(46.3, 49.1))
+```
+
+---
+
+# 6. Detecting Invasion Hotspots via Starting Points
+
+Accumulation curves reveal where species are concentrated. By starting spatial walks from different regions, we can detect **invasion hotspots**: if aliens accumulate faster when starting near cities, that confirms urban areas are introduction points. Conversely, native species should accumulate faster from alpine starts. We pick seeds from three regions: the **Vienna lowlands** (east, urban), the **Alps** (west, natural), and **central Austria**.
+
+```{r startpoint-regions, fig.height=6, fig.width=10}
+# Define three geographic regions
+regions <- list(
+  "Vienna & East" = list(lon = c(15.5, 17.0), lat = c(47.5, 48.5), color = "#D32F2F"),
+  "Alps (West)"   = list(lon = c(10.0, 12.5), lat = c(46.5, 47.5), color = "#1976D2"),
+  "Center"        = list(lon = c(13.0, 15.0), lat = c(47.5, 48.5), color = "#7B1FA2")
+)
+
+# Find sites in each region
+region_indices <- lapply(regions, function(r) {
+  which(coords$x >= r$lon[1] & coords$x <= r$lon[2] &
+        coords$y >= r$lat[1] & coords$y <= r$lat[2])
+})
+
+# Map showing regions and plot locations
+region_df <- do.call(rbind, lapply(names(regions), function(nm) {
+  idx <- region_indices[[nm]]
+  data.frame(x = coords$x[idx], y = coords$y[idx], region = nm)
+}))
+
+cat("Sites per region:\n")
+for (nm in names(regions)) cat(sprintf("  %s: %d sites\n", nm, length(region_indices[[nm]])))
+
+ggplot() +
+  geom_sf(data = austria_sf, fill = "grey95", color = "#666666", linewidth = 0.8) +
+  geom_point(data = data.frame(x = coords$x, y = coords$y),
+             aes(x = x, y = y), color = "grey80", size = 0.2, alpha = 0.3) +
+  geom_point(data = region_df, aes(x = x, y = y, color = region), size = 0.8, alpha = 0.6) +
+  geom_sf(data = austria_sf, fill = NA, color = "#333333", linewidth = 1) +
+  scale_color_manual(values = c("Vienna & East" = "#D32F2F",
+                                 "Alps (West)" = "#1976D2",
+                                 "Center" = "#7B1FA2")) +
+  labs(title = "Starting Regions for Invasion Hotspot Detection",
+       subtitle = "Where you start reveals where species are concentrated",
+       x = "Longitude", y = "Latitude", color = "Region") +
+  theme_minimal(base_size = 12) +
+  coord_sf(xlim = c(9.3, 17.2), ylim = c(46.3, 49.1))
+```
+
+```{r startpoint-curves, fig.height=8, fig.width=10}
+rds_startpoint <- file.path(comp_dir, "startpoint.rds")
+if (file.exists(rds_startpoint)) {
+  sp_results <- readRDS(rds_startpoint)
+} else {
+  n_seeds_per_region <- 15
+  set.seed(42)
+
+  sp_results <- lapply(names(regions), function(nm) {
+    idx <- region_indices[[nm]]
+    # Sample seed sites (0-based for C++)
+    seeds <- sample(idx, min(n_seeds_per_region, length(idx)), replace = FALSE) - 1L
+
+    # Run from these specific seeds on ALL sites (full dataset kNN walk)
+    curves_all    <- spacc:::cpp_knn_kdtree_parallel_seeds(
+      all_mat, coords$x, coords$y, seeds, distance = "haversine")
+    curves_native <- spacc:::cpp_knn_kdtree_parallel_seeds(
+      native_mat, coords$x, coords$y, seeds, distance = "haversine")
+    curves_alien  <- spacc:::cpp_knn_kdtree_parallel_seeds(
+      alien_mat, coords$x, coords$y, seeds, distance = "haversine")
+
+    list(all = curves_all, native = curves_native, alien = curves_alien,
+         seeds = seeds, n_seeds = length(seeds))
+  })
+  names(sp_results) <- names(regions)
+  saveRDS(sp_results, rds_startpoint)
+}
+
+# Plot: all-species curves by starting region
+curves_df <- do.call(rbind, lapply(names(sp_results), function(nm) {
+  mat <- sp_results[[nm]]$all
+  n <- ncol(mat)
+  total <- max(mat)
+  data.frame(
+    sites = seq_len(n),
+    mean  = colMeans(mat) / total,
+    region = nm
+  )
+}))
+curves_df$region <- factor(curves_df$region, levels = names(regions))
+
+p1 <- ggplot(curves_df, aes(x = sites, y = mean, color = region)) +
+  geom_line(linewidth = 1) +
+  scale_color_manual(values = c("Vienna & East" = "#D32F2F",
+                                 "Alps (West)" = "#1976D2",
+                                 "Center" = "#7B1FA2")) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = "All Species: Curves by Starting Region",
+       x = "Sites sampled", y = "Proportion of total species",
+       color = "Start Region") +
+  theme_minimal(base_size = 12)
+
+# Plot: native curves by starting region
+native_df <- do.call(rbind, lapply(names(sp_results), function(nm) {
+  mat <- sp_results[[nm]]$native
+  n <- ncol(mat)
+  total <- max(mat)
+  data.frame(
+    sites = seq_len(n),
+    mean  = colMeans(mat) / total,
+    region = nm
+  )
+}))
+native_df$region <- factor(native_df$region, levels = names(regions))
+
+p2 <- ggplot(native_df, aes(x = sites, y = mean, color = region)) +
+  geom_line(linewidth = 1) +
+  scale_color_manual(values = c("Vienna & East" = "#D32F2F",
+                                 "Alps (West)" = "#1976D2",
+                                 "Center" = "#7B1FA2")) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = "Native Species: Curves by Starting Region",
+       x = "Sites sampled", y = "Proportion of total native species",
+       color = "Start Region") +
+  theme_minimal(base_size = 12)
+
+# Plot: alien curves by starting region
+alien_df <- do.call(rbind, lapply(names(sp_results), function(nm) {
+  mat <- sp_results[[nm]]$alien
+  n <- ncol(mat)
+  total <- max(mat)
+  data.frame(
+    sites = seq_len(n),
+    mean  = colMeans(mat) / total,
+    region = nm
+  )
+}))
+alien_df$region <- factor(alien_df$region, levels = names(regions))
+
+p3 <- ggplot(alien_df, aes(x = sites, y = mean, color = region)) +
+  geom_line(linewidth = 1) +
+  scale_color_manual(values = c("Vienna & East" = "#D32F2F",
+                                 "Alps (West)" = "#1976D2",
+                                 "Center" = "#7B1FA2")) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = "Alien Species: Curves by Starting Region",
+       x = "Sites sampled", y = "Proportion of total alien species",
+       color = "Start Region") +
+  theme_minimal(base_size = 12)
+
+gridExtra::grid.arrange(p1, p2, p3, ncol = 1)
+```
+
+```{r startpoint-early, fig.height=5, fig.width=10}
+# Zoom into first 1000 sites to see early differences clearly
+n_zoom <- min(1000, ncol(sp_results[[1]]$all))
+
+early_df <- do.call(rbind, lapply(names(sp_results), function(nm) {
+  mat_n <- sp_results[[nm]]$native
+  mat_a <- sp_results[[nm]]$alien
+  total_n <- max(mat_n)
+  total_a <- max(mat_a)
+  data.frame(
+    sites = rep(seq_len(n_zoom), 2),
+    mean  = c(colMeans(mat_n)[1:n_zoom] / total_n,
+              colMeans(mat_a)[1:n_zoom] / total_a),
+    group = rep(c("Native", "Alien"), each = n_zoom),
+    region = nm
+  )
+}))
+early_df$label <- paste(early_df$region, "-", early_df$group)
+early_df$region <- factor(early_df$region, levels = names(regions))
+
+ggplot(early_df, aes(x = sites, y = mean, color = region, linetype = group)) +
+  geom_line(linewidth = 0.8) +
+  scale_color_manual(values = c("Vienna & East" = "#D32F2F",
+                                 "Alps (West)" = "#1976D2",
+                                 "Center" = "#7B1FA2")) +
+  scale_linetype_manual(values = c("Native" = "solid", "Alien" = "dashed")) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = sprintf("Early Accumulation (first %d sites): Native vs Alien by Region", n_zoom),
+       subtitle = "Faster alien accumulation from Vienna confirms urban invasion hotspots",
+       x = "Sites sampled", y = "Proportion of total species",
+       color = "Start Region", linetype = "Species Group") +
+  theme_minimal(base_size = 12)
+```
+
+---
+
+# 7. Extrapolation
 
 Fit asymptotic models to estimate total richness for each group.
 
@@ -291,7 +538,7 @@ plot(fit_alien)
 
 ---
 
-# 6. Methods Comparison
+# 8. Methods Comparison
 
 Compare kNN (spatially structured) vs random (null model) accumulation. We use the 1990s decade (largest chunk) for speed.
 
@@ -319,7 +566,7 @@ plot(methods_combined) + ggtitle("kNN vs Random (1990s subset)")
 
 ---
 
-# 7. Hill Numbers
+# 9. Hill Numbers
 
 Track effective species diversity (q = 0, 1, 2) as sites accumulate. Using 1990s decade.
 
@@ -339,7 +586,7 @@ plot(hill)
 
 ---
 
-# 8. Beta Diversity Accumulation
+# 10. Beta Diversity Accumulation
 
 Track how turnover and nestedness change as the sampling window expands.
 
@@ -359,7 +606,7 @@ plot(beta)
 
 ---
 
-# 9. Coverage-Based Rarefaction
+# 11. Coverage-Based Rarefaction
 
 How many sites do we need for 90%, 95%, 99% completeness?
 
@@ -384,7 +631,7 @@ print(round(colMeans(interp, na.rm = TRUE), 1))
 
 ---
 
-# 10. Per-Site Metrics & Spatial Map
+# 12. Per-Site Metrics & Spatial Map
 
 Compute accumulation metrics for every site as a starting point. Using 1990s subset.
 
@@ -408,7 +655,7 @@ plot(metrics, type = "points")
 
 ---
 
-# 11. Diversity Partitioning
+# 13. Diversity Partitioning
 
 Decompose regional diversity into alpha, beta, and gamma components.
 
@@ -442,7 +689,7 @@ plot(alpha)
 
 ---
 
-# 12. Analytical Benchmarks
+# 14. Analytical Benchmarks
 
 Compare simulation-based curves to exact analytical expectations. Using 1990s subset.
 
@@ -456,7 +703,7 @@ plot(sac_knn_m)
 
 ---
 
-# 13. Grouped Accumulation by Status
+# 15. Grouped Accumulation by Status
 
 Use the `groups` argument to run a single accumulation with automatic native/alien splitting. Using 1990s subset.
 
@@ -476,7 +723,7 @@ plot_grouped_normalized(sac_grouped,
 
 ---
 
-# 14. Habitat-Level Analysis (EUNIS)
+# 16. Habitat-Level Analysis (EUNIS)
 
 Compare accumulation curves across broad habitat types (EUNIS level 1). We subset to habitats with at least 100 plots.
 
@@ -571,7 +818,7 @@ invisible(gc())
 
 ---
 
-# 15. Phylogenetic Diversity Accumulation
+# 17. Phylogenetic Diversity Accumulation
 
 Track phylogenetic diversity (MPD, MNTD) as the sampling window expands spatially. Using 1990s subset for speed.
 
@@ -677,7 +924,7 @@ invisible(gc())
 
 ---
 
-# 16. Functional Diversity Accumulation
+# 18. Functional Diversity Accumulation
 
 Track functional diversity (FDis) as sites accumulate. Using family + status as proxy traits. Using 1990s subset.
 
@@ -744,7 +991,7 @@ invisible(gc())
 
 ---
 
-# 17. Halo Analysis (Area of Effect)
+# 19. Halo Analysis (Area of Effect)
 
 Use the halo dataset (Austria + surrounding buffer) to see how edge effects influence accumulation.
 

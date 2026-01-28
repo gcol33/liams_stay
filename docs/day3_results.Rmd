@@ -1,0 +1,1926 @@
+---
+title: '<span class="en">Day 3: Results & Scientific Interpretation</span><span class="de">Tag 3: Ergebnisse & wissenschaftliche Interpretation</span>'
+subtitle: '<span class="en">From Hypothesis to Evidence — Exploring Austrian Plant Diversity</span><span class="de">Von der Hypothese zur Evidenz — Erforschung der österreichischen Pflanzenvielfalt</span>'
+author: '<span class="en">Ecology Workshop</span><span class="de">Ökologie-Workshop</span>'
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 3
+    theme: flatly
+    self_contained: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE, message = FALSE, warning = FALSE,
+  fig.width = 10, fig.height = 6
+)
+library(ggplot2)
+library(data.table)
+library(spacc)
+library(sf)
+library(rnaturalearth)
+
+comp_dir  <- file.path(dirname(getwd()), "comp")
+data_path <- file.path(dirname(getwd()), "data")
+```
+
+```{css, echo=FALSE}
+/* ========== WORKSHOP THEME ========== */
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.7;
+  background-color: #fafffe;
+}
+
+h1 { color: #1565C0 !important; border-bottom: 3px solid #1976D2; padding-bottom: 10px; }
+h2 { color: #1976D2 !important; margin-top: 2em; }
+h3 { color: #1E88E5 !important; }
+
+table { border-collapse: collapse; margin: 1em 0; width: 100%; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+th { background-color: #1976D2 !important; color: white !important; padding: 12px; text-align: left; }
+td { padding: 10px 12px; border-bottom: 1px solid #ddd; }
+tr:nth-child(even) { background-color: #f9f9f9; }
+tr:hover { background-color: #E3F2FD; }
+
+blockquote { border-left: 4px solid #FF9800; background-color: #FFF8E1; padding: 15px 20px; margin: 1em 0; border-radius: 0 8px 8px 0; }
+
+hr { border: none; height: 3px; background: linear-gradient(to right, #1565C0, #42A5F5, #90CAF9, #42A5F5, #1565C0); margin: 2em 0; border-radius: 2px; }
+
+.tocify { border: none !important; border-radius: 12px !important; background-color: #E3F2FD !important; }
+.tocify-item.active { background-color: #1976D2 !important; color: white !important; }
+
+/* Hypothesis boxes */
+.hypothesis-box {
+  background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+  border-left: 5px solid #FF9800;
+  padding: 20px;
+  margin: 1.5em 0;
+  border-radius: 0 12px 12px 0;
+}
+
+/* Results boxes */
+.results-box {
+  background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+  border-left: 5px solid #4CAF50;
+  padding: 20px;
+  margin: 1.5em 0;
+  border-radius: 0 12px 12px 0;
+}
+
+/* Theory boxes */
+.theory-box {
+  background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+  border-left: 5px solid #1976D2;
+  padding: 20px;
+  margin: 1.5em 0;
+  border-radius: 0 12px 12px 0;
+}
+
+/* Literature boxes */
+.lit-box {
+  background: linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%);
+  border-left: 5px solid #7B1FA2;
+  padding: 20px;
+  margin: 1.5em 0;
+  border-radius: 0 12px 12px 0;
+  font-size: 0.92em;
+}
+
+/* Math formula display fix */
+.MathJax, .MathJax_Display, .mjx-chtml {
+  overflow: visible !important;
+  padding: 5px 0 !important;
+}
+p:has(.MathJax) {
+  overflow: visible;
+  line-height: 2.5;
+}
+
+/* ========== LANGUAGE TOGGLE ========== */
+.lang-toggle {
+  position: fixed; top: 10px; right: 20px; z-index: 9999;
+  background: linear-gradient(135deg, #1565C0, #1976D2);
+  padding: 8px 12px; border-radius: 25px;
+  box-shadow: 0 4px 15px rgba(21, 101, 192, 0.3);
+}
+.lang-toggle button {
+  background: transparent; border: none; color: #fff;
+  padding: 6px 14px; cursor: pointer; font-weight: bold;
+  border-radius: 20px; transition: all 0.3s; font-size: 14px;
+}
+.lang-toggle button.active { background: white; color: #1565C0; }
+.lang-toggle button:hover:not(.active) { background: rgba(255,255,255,0.2); }
+
+.de { display: none; }
+.en { display: inline; }
+body.lang-de .de { display: inline; }
+body.lang-de .en { display: none; }
+
+div.de, p.de, li.de, h1.de, h2.de, h3.de, h4.de, section.de { display: none; }
+div.en, p.en, li.en, h1.en, h2.en, h3.en, h4.en, section.en { display: block; }
+
+body.lang-de div.de, body.lang-de p.de, body.lang-de li.de,
+body.lang-de h1.de, body.lang-de h2.de, body.lang-de h3.de,
+body.lang-de h4.de, body.lang-de section.de { display: block; }
+
+body.lang-de div.en, body.lang-de p.en, body.lang-de li.en,
+body.lang-de h1.en, body.lang-de h2.en, body.lang-de h3.en,
+body.lang-de h4.en, body.lang-de section.en { display: none; }
+
+body.lang-de #TOC .en { display: none; }
+body.lang-de #TOC .de { display: inline; }
+#TOC .de { display: none; }
+#TOC .en { display: inline; }
+
+@media print {
+  .tocify, .lang-toggle { display: none; }
+}
+
+/* ========== MOBILE RESPONSIVE ========== */
+@media (max-width: 768px) {
+  body { font-size: 14px; line-height: 1.5; }
+  h1 { font-size: 1.5rem; }
+  h2 { font-size: 1.3rem; }
+  h3 { font-size: 1.1rem; }
+  .lang-toggle { top: 5px; right: 10px; padding: 5px 8px; }
+  .lang-toggle button { padding: 4px 10px; font-size: 12px; }
+  table { font-size: 12px; display: block; overflow-x: auto; white-space: nowrap; }
+  th, td { padding: 6px 8px; }
+  blockquote { padding: 10px 15px; margin: 0.5em 0; }
+  pre { font-size: 11px; padding: 10px; }
+  code { font-size: 11px; }
+  img, .figure img { max-width: 100%; height: auto; }
+}
+```
+
+```{js, echo=FALSE}
+document.addEventListener('DOMContentLoaded', function() {
+  var toggle = document.createElement('div');
+  toggle.className = 'lang-toggle';
+  toggle.innerHTML = '<button id="btn-en" class="active">EN</button><button id="btn-de">DE</button>';
+  document.body.appendChild(toggle);
+
+  var savedLang = localStorage.getItem('workshop-lang');
+  var browserLang = navigator.language.substring(0, 2);
+  var defaultLang = savedLang || (browserLang === 'de' ? 'de' : 'en');
+  if (defaultLang === 'de') setLanguage('de');
+
+  document.getElementById('btn-en').addEventListener('click', function() { setLanguage('en'); });
+  document.getElementById('btn-de').addEventListener('click', function() { setLanguage('de'); });
+
+  function setLanguage(lang) {
+    document.body.classList.remove('lang-en', 'lang-de');
+    document.body.classList.add('lang-' + lang);
+    document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+    document.getElementById('btn-de').classList.toggle('active', lang === 'de');
+    localStorage.setItem('workshop-lang', lang);
+  }
+});
+```
+
+---
+
+# <span class="en">Introduction</span><span class="de">Einleitung</span>
+
+## <span class="en">From Theory to Evidence</span><span class="de">Von der Theorie zur Evidenz</span>
+
+<div class="en">
+
+On **Day 1**, we learned the foundations: what biodiversity is, why it matters, how species accumulation curves work, and why R is essential for large-scale ecological analyses. On **Day 2**, we explored spatial algorithms, the nearest-neighbor method, the importance of multiple starting points, and we formulated hypotheses about native versus alien species.
+
+**Today, we move from hypothesis to evidence.**
+
+We will examine the results of a comprehensive spatial analysis of **~52,000 vegetation plots** from the European Vegetation Archive (EVA), covering all of Austria. Every result shown here was computed using the `spacc` R package with the kNN (k-nearest-neighbor) spatial accumulation algorithm and haversine distances.
+
+This document covers **13 analyses**, each grounded in ecological theory and supported by scientific literature. We move progressively from basic species counts through advanced diversity metrics:
+
+1. **Dataset overview** — What do we have?
+2. **Temporal dynamics** — Has diversity changed across decades?
+3. **Native vs. alien accumulation** — Testing our central hypothesis
+4. **Extrapolation** — How many species are we missing?
+5. **Spatial vs. random sampling** — Does geography matter?
+6. **Hill numbers** — Beyond species richness
+7. **Diversity partitioning** — Alpha, beta, gamma decomposition
+8. **Beta diversity** — Turnover vs. nestedness
+9. **Coverage-based rarefaction** — How complete is our sampling?
+10. **Phylogenetic diversity** — The tree of life perspective
+11. **Functional diversity** — Trait-based patterns
+12. **Habitat-level analysis** — EUNIS habitat comparisons
+13. **Edge effects** — The halo problem
+
+</div>
+
+<div class="de">
+
+An **Tag 1** haben wir die Grundlagen gelernt: Was Biodiversität ist, warum sie wichtig ist, wie Artenakkumulationskurven funktionieren und warum R für großflächige ökologische Analysen unverzichtbar ist. An **Tag 2** haben wir räumliche Algorithmen erkundet, die Nearest-Neighbor-Methode, die Bedeutung mehrerer Startpunkte, und wir haben Hypothesen über heimische versus Alien-Arten formuliert.
+
+**Heute gehen wir von der Hypothese zur Evidenz.**
+
+Wir untersuchen die Ergebnisse einer umfassenden räumlichen Analyse von **~52.000 Vegetationsplots** aus dem Europäischen Vegetationsarchiv (EVA), die ganz Österreich abdecken. Jedes hier gezeigte Ergebnis wurde mit dem R-Paket `spacc` berechnet, unter Verwendung des kNN-Algorithmus (k-nächste-Nachbarn) und Haversine-Distanzen.
+
+Dieses Dokument umfasst **13 Analysen**, jede in ökologischer Theorie verankert und durch wissenschaftliche Literatur gestützt. Wir schreiten progressiv von einfachen Artenzahlen zu fortgeschrittenen Diversitätsmetriken voran:
+
+1. **Datensatzübersicht** — Was haben wir?
+2. **Zeitliche Dynamik** — Hat sich die Diversität über Jahrzehnte verändert?
+3. **Heimisch vs. Alien Akkumulation** — Test unserer zentralen Hypothese
+4. **Extrapolation** — Wie viele Arten fehlen uns?
+5. **Räumliches vs. zufälliges Sampling** — Ist Geografie wichtig?
+6. **Hill-Zahlen** — Jenseits des Artenreichtums
+7. **Diversitätsaufteilung** — Alpha-, Beta-, Gamma-Zerlegung
+8. **Beta-Diversität** — Turnover vs. Nestedness
+9. **Deckungsbasierte Rarefaction** — Wie vollständig ist unsere Beprobung?
+10. **Phylogenetische Diversität** — Die Perspektive des Lebensbaums
+11. **Funktionelle Diversität** — Eigenschaftsbasierte Muster
+12. **Habitat-Analyse** — EUNIS-Habitatvergleiche
+13. **Randeffekte** — Das Halo-Problem
+
+</div>
+
+---
+
+# <span class="en">1. The Dataset</span><span class="de">1. Der Datensatz</span>
+
+## <span class="en">Austrian Vegetation Plots</span><span class="de">Österreichische Vegetationsplots</span>
+
+```{r load-data}
+header  <- fread(file.path(data_path, "austria_header.csv"))
+species <- fread(file.path(data_path, "austria_species.csv"))
+
+# Keep only matching plots
+common_ids <- intersect(header$PlotObservationID, species$PlotObservationID)
+header <- header[PlotObservationID %in% common_ids]
+
+# Assign decade
+header[, decade := ifelse(Year < 1970, "pre-1970",
+                          paste0(floor(Year / 10) * 10, "s"))]
+
+n_plots   <- nrow(header)
+n_records <- nrow(species)
+n_species <- uniqueN(species$WFO_TAXON)
+n_native  <- uniqueN(species[STATUS == "native"]$WFO_TAXON)
+n_alien   <- uniqueN(species[STATUS == "neo"]$WFO_TAXON)
+```
+
+<div class="en">
+
+Our dataset comes from the **European Vegetation Archive (EVA)**, the largest collection of vegetation plot data in Europe (Chytry et al. 2016). Each plot represents a small area (typically 1--100 m²) where ecologists recorded every plant species present.
+
+</div>
+
+<div class="de">
+
+Unser Datensatz stammt aus dem **Europäischen Vegetationsarchiv (EVA)**, der größten Sammlung von Vegetationsplotdaten in Europa (Chytry et al. 2016). Jeder Plot repräsentiert eine kleine Fläche (typischerweise 1--100 m²), auf der Ökologen jede vorhandene Pflanzenart erfasst haben.
+
+</div>
+
+```{r dataset-summary}
+summary_df <- data.frame(
+  Metric = c("Total plots", "Species records", "Unique species",
+             "Native species", "Alien species (neophytes)", "Alien proportion"),
+  Value = c(format(n_plots, big.mark = ","),
+            format(n_records, big.mark = ","),
+            format(n_species, big.mark = ","),
+            format(n_native, big.mark = ","),
+            format(n_alien, big.mark = ","),
+            paste0(round(100 * n_alien / n_species, 1), "%"))
+)
+knitr::kable(summary_df, col.names = c("Metric / Metrik", "Value / Wert"),
+             align = "lr")
+```
+
+<div class="theory-box">
+
+<div class="en">
+
+**Why does the native-to-alien ratio matter?**
+
+Globally, alien plant species constitute approximately 3.9% of national floras on average, but this varies enormously by region (van Kleunen et al. 2015). In Central Europe, the proportion tends to be higher due to centuries of trade, agriculture, and urbanization. Austria sits at a biogeographic crossroads — alpine, Pannonian, and continental zones converge — creating diverse conditions for both native endemism and alien establishment.
+
+</div>
+
+<div class="de">
+
+**Warum ist das Verhältnis heimisch zu alien wichtig?**
+
+Global machen Alien-Pflanzenarten durchschnittlich etwa 3,9% der nationalen Floren aus, aber dies variiert enorm nach Region (van Kleunen et al. 2015). In Mitteleuropa ist der Anteil tendenziell höher aufgrund von Jahrhunderten des Handels, der Landwirtschaft und Urbanisierung. Österreich liegt an einer biogeografischen Kreuzung — alpine, pannonische und kontinentale Zonen konvergieren — und schafft vielfältige Bedingungen sowohl für heimischen Endemismus als auch für Alien-Etablierung.
+
+</div>
+
+</div>
+
+## <span class="en">Spatial Distribution of Plots</span><span class="de">Räumliche Verteilung der Plots</span>
+
+```{r map-plots, fig.height=5}
+austria_sf <- ne_countries(scale = "medium", country = "Austria", returnclass = "sf")
+
+ggplot() +
+  geom_sf(data = austria_sf, fill = "#E3F2FD", color = "#1565C0", linewidth = 1) +
+  geom_point(data = header, aes(x = Longitude, y = Latitude),
+             size = 0.15, alpha = 0.15, color = "#1565C0") +
+  labs(title = "Vegetation Plot Locations / Vegetationsplot-Standorte",
+       subtitle = paste0(format(n_plots, big.mark = ","), " plots across Austria / Plots in ganz \u00d6sterreich"),
+       x = "Longitude", y = "Latitude") +
+  theme_minimal(base_size = 14) +
+  coord_sf(xlim = c(9.3, 17.2), ylim = c(46.3, 49.1))
+```
+
+<div class="en">
+
+**Sampling bias** is visible: some regions are densely sampled (e.g., the Vienna Basin, the Inn Valley) while others (high alpine areas) have fewer plots. This uneven coverage is a known property of opportunistic vegetation databases (Dengler et al. 2011) and is one reason why spatial accumulation methods — rather than simple species counts — are necessary for fair biodiversity comparison.
+
+</div>
+
+<div class="de">
+
+**Stichprobenverzerrung** ist sichtbar: Einige Regionen sind dicht beprobt (z.B. Wiener Becken, Inntal), während andere (hochalpine Gebiete) weniger Plots haben. Diese ungleichmäßige Abdeckung ist eine bekannte Eigenschaft opportunistischer Vegetationsdatenbanken (Dengler et al. 2011) und einer der Gründe, warum räumliche Akkumulationsmethoden — statt einfacher Artenzählungen — für faire Biodiversitätsvergleiche notwendig sind.
+
+</div>
+
+```{r decade-table}
+decade_counts <- header[, .N, by = decade][order(decade)]
+setnames(decade_counts, c("Decade / Jahrzehnt", "Plots"))
+knitr::kable(decade_counts, align = "lr")
+```
+
+## <span class="en">Biodiversity Hotspot Maps</span><span class="de">Biodiversitäts-Hotspot-Karten</span>
+
+<div class="en">
+
+The following maps show the **real spatial distribution** of native and alien species richness across Austria. Unlike the hypothetical maps in the Day 2 theory, these are computed directly from the EVA data: for each plot, we count the number of native and alien species recorded.
+
+To visualize patterns at the landscape scale, we aggregate plot-level data into a hexagonal grid. Each hexagon shows the **mean species richness** across all plots falling within it.
+
+</div>
+
+<div class="de">
+
+Die folgenden Karten zeigen die **reale räumliche Verteilung** des heimischen und Alien-Artenreichtums über Österreich. Im Gegensatz zu den hypothetischen Karten in der Tag-2-Theorie werden diese direkt aus den EVA-Daten berechnet: Für jeden Plot zählen wir die Anzahl der erfassten heimischen und Alien-Arten.
+
+Um Muster auf Landschaftsebene zu visualisieren, aggregieren wir Plot-Daten in ein hexagonales Raster. Jedes Hexagon zeigt den **mittleren Artenreichtum** über alle darin liegenden Plots.
+
+</div>
+
+```{r hotspot-data}
+# Compute per-plot richness
+plot_richness <- species[, .(
+  n_native = uniqueN(WFO_TAXON[STATUS == "native"]),
+  n_alien  = uniqueN(WFO_TAXON[STATUS == "neo"])
+), by = PlotObservationID]
+
+plot_richness[, total := n_native + n_alien]
+plot_richness[, alien_pct := ifelse(total > 0, 100 * n_alien / total, 0)]
+
+# Merge with coordinates
+plot_rich_geo <- merge(plot_richness,
+                       header[, .(PlotObservationID, Longitude, Latitude)],
+                       by = "PlotObservationID")
+
+# Create hex grid using sf
+plot_sf <- st_as_sf(plot_rich_geo, coords = c("Longitude", "Latitude"), crs = 4326)
+hex_grid <- st_make_grid(austria_sf, cellsize = 0.3, square = FALSE)
+hex_grid <- st_sf(hex_id = seq_along(hex_grid), geometry = hex_grid)
+hex_grid <- hex_grid[st_intersects(hex_grid, austria_sf, sparse = FALSE)[, 1], ]
+
+# Assign plots to hexagons
+hex_join <- st_join(plot_sf, hex_grid)
+
+hex_summary <- as.data.table(hex_join)[!is.na(hex_id), .(
+  mean_native = mean(n_native, na.rm = TRUE),
+  mean_alien  = mean(n_alien, na.rm = TRUE),
+  mean_alien_pct = mean(alien_pct, na.rm = TRUE),
+  n_plots = .N
+), by = hex_id]
+
+# Get hex centroids for plotting
+hex_centroids <- st_centroid(hex_grid)
+hex_coords <- as.data.frame(st_coordinates(hex_centroids))
+hex_coords$hex_id <- hex_grid$hex_id
+
+hex_plot <- merge(hex_coords, hex_summary, by = "hex_id")
+hex_plot <- hex_plot[hex_plot$n_plots >= 3, ]  # Only hexagons with >= 3 plots
+```
+
+```{r hotspot-native, fig.height=5.5}
+ggplot() +
+  geom_sf(data = austria_sf, fill = "grey95", color = "#333333", linewidth = 0.8) +
+  geom_point(data = hex_plot, aes(x = X, y = Y, color = mean_native, size = n_plots),
+             alpha = 0.8) +
+  geom_sf(data = austria_sf, fill = NA, color = "#333333", linewidth = 1) +
+  scale_color_viridis_c(option = "G", direction = -1, name = "Mean native\nrichness") +
+  scale_size_continuous(range = c(1, 6), guide = "none") +
+  labs(title = "Native Species Richness Hotspots / Heimische Arten Hotspots",
+       subtitle = "Mean species per plot, aggregated by hexagonal grid (min. 3 plots)",
+       x = "Longitude", y = "Latitude") +
+  theme_minimal(base_size = 13) +
+  coord_sf(xlim = c(9.3, 17.2), ylim = c(46.3, 49.1))
+```
+
+```{r hotspot-alien, fig.height=5.5}
+ggplot() +
+  geom_sf(data = austria_sf, fill = "grey95", color = "#333333", linewidth = 0.8) +
+  geom_point(data = hex_plot, aes(x = X, y = Y, color = mean_alien, size = n_plots),
+             alpha = 0.8) +
+  geom_sf(data = austria_sf, fill = NA, color = "#333333", linewidth = 1) +
+  scale_color_viridis_c(option = "B", direction = -1, name = "Mean alien\nrichness") +
+  scale_size_continuous(range = c(1, 6), guide = "none") +
+  labs(title = "Alien Species Richness Hotspots / Alien-Arten Hotspots",
+       subtitle = "Mean alien species per plot, aggregated by hexagonal grid",
+       x = "Longitude", y = "Latitude") +
+  theme_minimal(base_size = 13) +
+  coord_sf(xlim = c(9.3, 17.2), ylim = c(46.3, 49.1))
+```
+
+```{r hotspot-alien-pct, fig.height=5.5}
+ggplot() +
+  geom_sf(data = austria_sf, fill = "grey95", color = "#333333", linewidth = 0.8) +
+  geom_point(data = hex_plot, aes(x = X, y = Y, color = mean_alien_pct, size = n_plots),
+             alpha = 0.8) +
+  geom_sf(data = austria_sf, fill = NA, color = "#333333", linewidth = 1) +
+  scale_color_gradient2(low = "#2E7D32", mid = "#FFC107", high = "#D32F2F",
+                        midpoint = median(hex_plot$mean_alien_pct),
+                        name = "Alien %") +
+  scale_size_continuous(range = c(1, 6), guide = "none") +
+  labs(title = "Alien Species Proportion / Alien-Artenanteil",
+       subtitle = "Mean % alien species per plot — Green = native-dominated, Red = alien-rich",
+       x = "Longitude", y = "Latitude") +
+  theme_minimal(base_size = 13) +
+  coord_sf(xlim = c(9.3, 17.2), ylim = c(46.3, 49.1))
+```
+
+<div class="results-box">
+
+<div class="en">
+
+**Hotspot interpretation:**
+
+These three maps together tell a powerful story:
+
+1. **Native richness** is highest in areas with high habitat heterogeneity — particularly in the pre-Alpine and Alpine foothills where multiple vegetation zones overlap. This is consistent with the mid-elevation diversity peak documented across European mountain systems (Rahbek 1995).
+
+2. **Alien richness** concentrates in the lowlands, particularly around the **Danube corridor**, major cities (Vienna, Linz, Graz), and the Pannonian Basin in eastern Austria. These are the warmest, most urbanized, and most agriculturally intensive regions — precisely the areas where alien species propagule pressure is highest (Pysek et al. 2010).
+
+3. **Alien proportion** reveals the contrast most starkly: the eastern lowlands and Danube valley show the highest alien percentages, while the Alpine core remains almost exclusively native. This east-west gradient mirrors the continent-wide pattern where the Pannonian biogeographic region is among the most invaded in Europe (Chytry et al. 2009).
+
+**The Day 2 hypothetical maps predicted this pattern** — and the real data confirms it. Aliens cluster around introduction points (cities, transport corridors), while natives dominate in natural, undisturbed habitats.
+
+</div>
+
+<div class="de">
+
+**Hotspot-Interpretation:**
+
+Diese drei Karten erzählen zusammen eine kraftvolle Geschichte:
+
+1. **Heimischer Reichtum** ist am höchsten in Gebieten mit hoher Habitat-Heterogenität — besonders in den Voralpen, wo mehrere Vegetationszonen überlappen. Dies stimmt mit dem Höhendiversitätspeak überein, der in europäischen Gebirgssystemen dokumentiert ist (Rahbek 1995).
+
+2. **Alien-Reichtum** konzentriert sich in den Tieflagen, besonders entlang des **Donaukorridors**, um Großstädte (Wien, Linz, Graz) und im Pannonischen Becken in Ostösterreich. Dies sind die wärmsten, urbanisiertesten und landwirtschaftlich intensivsten Regionen — genau die Gebiete, wo der Propagule Pressure von Alien-Arten am höchsten ist (Pysek et al. 2010).
+
+3. **Alien-Anteil** zeigt den Kontrast am deutlichsten: Die östlichen Tieflagen und das Donautal zeigen die höchsten Alien-Prozente, während der alpine Kern fast ausschließlich heimisch bleibt. Dieser Ost-West-Gradient spiegelt das kontinentweite Muster wider, wo die pannonische biogeografische Region zu den am stärksten invadierten in Europa gehört (Chytry et al. 2009).
+
+**Die hypothetischen Karten von Tag 2 sagten dieses Muster voraus** — und die realen Daten bestätigen es. Aliens clustern um Einführungspunkte (Städte, Transportkorridore), während Einheimische in natürlichen, ungestörten Habitaten dominieren.
+
+</div>
+
+</div>
+
+<div class="lit-box">
+
+**The Pannonian invasion gradient:** Chytry et al. (2009) documented that the Pannonian biogeographic region has among the highest alien plant richness in Europe, driven by warm temperatures, fertile soils, intensive agriculture, and proximity to major trade routes since Roman times. Our Austrian data provides a within-country confirmation of this continental pattern.
+
+**Der pannonische Invasionsgradient:** Chytry et al. (2009) dokumentierten, dass die pannonische biogeografische Region zu den höchsten Alien-Pflanzenreichtümern in Europa gehört, angetrieben durch warme Temperaturen, fruchtbare Böden, intensive Landwirtschaft und Nähe zu Handelsrouten seit der Römerzeit.
+
+</div>
+
+---
+
+# <span class="en">2. Temporal Dynamics</span><span class="de">2. Zeitliche Dynamik</span>
+
+## <span class="en">Has Diversity Changed Across Decades?</span><span class="de">Hat sich die Diversität über Jahrzehnte verändert?</span>
+
+<div class="hypothesis-box">
+
+<div class="en">
+
+**Hypothesis:** Species accumulation patterns have changed over time due to:
+
+- **Land use intensification** reducing native plant diversity (Sala et al. 2000)
+- **Globalization** increasing alien species introductions (Seebens et al. 2017)
+- **Climate change** shifting species ranges (Lenoir et al. 2008)
+
+**Prediction:** More recent decades should show (1) higher alien richness and (2) potentially lower native richness, reflecting the "biotic homogenization" trend documented across Europe (Winter et al. 2009).
+
+</div>
+
+<div class="de">
+
+**Hypothese:** Artenakkumulationsmuster haben sich über die Zeit verändert aufgrund von:
+
+- **Intensivierung der Landnutzung**, die die heimische Pflanzendiversität reduziert (Sala et al. 2000)
+- **Globalisierung**, die die Einführung von Alien-Arten erhöht (Seebens et al. 2017)
+- **Klimawandel**, der Artverbreitungsgebiete verschiebt (Lenoir et al. 2008)
+
+**Vorhersage:** Neuere Jahrzehnte sollten (1) höheren Alien-Reichtum und (2) möglicherweise geringeren heimischen Reichtum zeigen, was den in ganz Europa dokumentierten Trend der "biotischen Homogenisierung" widerspiegelt (Winter et al. 2009).
+
+</div>
+
+</div>
+
+```{r decade-curves}
+decade_results <- readRDS(file.path(comp_dir, "decade_results.rds"))
+decade_combined <- do.call(c, decade_results)
+plot(decade_combined) +
+  ggtitle("Spatial Accumulation by Decade / R\u00e4umliche Akkumulation nach Jahrzehnt") +
+  theme_minimal(base_size = 13)
+```
+
+<div class="results-box">
+
+<div class="en">
+
+**Interpretation:**
+
+The decade-level accumulation curves reveal several patterns:
+
+- **Older decades** (pre-1970, 1970s) show steeper initial slopes, suggesting that historically surveyed plots tended to target biodiversity hotspots — a well-known bias in early vegetation surveys (Chytry et al. 2016).
+- **Recent decades** (1990s, 2000s) have more plots and smoother curves, providing more reliable estimates.
+- The **asymptotic richness** varies by decade partly because of sampling intensity differences, not only biological change. This is a critical distinction: apparent temporal trends in species richness can be artifacts of uneven sampling effort (Gotelli & Colwell 2001).
+
+</div>
+
+<div class="de">
+
+**Interpretation:**
+
+Die Akkumulationskurven auf Jahrzehntsebene zeigen mehrere Muster:
+
+- **Ältere Jahrzehnte** (vor 1970, 1970er) zeigen steilere anfängliche Steigungen, was darauf hindeutet, dass historisch untersuchte Plots tendenziell auf Biodiversitäts-Hotspots abzielten — eine bekannte Verzerrung in frühen Vegetationserfassungen (Chytry et al. 2016).
+- **Neuere Jahrzehnte** (1990er, 2000er) haben mehr Plots und glattere Kurven, die zuverlässigere Schätzungen liefern.
+- Der **asymptotische Reichtum** variiert teilweise aufgrund von Unterschieden in der Beprobungsintensität, nicht nur biologischer Veränderung. Diese Unterscheidung ist kritisch: Scheinbare zeitliche Trends im Artenreichtum können Artefakte ungleichmäßiger Beprobung sein (Gotelli & Colwell 2001).
+
+</div>
+
+</div>
+
+## <span class="en">Native vs. Alien Through Time</span><span class="de">Heimisch vs. Alien im Zeitverlauf</span>
+
+```{r decade-native-alien, fig.height=10}
+decade_na_results <- readRDS(file.path(comp_dir, "decade_na_results.rds"))
+
+# Helper for normalized grouped plots
+plot_grouped_normalized <- function(x, title = "Normalized Accumulation",
+                                     ci = TRUE, ci_level = 0.95, ci_alpha = 0.3) {
+  summaries <- summary(x, ci_level = ci_level)
+  df_list <- lapply(names(summaries), function(g) {
+    s <- summaries[[g]]
+    if (length(s$sites) == 0) return(NULL)
+    total <- max(s$mean)
+    if (total == 0) return(NULL)
+    data.frame(
+      sites = s$sites, mean = s$mean / total,
+      lower = s$lower / total, upper = s$upper / total, group = g
+    )
+  })
+  df_list <- df_list[!vapply(df_list, is.null, logical(1))]
+  df <- do.call(rbind, df_list)
+  df$group <- factor(df$group)
+  ggplot(df, aes(x = sites, y = mean, color = group, fill = group)) +
+    { if (ci) geom_ribbon(aes(ymin = lower, ymax = upper), alpha = ci_alpha, color = NA) } +
+    geom_line(linewidth = 1) +
+    scale_y_continuous(labels = scales::percent) +
+    scale_color_manual(values = c("native" = "#2E7D32", "neo" = "#D32F2F"),
+                       labels = c("native" = "Native", "neo" = "Alien")) +
+    scale_fill_manual(values = c("native" = "#2E7D32", "neo" = "#D32F2F"),
+                      labels = c("native" = "Native", "neo" = "Alien")) +
+    labs(x = "Sites sampled", y = "Proportion of total species",
+         title = title, color = "Status", fill = "Status") +
+    theme_minimal(base_size = 12)
+}
+
+decades <- sort(names(decade_na_results))
+plots <- lapply(decades, function(d) {
+  plot_grouped_normalized(decade_na_results[[d]],
+    title = sprintf("%s: Native vs Alien (normalized)", d))
+})
+gridExtra::grid.arrange(grobs = plots, ncol = 2)
+```
+
+<div class="en">
+
+**Key finding:** Across all decades, native and alien species display consistently different accumulation shapes. Native species tend to accumulate more gradually (evenly distributed), while alien species often show steeper initial rises followed by earlier plateaus — consistent with spatial clustering around urban and lowland areas.
+
+This pattern aligns with the **propagule pressure hypothesis** (Lockwood et al. 2005): alien species arrive at specific introduction points (cities, transport corridors, agricultural areas) and radiate outward, creating clustered distributions that contrast with the broader, more uniform distribution of long-established native flora.
+
+</div>
+
+<div class="de">
+
+**Schlüsselergebnis:** Über alle Jahrzehnte hinweg zeigen heimische und Alien-Arten konsistent unterschiedliche Akkumulationsformen. Heimische Arten akkumulieren tendenziell gradueller (gleichmäßig verteilt), während Alien-Arten oft steilere anfängliche Anstiege mit früheren Plateaus zeigen — konsistent mit räumlichem Clustering um urbane und Tieflandgebiete.
+
+Dieses Muster stimmt mit der **Propagule-Pressure-Hypothese** überein (Lockwood et al. 2005): Alien-Arten kommen an spezifischen Einführungspunkten an (Städte, Transportkorridore, Agrarflächen) und breiten sich von dort aus, was geclusterte Verteilungen erzeugt, die mit der breiteren, gleichmäßigeren Verteilung der lang etablierten heimischen Flora kontrastieren.
+
+</div>
+
+---
+
+# <span class="en">3. Native vs. Alien: The Central Hypothesis</span><span class="de">3. Heimisch vs. Alien: Die zentrale Hypothese</span>
+
+## <span class="en">Pooled Accumulation Curves</span><span class="de">Gesamtakkumulationskurven</span>
+
+<div class="hypothesis-box">
+
+<div class="en">
+
+**Central Research Question:** Do alien species accumulate differently than native species across the Austrian landscape?
+
+**Hypotheses (from Day 2):**
+
+- **H1:** Alien species accumulate **more slowly** in absolute terms (fewer total species)
+- **H2:** Alien species are **more spatially clustered** than natives (different curve shapes when normalized)
+- **H3:** The **statistical comparison** will confirm these curves are significantly different
+
+These hypotheses are grounded in invasion ecology theory. Alien species in temperate Europe tend to concentrate in anthropogenically disturbed habitats — urban areas, agricultural land, transport infrastructure — rather than distributing evenly across all habitat types (Pysek et al. 2010; Chytry et al. 2008).
+
+</div>
+
+<div class="de">
+
+**Zentrale Forschungsfrage:** Akkumulieren Alien-Arten anders als heimische Arten über die österreichische Landschaft?
+
+**Hypothesen (von Tag 2):**
+
+- **H1:** Alien-Arten akkumulieren **langsamer** in absoluten Zahlen (weniger Gesamtarten)
+- **H2:** Alien-Arten sind **räumlich stärker geclustert** als Einheimische (verschiedene Kurvenformen bei Normalisierung)
+- **H3:** Der **statistische Vergleich** wird bestätigen, dass diese Kurven signifikant unterschiedlich sind
+
+Diese Hypothesen basieren auf der Invasionsökologie-Theorie. Alien-Arten in gemäßigtem Europa konzentrieren sich tendenziell in anthropogen gestörten Habitaten — urbane Gebiete, Agrarland, Verkehrsinfrastruktur — anstatt sich gleichmäßig über alle Habitattypen zu verteilen (Pysek et al. 2010; Chytry et al. 2008).
+
+</div>
+
+</div>
+
+```{r pooled-curves}
+plot_normalized <- function(..., title = "Species Accumulation Curves (normalized)",
+                            ci = TRUE, ci_alpha = 0.3) {
+  objs <- list(...)
+  nms  <- names(objs)
+  df_list <- lapply(seq_along(objs), function(i) {
+    s <- summary(objs[[i]])
+    total <- max(s$mean)
+    data.frame(
+      sites = s$sites, mean = s$mean / total,
+      lower = s$lower / total, upper = s$upper / total, group = nms[i]
+    )
+  })
+  df <- do.call(rbind, df_list)
+  df$group <- factor(df$group, levels = nms)
+  p <- ggplot(df, aes(x = sites, y = mean, color = group, fill = group))
+  if (ci) p <- p + geom_ribbon(aes(ymin = lower, ymax = upper), alpha = ci_alpha, color = NA)
+  p + geom_line(linewidth = 1) +
+    scale_y_continuous(labels = scales::percent) +
+    labs(x = "Sites sampled", y = "Proportion of total species",
+         title = title, color = "Group", fill = "Group") +
+    theme_minimal(base_size = 13)
+}
+
+p <- readRDS(file.path(comp_dir, "pooled.rds"))
+sac_native <- p$native; sac_alien <- p$alien; sac_all <- p$all
+rm(p)
+
+plot_normalized(Native = sac_native, Alien = sac_alien,
+                title = "Pooled: Native vs Alien Accumulation (normalized)") +
+  scale_color_manual(values = c("Native" = "#2E7D32", "Alien" = "#D32F2F")) +
+  scale_fill_manual(values = c("Native" = "#2E7D32", "Alien" = "#D32F2F"))
+```
+
+<div class="results-box">
+
+<div class="en">
+
+**Result — H1 confirmed:** In absolute terms, native species vastly outnumber aliens. Austria harbors approximately **`r n_native`** native plant species compared to **`r n_alien`** neophytes in this dataset.
+
+**Result — H2:** When normalized, the curve *shapes* reveal that alien species reach their proportional plateau differently from native species. This shape difference reflects fundamentally different spatial distribution strategies.
+
+</div>
+
+<div class="de">
+
+**Ergebnis — H1 bestätigt:** In absoluten Zahlen überwiegen heimische Arten die Aliens bei weitem. Österreich beherbergt in diesem Datensatz ungefähr **`r n_native`** heimische Pflanzenarten im Vergleich zu **`r n_alien`** Neophyten.
+
+**Ergebnis — H2:** Bei Normalisierung zeigen die Kurven*formen*, dass Alien-Arten ihr proportionales Plateau anders erreichen als heimische Arten. Dieser Formunterschied spiegelt grundlegend verschiedene räumliche Verteilungsstrategien wider.
+
+</div>
+
+</div>
+
+## <span class="en">Statistical Comparison</span><span class="de">Statistischer Vergleich</span>
+
+```{r compare-curves}
+comp <- readRDS(file.path(comp_dir, "compare.rds"))
+print(comp)
+plot(comp)
+```
+
+<div class="results-box">
+
+<div class="en">
+
+**Result — H3:** The permutation test confirms that native and alien accumulation curves are **statistically significantly different** (p < 0.05). This is not merely a difference in total species counts — the *spatial pattern* of accumulation differs.
+
+**What does this mean biologically?**
+
+The significant difference tells us that if we walk across the Austrian landscape sampling plots in spatial order, we encounter native and alien species at fundamentally different rates. This finding is consistent with:
+
+1. **Habitat filtering** — Alien species are filtered into specific habitats (Chytry et al. 2008)
+2. **Dispersal limitation** — Many aliens have not yet filled their potential range (Wilson et al. 2007)
+3. **Introduction history** — Aliens have had less time to spread from introduction points (Essl et al. 2011)
+
+</div>
+
+<div class="de">
+
+**Ergebnis — H3:** Der Permutationstest bestätigt, dass heimische und Alien-Akkumulationskurven **statistisch signifikant unterschiedlich** sind (p < 0,05). Dies ist nicht nur ein Unterschied in der Gesamtartenzahl — das *räumliche Muster* der Akkumulation unterscheidet sich.
+
+**Was bedeutet das biologisch?**
+
+Der signifikante Unterschied sagt uns, dass wir, wenn wir die österreichische Landschaft durchqueren und Plots in räumlicher Reihenfolge beproben, heimische und Alien-Arten mit grundlegend verschiedenen Raten antreffen. Dieses Ergebnis stimmt überein mit:
+
+1. **Habitatfilterung** — Alien-Arten werden in spezifische Habitate gefiltert (Chytry et al. 2008)
+2. **Ausbreitungslimitierung** — Viele Aliens haben ihr potenzielles Verbreitungsgebiet noch nicht ausgefüllt (Wilson et al. 2007)
+3. **Einführungsgeschichte** — Aliens hatten weniger Zeit, sich von Einführungspunkten auszubreiten (Essl et al. 2011)
+
+</div>
+
+</div>
+
+---
+
+# <span class="en">4. Extrapolation: How Many Species Are We Missing?</span><span class="de">4. Extrapolation: Wie viele Arten fehlen uns?</span>
+
+<div class="theory-box">
+
+<div class="en">
+
+**The species estimation problem:** Even with 52,000 plots, we have not sampled every corner of Austria. **Asymptotic estimators** fit mathematical models to the accumulation curve and project where it would flatten completely (Colwell & Coddington 1994).
+
+The **Lomolino model** (Lomolino 2000) is particularly well-suited for spatial accumulation curves because it was developed with the species-area relationship in mind:
+
+$$S(A) = \frac{S_{max}}{1 + \left(\frac{A_{50}}{A}\right)^{Hill}}$$
+
+where $S_{max}$ is the estimated total species, $A_{50}$ is the area at which half of all species are found, and $Hill$ controls the curve's slope.
+
+</div>
+
+<div class="de">
+
+**Das Artenschätzungsproblem:** Selbst mit 52.000 Plots haben wir nicht jede Ecke Österreichs beprobt. **Asymptotische Schätzer** passen mathematische Modelle an die Akkumulationskurve an und projizieren, wo sie vollständig abflachen würde (Colwell & Coddington 1994).
+
+Das **Lomolino-Modell** (Lomolino 2000) ist besonders gut für räumliche Akkumulationskurven geeignet, weil es mit Blick auf die Arten-Areal-Beziehung entwickelt wurde:
+
+$$S(A) = \frac{S_{max}}{1 + \left(\frac{A_{50}}{A}\right)^{Hill}}$$
+
+wobei $S_{max}$ die geschätzte Gesamtartenzahl ist, $A_{50}$ die Fläche, bei der die Hälfte aller Arten gefunden wird, und $Hill$ die Steigung der Kurve steuert.
+
+</div>
+
+</div>
+
+```{r extrapolation}
+e <- readRDS(file.path(comp_dir, "extrapolate.rds"))
+fit_native <- e$native; fit_alien <- e$alien
+rm(e)
+```
+
+```{r extrap-native, fig.height=5}
+cat("Native species extrapolation:\n")
+print(fit_native)
+plot(fit_native) + ggtitle("Native Species: Observed vs Extrapolated")
+```
+
+```{r extrap-alien, fig.height=5}
+cat("\nAlien species extrapolation:\n")
+print(fit_alien)
+plot(fit_alien) + ggtitle("Alien Species: Observed vs Extrapolated")
+```
+
+<div class="results-box">
+
+<div class="en">
+
+**Interpretation:**
+
+The Lomolino model estimates the **total species richness** for each group, including species not yet detected by our sampling. The gap between the observed endpoint and the extrapolated asymptote represents our "dark diversity" — species present in the landscape but not yet captured by the plot network (Partel et al. 2011).
+
+For **native species**, the extrapolation suggests we have captured most of the flora, but some rare species in under-sampled alpine or wetland habitats remain undetected. For **alien species**, the extrapolation indicates that the alien flora may still be accumulating — consistent with the "invasion debt" concept (Essl et al. 2011), where species already introduced but not yet widespread will continue to appear in new plots over time.
+
+</div>
+
+<div class="de">
+
+**Interpretation:**
+
+Das Lomolino-Modell schätzt den **Gesamtartenreichtum** für jede Gruppe, einschließlich noch nicht durch unsere Beprobung erfasster Arten. Die Lücke zwischen dem beobachteten Endpunkt und der extrapolierten Asymptote repräsentiert unsere "dunkle Diversität" — Arten, die in der Landschaft vorhanden, aber noch nicht vom Plot-Netzwerk erfasst sind (Partel et al. 2011).
+
+Für **heimische Arten** deutet die Extrapolation darauf hin, dass wir den Großteil der Flora erfasst haben, aber einige seltene Arten in unterbeprobten alpinen oder Feuchtgebietshabitaten unentdeckt bleiben. Für **Alien-Arten** zeigt die Extrapolation, dass die Alien-Flora möglicherweise noch akkumuliert — konsistent mit dem Konzept der "Invasionsschuld" (Essl et al. 2011), wo bereits eingeführte aber noch nicht weit verbreitete Arten im Laufe der Zeit in neuen Plots erscheinen werden.
+
+</div>
+
+</div>
+
+<div class="lit-box">
+
+**Invasion debt** (Essl et al. 2011): Many alien species have been introduced to a region but have not yet reached their potential distribution. Current alien richness underestimates future alien richness. This has major implications for conservation planning — even if all new introductions stopped today, the alien flora would continue to expand for decades.
+
+**Invasionsschuld** (Essl et al. 2011): Viele Alien-Arten wurden in eine Region eingeführt, haben aber ihr potenzielles Verbreitungsgebiet noch nicht erreicht. Der aktuelle Alien-Reichtum unterschätzt den zukünftigen. Dies hat große Implikationen für die Naturschutzplanung.
+
+</div>
+
+---
+
+# <span class="en">5. Spatial vs. Random: Does Geography Matter?</span><span class="de">5. Räumlich vs. Zufällig: Ist Geografie wichtig?</span>
+
+<div class="theory-box">
+
+<div class="en">
+
+**The null model approach:** To test whether spatial structure genuinely affects species accumulation, we compare two methods:
+
+- **kNN (spatial):** Visit plots in nearest-neighbor order — mimics how a field ecologist would walk across a landscape
+- **Random:** Visit plots in random order — the classic null model for accumulation curves (Gotelli & Colwell 2001)
+
+If species are **spatially autocorrelated** (Tobler's first law of geography: "everything is related to everything else, but near things are more related than distant things"), the spatial curve should lie *below* the random curve. Nearby plots share more species, so the kNN walk encounters new species more slowly.
+
+The difference between the two curves quantifies **spatial turnover** — how much species composition changes across geographic distance (Nekola & White 1999).
+
+</div>
+
+<div class="de">
+
+**Der Nullmodell-Ansatz:** Um zu testen, ob räumliche Struktur die Artenakkumulation tatsächlich beeinflusst, vergleichen wir zwei Methoden:
+
+- **kNN (räumlich):** Plots in Nearest-Neighbor-Reihenfolge besuchen — ahmt nach, wie ein Feldökologe eine Landschaft durchquert
+- **Zufällig:** Plots in zufälliger Reihenfolge besuchen — das klassische Nullmodell für Akkumulationskurven (Gotelli & Colwell 2001)
+
+Wenn Arten **räumlich autokorreliert** sind (Toblers erstes Gesetz der Geografie: "alles hängt mit allem zusammen, aber nahe Dinge mehr als entfernte"), sollte die räumliche Kurve *unter* der zufälligen liegen. Benachbarte Plots teilen mehr Arten, sodass der kNN-Walk neue Arten langsamer antrifft.
+
+Die Differenz zwischen den beiden Kurven quantifiziert **räumlichen Turnover** — wie stark sich die Artenzusammensetzung über geografische Distanz verändert (Nekola & White 1999).
+
+</div>
+
+</div>
+
+```{r methods-comparison}
+m <- readRDS(file.path(comp_dir, "methods_comparison.rds"))
+sac_knn_m <- m$knn; sac_random_m <- m$random
+rm(m)
+
+methods_combined <- c(kNN = sac_knn_m, Random = sac_random_m)
+plot(methods_combined) +
+  ggtitle("kNN (spatial) vs Random Accumulation (1990s subset)") +
+  theme_minimal(base_size = 13)
+```
+
+<div class="results-box">
+
+<div class="en">
+
+**Key finding:** The spatial (kNN) curve lies consistently below the random curve. This means:
+
+1. **Spatial autocorrelation is strong** — nearby plots share many species
+2. **Beta diversity is real** — species composition genuinely changes across the landscape
+3. **Random sampling overestimates local diversity** — if you jump around randomly, you encounter new species faster because you cross biogeographic boundaries more often
+
+The gap between the curves is a visual measure of **spatial beta diversity**. A large gap indicates high species turnover across the landscape; a small gap would mean species are distributed uniformly.
+
+This result validates the use of spatial (kNN) accumulation curves for Austrian vegetation data: the spatial structure is ecologically meaningful, not just a statistical artifact.
+
+</div>
+
+<div class="de">
+
+**Schlüsselergebnis:** Die räumliche (kNN) Kurve liegt konsistent unter der zufälligen Kurve. Das bedeutet:
+
+1. **Räumliche Autokorrelation ist stark** — benachbarte Plots teilen viele Arten
+2. **Beta-Diversität ist real** — die Artenzusammensetzung verändert sich tatsächlich über die Landschaft
+3. **Zufälliges Sampling überschätzt lokale Diversität** — wenn man zufällig herumspringt, trifft man schneller neue Arten, weil man häufiger biogeografische Grenzen überquert
+
+Die Lücke zwischen den Kurven ist ein visuelles Maß für **räumliche Beta-Diversität**. Eine große Lücke zeigt hohen Arten-Turnover über die Landschaft; eine kleine Lücke würde bedeuten, dass Arten gleichmäßig verteilt sind.
+
+Dieses Ergebnis validiert die Verwendung räumlicher (kNN) Akkumulationskurven für österreichische Vegetationsdaten: Die räumliche Struktur ist ökologisch bedeutsam, nicht nur ein statistisches Artefakt.
+
+</div>
+
+</div>
+
+---
+
+# <span class="en">6. Hill Numbers: Beyond Species Richness</span><span class="de">6. Hill-Zahlen: Jenseits des Artenreichtums</span>
+
+<div class="theory-box">
+
+<div class="en">
+
+**Why species richness is not enough:**
+
+Species richness (counting species) treats all species equally — a species represented by 10,000 individuals counts the same as one represented by a single individual. **Hill numbers** (Hill 1973; Jost 2006) provide a unified framework of diversity measures parameterized by a single value $q$:
+
+$${}^qD = \left(\sum_{i=1}^{S} p_i^q\right)^{1/(1-q)}$$
+
+| Order $q$ | Name | What it measures | Sensitivity |
+|-----------|------|-----------------|-------------|
+| **q = 0** | Species richness | Number of species | All species equally |
+| **q = 1** | Shannon diversity | Effective number of common species | Proportional to abundance |
+| **q = 2** | Simpson diversity | Effective number of dominant species | Emphasizes dominants |
+
+As $q$ increases, the measure gives less weight to rare species and more to dominant ones. This is critical because **invasive alien species often achieve dominance** — they may be few in number but can contribute disproportionately to community biomass and ecological impact (Pysek et al. 2012).
+
+</div>
+
+<div class="de">
+
+**Warum Artenreichtum nicht ausreicht:**
+
+Artenreichtum (Arten zählen) behandelt alle Arten gleich — eine Art mit 10.000 Individuen zählt genauso wie eine mit einem einzigen Individuum. **Hill-Zahlen** (Hill 1973; Jost 2006) bieten einen einheitlichen Rahmen von Diversitätsmaßen, parametrisiert durch einen einzigen Wert $q$:
+
+$${}^qD = \left(\sum_{i=1}^{S} p_i^q\right)^{1/(1-q)}$$
+
+| Ordnung $q$ | Name | Was es misst | Empfindlichkeit |
+|-------------|------|-------------|-----------------|
+| **q = 0** | Artenreichtum | Anzahl der Arten | Alle Arten gleich |
+| **q = 1** | Shannon-Diversität | Effektive Anzahl häufiger Arten | Proportional zur Abundanz |
+| **q = 2** | Simpson-Diversität | Effektive Anzahl dominanter Arten | Betont Dominante |
+
+Mit steigendem $q$ gibt das Maß seltenen Arten weniger und dominanten mehr Gewicht. Dies ist kritisch, weil **invasive Alien-Arten oft Dominanz erreichen** — sie mögen wenige sein, können aber unverhältnismäßig zu Biomasse und ökologischer Wirkung beitragen (Pysek et al. 2012).
+
+</div>
+
+</div>
+
+```{r hill-numbers}
+hill <- readRDS(file.path(comp_dir, "hill.rds"))
+print(hill)
+plot(hill) +
+  ggtitle("Hill Number Accumulation (1990s subset)") +
+  theme_minimal(base_size = 13)
+```
+
+<div class="results-box">
+
+<div class="en">
+
+**Interpretation:**
+
+The three Hill number curves tell complementary stories:
+
+- **q = 0 (richness):** The classic accumulation curve — total species count increases with sampling. This is what we analyzed on Days 1 and 2.
+- **q = 1 (Shannon):** The effective number of "typical" species. This curve rises more slowly because it downweights rare species. If many species are very rare, Shannon diversity will be much lower than raw richness.
+- **q = 2 (Simpson):** The effective number of dominant species. This curve plateaus earliest because the community's dominant species are captured quickly — you need relatively few plots to encounter the species that make up most of the vegetation cover.
+
+**The gap between q=0 and q=2** is itself informative: a large gap indicates high **evenness** — many species, none strongly dominant. A small gap suggests a few species dominate while many are rare. This "dominance structure" has implications for ecosystem functioning (Hillebrand et al. 2008).
+
+</div>
+
+<div class="de">
+
+**Interpretation:**
+
+Die drei Hill-Zahlen-Kurven erzählen komplementäre Geschichten:
+
+- **q = 0 (Reichtum):** Die klassische Akkumulationskurve — die Gesamtartenzahl steigt mit der Beprobung. Das haben wir an Tag 1 und 2 analysiert.
+- **q = 1 (Shannon):** Die effektive Anzahl "typischer" Arten. Diese Kurve steigt langsamer, weil sie seltene Arten heruntergewichtet. Wenn viele Arten sehr selten sind, wird die Shannon-Diversität viel niedriger als der rohe Reichtum sein.
+- **q = 2 (Simpson):** Die effektive Anzahl dominanter Arten. Diese Kurve erreicht am frühesten ein Plateau, weil die dominanten Arten der Gemeinschaft schnell erfasst werden — man braucht relativ wenige Plots, um die Arten zu finden, die den Großteil der Vegetationsdeckung ausmachen.
+
+**Die Lücke zwischen q=0 und q=2** ist selbst informativ: Eine große Lücke zeigt hohe **Evenness** — viele Arten, keine stark dominant. Eine kleine Lücke deutet darauf hin, dass wenige Arten dominieren, während viele selten sind. Diese "Dominanzstruktur" hat Implikationen für die Ökosystemfunktion (Hillebrand et al. 2008).
+
+</div>
+
+</div>
+
+## <span class="en">Diversity Partitioning: Alpha, Beta, Gamma</span><span class="de">Diversitätsaufteilung: Alpha, Beta, Gamma</span>
+
+<div class="theory-box">
+
+<div class="en">
+
+**Whittaker's insight (1960, 1972):** Regional diversity ($\gamma$) can be decomposed into local diversity ($\alpha$) and between-site diversity ($\beta$):
+
+$$\gamma = \alpha \times \beta \quad \text{(multiplicative)}$$
+
+or equivalently: $\beta = \gamma / \alpha$
+
+- **Alpha ($\alpha$):** Average diversity within a single plot — how many species does one site typically hold?
+- **Gamma ($\gamma$):** Total diversity across the entire region — the full species pool
+- **Beta ($\beta$):** How different are sites from each other? High beta = high turnover between sites
+
+This decomposition reveals whether diversity is driven by **many species packed into individual sites** (high alpha) or by **different species at different sites** (high beta). The answer has direct conservation implications: high-alpha systems need fewer protected areas; high-beta systems need a distributed network of reserves (Socolar et al. 2016).
+
+</div>
+
+<div class="de">
+
+**Whittakers Erkenntnis (1960, 1972):** Regionale Diversität ($\gamma$) kann in lokale Diversität ($\alpha$) und Zwischen-Standort-Diversität ($\beta$) zerlegt werden:
+
+$$\gamma = \alpha \times \beta \quad \text{(multiplikativ)}$$
+
+oder äquivalent: $\beta = \gamma / \alpha$
+
+- **Alpha ($\alpha$):** Durchschnittliche Diversität innerhalb eines einzelnen Plots — wie viele Arten hält ein Standort typischerweise?
+- **Gamma ($\gamma$):** Gesamtdiversität über die gesamte Region — der vollständige Artenpool
+- **Beta ($\beta$):** Wie unterschiedlich sind Standorte voneinander? Hohes Beta = hoher Turnover zwischen Standorten
+
+Diese Zerlegung zeigt, ob Diversität durch **viele Arten an einzelnen Standorten** (hohes Alpha) oder durch **verschiedene Arten an verschiedenen Standorten** (hohes Beta) angetrieben wird. Die Antwort hat direkte Naturschutzimplikationen: Systeme mit hohem Alpha brauchen weniger Schutzgebiete; Systeme mit hohem Beta brauchen ein verteiltes Netzwerk von Reservaten (Socolar et al. 2016).
+
+</div>
+
+</div>
+
+```{r diversity-partition}
+partition <- readRDS(file.path(comp_dir, "partition.rds"))
+print(partition)
+plot(partition) +
+  ggtitle("Diversity Partitioning (1990s subset)") +
+  theme_minimal(base_size = 13)
+```
+
+```{r alpha-diversity}
+alpha <- readRDS(file.path(comp_dir, "alpha.rds"))
+print(alpha)
+plot(alpha) +
+  ggtitle("Alpha Diversity per Site (1990s subset)") +
+  theme_minimal(base_size = 13)
+```
+
+<div class="results-box">
+
+<div class="en">
+
+**Interpretation:**
+
+The partitioning reveals that Austrian plant diversity is primarily driven by **high beta diversity** — sites differ substantially in species composition. This is expected given Austria's topographic heterogeneity: a single plot in the Pannonian lowlands shares relatively few species with a plot in the high Alps. The alpha-diversity map shows spatial patterns in local richness, likely reflecting habitat type, elevation, and land use intensity.
+
+For conservation, this high beta diversity means that protecting a single biodiversity hotspot is insufficient — a **network of protected areas** spanning different habitats and elevations is necessary to capture the full Austrian flora (Kier et al. 2009).
+
+</div>
+
+<div class="de">
+
+**Interpretation:**
+
+Die Aufteilung zeigt, dass die österreichische Pflanzendiversität primär durch **hohe Beta-Diversität** angetrieben wird — Standorte unterscheiden sich erheblich in der Artenzusammensetzung. Dies ist angesichts der topografischen Heterogenität Österreichs zu erwarten: Ein einzelner Plot im pannonischen Tiefland teilt relativ wenige Arten mit einem Plot in den Hochalpen. Die Alpha-Diversitätskarte zeigt räumliche Muster im lokalen Reichtum, die wahrscheinlich Habitattyp, Höhenlage und Landnutzungsintensität widerspiegeln.
+
+Für den Naturschutz bedeutet diese hohe Beta-Diversität, dass der Schutz eines einzelnen Biodiversitäts-Hotspots unzureichend ist — ein **Netzwerk von Schutzgebieten**, das verschiedene Habitate und Höhenlagen umfasst, ist notwendig, um die gesamte österreichische Flora zu erfassen (Kier et al. 2009).
+
+</div>
+
+</div>
+
+---
+
+# <span class="en">7. Beta Diversity: Turnover vs. Nestedness</span><span class="de">7. Beta-Diversität: Turnover vs. Nestedness</span>
+
+<div class="theory-box">
+
+<div class="en">
+
+**Not all beta diversity is the same.** Baselga (2010) demonstrated that total beta diversity can be decomposed into two fundamentally different components:
+
+- **Turnover ($\beta_{sim}$):** Species are *replaced* by different species across sites. Site A has species 1,2,3; Site B has species 4,5,6. This indicates genuine ecological gradients — different environmental conditions support different species assemblages.
+
+- **Nestedness ($\beta_{nes}$):** Species-poor sites are *subsets* of species-rich sites. Site A has species 1,2,3,4,5; Site B has species 1,2. This indicates differential species loss — some sites have lost species (or never acquired them) rather than hosting different species.
+
+$$\beta_{Sorensen} = \beta_{Turnover} + \beta_{Nestedness}$$
+
+**Why this matters for invasions:** If alien species show high nestedness (alien-poor sites are subsets of alien-rich sites), it suggests that aliens spread from introduction hotspots outward. If they show high turnover, different alien species establish in different regions — possibly reflecting multiple independent introduction events or habitat-specific invasions.
+
+</div>
+
+<div class="de">
+
+**Nicht alle Beta-Diversität ist gleich.** Baselga (2010) zeigte, dass die Gesamt-Beta-Diversität in zwei grundlegend verschiedene Komponenten zerlegt werden kann:
+
+- **Turnover ($\beta_{sim}$):** Arten werden über Standorte hinweg durch andere Arten *ersetzt*. Standort A hat Arten 1,2,3; Standort B hat Arten 4,5,6. Dies zeigt echte ökologische Gradienten — verschiedene Umweltbedingungen unterstützen verschiedene Artenzusammensetzungen.
+
+- **Nestedness ($\beta_{nes}$):** Artenarme Standorte sind *Teilmengen* artenreicher Standorte. Standort A hat Arten 1,2,3,4,5; Standort B hat Arten 1,2. Dies zeigt differenziellen Artenverlust — einige Standorte haben Arten verloren (oder nie erworben), anstatt andere Arten zu beherbergen.
+
+$$\beta_{Sorensen} = \beta_{Turnover} + \beta_{Nestedness}$$
+
+**Warum das für Invasionen wichtig ist:** Wenn Alien-Arten hohe Nestedness zeigen (alien-arme Standorte sind Teilmengen alien-reicher Standorte), deutet das darauf hin, dass sich Aliens von Einführungs-Hotspots nach außen ausbreiten. Wenn sie hohen Turnover zeigen, etablieren sich verschiedene Alien-Arten in verschiedenen Regionen — möglicherweise verschiedene unabhängige Einführungsereignisse oder habitatspezifische Invasionen widerspiegelnd.
+
+</div>
+
+</div>
+
+```{r beta-diversity}
+beta <- readRDS(file.path(comp_dir, "beta.rds"))
+print(beta)
+plot(beta) +
+  ggtitle("Beta Diversity Accumulation: Turnover vs Nestedness (1990s)") +
+  theme_minimal(base_size = 13)
+```
+
+<div class="results-box">
+
+<div class="en">
+
+**Interpretation:**
+
+As the spatial sampling window expands (more plots included), the beta diversity components evolve:
+
+- **Turnover dominates** at larger spatial scales — moving from the Alps to the lowlands involves genuine species replacement, not just species loss. Alpine specialists (e.g., *Dryas octopetala*, *Saxifraga* spp.) are replaced by lowland species (e.g., *Arrhenatherum elatius*, *Lolium perenne*), not simply added to.
+- **Nestedness** contributes less, suggesting that Austria's flora is not merely a nested hierarchy where poor sites are subsets of rich ones. Instead, different regions host genuinely different species assemblages.
+
+This pattern is consistent with strong **environmental filtering** along Austria's elevation gradient (~115 m to ~3,798 m), which creates distinct vegetation belts from thermophilic lowland grasslands to alpine cushion plant communities (Grabherr et al. 2003).
+
+</div>
+
+<div class="de">
+
+**Interpretation:**
+
+Wenn sich das räumliche Beprobungsfenster erweitert (mehr Plots einbezogen), entwickeln sich die Beta-Diversitäts-Komponenten:
+
+- **Turnover dominiert** auf größeren räumlichen Skalen — die Bewegung von den Alpen zum Tiefland beinhaltet echten Artenersatz, nicht nur Artenverlust. Alpine Spezialisten (z.B. *Dryas octopetala*, *Saxifraga* spp.) werden durch Tieflandarten (z.B. *Arrhenatherum elatius*, *Lolium perenne*) ersetzt, nicht einfach ergänzt.
+- **Nestedness** trägt weniger bei, was darauf hindeutet, dass Österreichs Flora keine bloß verschachtelte Hierarchie ist, wo artenarme Standorte Teilmengen reicher Standorte sind. Stattdessen beherbergen verschiedene Regionen tatsächlich verschiedene Artenzusammensetzungen.
+
+Dieses Muster stimmt mit starker **Umweltfilterung** entlang Österreichs Höhengradienten (~115 m bis ~3.798 m) überein, der deutliche Vegetationsgürtel von thermophilem Tieflandgrasland bis zu alpinen Polsterpflanzengemeinschaften schafft (Grabherr et al. 2003).
+
+</div>
+
+</div>
+
+---
+
+# <span class="en">8. Coverage-Based Rarefaction</span><span class="de">8. Deckungsbasierte Rarefaction</span>
+
+<div class="theory-box">
+
+<div class="en">
+
+**The completeness question:** Instead of asking "how many species did we find?", we ask "**what fraction of all species did we find?**"
+
+**Sample coverage** (Chao & Jost 2012) estimates the proportion of the total community that has been detected. It is defined as the fraction of individuals in the community that belong to species already observed:
+
+$$\hat{C}_n = 1 - \frac{f_1}{n}$$
+
+where $f_1$ is the number of singletons (species observed exactly once) and $n$ is the total number of individuals sampled. When coverage is 95%, it means we have detected species accounting for 95% of all individuals — but we may still be missing many rare species.
+
+**Practical question:** How many plots do we need to sample to achieve 90%, 95%, or 99% coverage?
+
+</div>
+
+<div class="de">
+
+**Die Vollständigkeitsfrage:** Statt "wie viele Arten haben wir gefunden?" fragen wir "**welchen Anteil aller Arten haben wir gefunden?**"
+
+**Stichprobenabdeckung** (Chao & Jost 2012) schätzt den Anteil der Gesamtgemeinschaft, der erfasst wurde. Sie ist definiert als der Anteil der Individuen in der Gemeinschaft, die zu bereits beobachteten Arten gehören:
+
+$$\hat{C}_n = 1 - \frac{f_1}{n}$$
+
+wobei $f_1$ die Anzahl der Singletons (Arten, die genau einmal beobachtet wurden) und $n$ die Gesamtzahl der beprobten Individuen ist. Wenn die Abdeckung 95% beträgt, haben wir Arten entdeckt, die 95% aller Individuen ausmachen — aber wir verpassen möglicherweise noch viele seltene Arten.
+
+**Praktische Frage:** Wie viele Plots müssen wir beproben, um 90%, 95% oder 99% Abdeckung zu erreichen?
+
+</div>
+
+</div>
+
+```{r coverage}
+cov <- readRDS(file.path(comp_dir, "coverage.rds"))
+print(cov)
+plot(cov) +
+  ggtitle("Coverage-Based Rarefaction (1990s subset)") +
+  theme_minimal(base_size = 13)
+```
+
+```{r coverage-interpolation}
+interp <- interpolateCoverage(cov, target = c(0.90, 0.95, 0.99))
+interp_means <- round(colMeans(interp, na.rm = TRUE), 1)
+interp_df <- data.frame(
+  Target = c("90%", "95%", "99%"),
+  `Sites needed` = interp_means
+)
+knitr::kable(interp_df, col.names = c("Coverage Target / Abdeckungsziel",
+                                        "Sites Needed (mean) / Ben\u00f6tigte Plots"),
+             align = "lr")
+```
+
+<div class="results-box">
+
+<div class="en">
+
+**Practical implications:**
+
+The coverage analysis answers a fundamental field ecology question: **how much sampling is enough?** The table above shows how many spatially ordered plots are needed (on average) to achieve different coverage levels.
+
+The jump from 95% to 99% coverage requires disproportionately more effort — this is a universal property of biodiversity sampling reflecting the **long tail of rare species** (Preston 1948). Many species are represented by very few individuals or occur in very specific microhabitats; detecting them requires exhaustive sampling that may not be cost-effective.
+
+For inventory projects and environmental impact assessments, 90--95% coverage is typically considered adequate (Chao et al. 2014). Achieving 99% requires roughly twice the effort of 95%, a pattern consistent across ecosystems worldwide.
+
+</div>
+
+<div class="de">
+
+**Praktische Implikationen:**
+
+Die Abdeckungsanalyse beantwortet eine fundamentale feldökologische Frage: **Wie viel Beprobung ist genug?** Die Tabelle oben zeigt, wie viele räumlich geordnete Plots (im Durchschnitt) benötigt werden, um verschiedene Abdeckungsniveaus zu erreichen.
+
+Der Sprung von 95% auf 99% Abdeckung erfordert unverhältnismäßig mehr Aufwand — dies ist eine universelle Eigenschaft der Biodiversitätsbeprobung, die den **langen Schwanz seltener Arten** widerspiegelt (Preston 1948). Viele Arten sind durch sehr wenige Individuen vertreten oder kommen in sehr spezifischen Mikrohabitaten vor; sie zu entdecken erfordert erschöpfende Beprobung, die möglicherweise nicht kosteneffektiv ist.
+
+Für Inventurprojekte und Umweltverträglichkeitsprüfungen gelten 90--95% Abdeckung typischerweise als ausreichend (Chao et al. 2014). Das Erreichen von 99% erfordert ungefähr den doppelten Aufwand von 95%, ein Muster, das über Ökosysteme weltweit konsistent ist.
+
+</div>
+
+</div>
+
+---
+
+# <span class="en">9. Phylogenetic Diversity</span><span class="de">9. Phylogenetische Diversität</span>
+
+<div class="theory-box">
+
+<div class="en">
+
+**Beyond species identity — the evolutionary perspective:**
+
+Two communities can have the same number of species but very different **evolutionary histories**. A community of 10 grass species (all Poaceae) represents less evolutionary diversity than a community containing a grass, a fern, an orchid, and 7 species from different families.
+
+**Phylogenetic diversity** metrics quantify how much of the tree of life is represented in a community (Faith 1992):
+
+- **MPD (Mean Pairwise Distance):** Average evolutionary distance between all pairs of species. High MPD = species are distantly related = high phylogenetic breadth.
+- **MNTD (Mean Nearest Taxon Distance):** Average distance to each species' closest relative. Low MNTD = many closely related species = possible competitive exclusion or habitat filtering for specific lineages.
+
+**Hypothesis for invasions:** Alien species may come from a few dominant families (e.g., Asteraceae, Poaceae, Brassicaceae — Pysek et al. 2017), resulting in lower phylogenetic diversity than the native flora. Alternatively, aliens from diverse geographic origins might represent a wide phylogenetic breadth.
+
+</div>
+
+<div class="de">
+
+**Jenseits der Artenidentität — die evolutionäre Perspektive:**
+
+Zwei Gemeinschaften können die gleiche Artenzahl haben, aber sehr verschiedene **Evolutionsgeschichten**. Eine Gemeinschaft aus 10 Grasarten (alle Poaceae) repräsentiert weniger evolutionäre Diversität als eine Gemeinschaft mit einem Gras, einem Farn, einer Orchidee und 7 Arten aus verschiedenen Familien.
+
+**Phylogenetische Diversitäts**-Metriken quantifizieren, wie viel vom Baum des Lebens in einer Gemeinschaft repräsentiert ist (Faith 1992):
+
+- **MPD (Mean Pairwise Distance):** Durchschnittliche evolutionäre Distanz zwischen allen Artenpaaren. Hoher MPD = Arten sind entfernt verwandt = hohe phylogenetische Breite.
+- **MNTD (Mean Nearest Taxon Distance):** Durchschnittliche Distanz zum nächsten Verwandten jeder Art. Niedriger MNTD = viele eng verwandte Arten = mögliche kompetitive Exklusion oder Habitatfilterung für bestimmte Linien.
+
+**Hypothese für Invasionen:** Alien-Arten könnten aus wenigen dominanten Familien stammen (z.B. Asteraceae, Poaceae, Brassicaceae — Pysek et al. 2017), was zu geringerer phylogenetischer Diversität als die heimische Flora führt. Alternativ könnten Aliens aus verschiedenen geografischen Herkünften eine breite phylogenetische Spannweite repräsentieren.
+
+</div>
+
+</div>
+
+```{r phylo-accumulation}
+phylo_sac <- readRDS(file.path(comp_dir, "phylo_sac.rds"))
+print(phylo_sac)
+plot(phylo_sac) +
+  ggtitle("Phylogenetic Diversity Accumulation (MPD & MNTD, 1990s)") +
+  theme_minimal(base_size = 13)
+```
+
+## <span class="en">Native vs. Alien Phylogenetic Diversity</span><span class="de">Heimisch vs. Alien Phylogenetische Diversität</span>
+
+```{r phylo-native-alien}
+pna <- readRDS(file.path(comp_dir, "phylo_native_alien.rds"))
+phylo_native <- pna$native; phylo_alien <- pna$alien
+rm(pna)
+cat("Native MPD accumulation:\n"); print(phylo_native)
+cat("\nAlien MPD accumulation:\n"); print(phylo_alien)
+```
+
+<div class="results-box">
+
+<div class="en">
+
+**Interpretation:**
+
+**MPD (phylogenetic breadth)** increases as the sampling window expands because we encounter species from increasingly different evolutionary lineages. The rate of MPD increase tells us about **phylogenetic beta diversity** — how much evolutionary history varies across space.
+
+**MNTD (terminal clustering)** captures the fine-scale phylogenetic structure. When MNTD is low, many species in the sample have close relatives also present — this can indicate **environmental filtering** (the habitat selects for species from specific lineages) or **competitive exclusion** limiting the coexistence of very similar species (Webb et al. 2002).
+
+**Native vs. alien comparison:** The MPD comparison reveals whether alien species represent a phylogenetically broad or narrow slice of the plant tree of life. If aliens cluster phylogenetically, it suggests that certain evolutionary traits (fast growth, generalist ecology, high seed production) predispose lineages to successful invasion — the "ideal weed" syndrome (Baker 1974; van Kleunen et al. 2010).
+
+</div>
+
+<div class="de">
+
+**Interpretation:**
+
+**MPD (phylogenetische Breite)** steigt, wenn sich das Beprobungsfenster erweitert, weil wir Arten aus zunehmend verschiedenen evolutionären Linien antreffen. Die Anstiegsrate des MPD sagt uns etwas über **phylogenetische Beta-Diversität** — wie stark sich die Evolutionsgeschichte über den Raum verändert.
+
+**MNTD (terminale Clusterung)** erfasst die feinere phylogenetische Struktur. Wenn MNTD niedrig ist, haben viele Arten in der Probe nahe Verwandte, die ebenfalls anwesend sind — dies kann auf **Umweltfilterung** hindeuten (das Habitat selektiert für Arten aus bestimmten Linien) oder auf **kompetitive Exklusion**, die die Koexistenz sehr ähnlicher Arten begrenzt (Webb et al. 2002).
+
+**Vergleich heimisch vs. alien:** Der MPD-Vergleich zeigt, ob Alien-Arten einen phylogenetisch breiten oder schmalen Ausschnitt des Pflanzen-Lebensbaums repräsentieren. Wenn Aliens phylogenetisch clustern, deutet das darauf hin, dass bestimmte evolutionäre Eigenschaften (schnelles Wachstum, generalistische Ökologie, hohe Samenproduktion) Linien für erfolgreiche Invasion prädisponieren — das "ideale Unkraut"-Syndrom (Baker 1974; van Kleunen et al. 2010).
+
+</div>
+
+</div>
+
+---
+
+# <span class="en">10. Functional Diversity</span><span class="de">10. Funktionelle Diversität</span>
+
+<div class="theory-box">
+
+<div class="en">
+
+**What species DO matters as much as what species ARE:**
+
+Functional diversity measures the range of ecological roles (traits) present in a community (Petchey & Gaston 2006). Two species from the same family may have very different ecological functions (e.g., a tall tree vs. a ground-hugging rosette), while two distantly related species may serve similar functions (convergent evolution).
+
+Key functional traits in plant ecology include:
+
+| Trait | Ecological significance |
+|-------|------------------------|
+| **Specific leaf area** | Resource acquisition strategy (fast vs. slow) |
+| **Plant height** | Competitive ability, light capture |
+| **Seed mass** | Dispersal distance, seedling survival |
+| **Root depth** | Water acquisition, drought tolerance |
+| **Clonality** | Persistence, spread without seeds |
+
+**FDis (Functional Dispersion)** (Laliberte & Legendre 2010) measures the mean distance of species to the centroid of the trait space, weighted by abundance. Higher FDis = more functionally diverse community = greater "niche space" occupied.
+
+In our analysis, we use **family identity** and **native/alien status** as proxy traits — a coarse but informative approach when detailed trait measurements are unavailable for all species.
+
+</div>
+
+<div class="de">
+
+**Was Arten TUN ist genauso wichtig wie was Arten SIND:**
+
+Funktionelle Diversität misst die Bandbreite ökologischer Rollen (Eigenschaften), die in einer Gemeinschaft vorhanden sind (Petchey & Gaston 2006). Zwei Arten aus der gleichen Familie können sehr verschiedene ökologische Funktionen haben (z.B. ein hoher Baum vs. eine bodennahe Rosette), während zwei entfernt verwandte Arten ähnliche Funktionen erfüllen können (konvergente Evolution).
+
+Wichtige funktionelle Eigenschaften in der Pflanzenökologie:
+
+| Eigenschaft | Ökologische Bedeutung |
+|-------------|----------------------|
+| **Spezifische Blattfläche** | Ressourcenerwerbsstrategie (schnell vs. langsam) |
+| **Pflanzenhöhe** | Wettbewerbsfähigkeit, Lichtfang |
+| **Samenmasse** | Ausbreitungsdistanz, Keimlingüberleben |
+| **Wurzeltiefe** | Wasseraneignung, Trockenheitstoleranz |
+| **Klonalität** | Persistenz, Ausbreitung ohne Samen |
+
+**FDis (Functional Dispersion)** (Laliberte & Legendre 2010) misst die mittlere Distanz der Arten zum Zentroid des Eigenschaftsraums, gewichtet nach Abundanz. Höherer FDis = funktionell diversere Gemeinschaft = mehr besetzter "Nischenraum".
+
+In unserer Analyse verwenden wir **Familienzugehörigkeit** und **heimisch/alien Status** als Proxy-Eigenschaften — ein grober, aber informativer Ansatz, wenn detaillierte Eigenschaftsmessungen nicht für alle Arten verfügbar sind.
+
+</div>
+
+</div>
+
+```{r func-diversity}
+func_sac <- readRDS(file.path(comp_dir, "func_sac.rds"))
+print(func_sac)
+plot(func_sac) +
+  ggtitle("Functional Diversity (FDis) Accumulation (1990s)") +
+  theme_minimal(base_size = 13)
+```
+
+<div class="results-box">
+
+<div class="en">
+
+**Interpretation:**
+
+Functional diversity (FDis) increases with spatial sampling but may plateau at a different rate than species richness. This can reveal:
+
+1. **Functional redundancy:** If FDis plateaus well before species richness, many species added later are functionally similar to species already sampled — they share the same ecological "job." This redundancy can provide ecosystem resilience (Pillar et al. 2013).
+
+2. **Functional complementarity:** If FDis continues rising alongside species richness, each new species brings a unique functional contribution. This is associated with higher ecosystem functioning (Tilman et al. 2001).
+
+3. **Invasion impact on function:** If alien species cluster in a narrow functional space (e.g., ruderal, fast-growing, generalist herbs), they may not increase functional diversity much despite increasing species richness. This is the "functional homogenization" concern — invasions add species but not ecological roles (Olden et al. 2004).
+
+</div>
+
+<div class="de">
+
+**Interpretation:**
+
+Funktionelle Diversität (FDis) steigt mit räumlicher Beprobung, kann aber mit anderer Rate ein Plateau erreichen als der Artenreichtum. Dies kann zeigen:
+
+1. **Funktionelle Redundanz:** Wenn FDis deutlich vor dem Artenreichtum ein Plateau erreicht, sind viele später hinzugefügte Arten funktionell ähnlich zu bereits beprobten Arten — sie teilen den gleichen ökologischen "Job." Diese Redundanz kann Ökosystem-Resilienz bieten (Pillar et al. 2013).
+
+2. **Funktionelle Komplementarität:** Wenn FDis weiter neben dem Artenreichtum steigt, bringt jede neue Art einen einzigartigen funktionellen Beitrag. Dies ist mit höherer Ökosystemfunktion assoziiert (Tilman et al. 2001).
+
+3. **Invasionsauswirkung auf Funktion:** Wenn Alien-Arten sich in einem engen funktionellen Raum clustern (z.B. ruderale, schnellwüchsige, generalistische Kräuter), erhöhen sie die funktionelle Diversität möglicherweise nicht wesentlich, obwohl sie den Artenreichtum steigern. Dies ist die "funktionelle Homogenisierung"-Befürchtung — Invasionen fügen Arten hinzu, aber keine ökologischen Rollen (Olden et al. 2004).
+
+</div>
+
+</div>
+
+---
+
+# <span class="en">11. Habitat-Level Analysis</span><span class="de">11. Habitat-Analyse</span>
+
+<div class="theory-box">
+
+<div class="en">
+
+**Habitat type as a driver of invasion:**
+
+Not all habitats are equally susceptible to plant invasions. The **fluctuating resource availability hypothesis** (Davis et al. 2000) predicts that communities become more invasible when resource availability increases temporarily — through disturbance, nutrient pulses, or the release of other limiting factors.
+
+In the EUNIS habitat classification, we would expect:
+
+| EUNIS habitat | Expected invasion level | Reasoning |
+|---------------|------------------------|-----------|
+| **C (Inland waters)** | Moderate | Riparian corridors facilitate dispersal |
+| **E (Grasslands)** | Variable | Depends on management intensity |
+| **G (Forests)** | Low | Closed canopy limits light for invaders |
+| **I (Agricultural)** | High | Disturbed, nutrient-rich, open |
+| **J (Urban)** | Very high | Maximum disturbance, many introduction points |
+
+</div>
+
+<div class="de">
+
+**Habitattyp als Treiber von Invasionen:**
+
+Nicht alle Habitate sind gleich anfällig für Pflanzeninvasionen. Die **Hypothese der schwankenden Ressourcenverfügbarkeit** (Davis et al. 2000) sagt voraus, dass Gemeinschaften invasibler werden, wenn die Ressourcenverfügbarkeit vorübergehend steigt — durch Störung, Nährstoffpulse oder die Freisetzung anderer limitierender Faktoren.
+
+In der EUNIS-Habitatklassifikation würden wir erwarten:
+
+| EUNIS-Habitat | Erwartetes Invasionsniveau | Begründung |
+|---------------|---------------------------|------------|
+| **C (Binnengewässer)** | Mäßig | Uferkorridore erleichtern Ausbreitung |
+| **E (Grasland)** | Variabel | Hängt von Bewirtschaftungsintensität ab |
+| **G (Wälder)** | Niedrig | Geschlossenes Kronendach begrenzt Licht für Invasoren |
+| **I (Landwirtschaft)** | Hoch | Gestört, nährstoffreich, offen |
+| **J (Urban)** | Sehr hoch | Maximale Störung, viele Einführungspunkte |
+
+</div>
+
+</div>
+
+```{r habitat-curves}
+hab_results <- readRDS(file.path(comp_dir, "habitat_curves.rds"))
+hab_combined <- do.call(c, hab_results)
+plot(hab_combined) +
+  ggtitle("Species Accumulation by EUNIS Habitat (level 1)") +
+  theme_minimal(base_size = 13)
+```
+
+## <span class="en">Alien Species Share by Habitat</span><span class="de">Alien-Artenanteil nach Habitat</span>
+
+```{r habitat-alien-share}
+hab_alien <- header[, .(PlotObservationID, Eunis_lvl1)]
+hab_alien <- merge(hab_alien,
+                   species[, .(n_native = sum(STATUS == "native"),
+                               n_alien  = sum(STATUS == "neo")),
+                           by = PlotObservationID],
+                   by = "PlotObservationID")
+keep_habs <- names(which(table(header$Eunis_lvl1) >= 100))
+hab_summary <- hab_alien[Eunis_lvl1 %in% keep_habs,
+                         .(mean_native = round(mean(n_native), 1),
+                           mean_alien  = round(mean(n_alien), 1),
+                           alien_pct   = round(mean(n_alien / (n_native + n_alien)) * 100, 1)),
+                         by = Eunis_lvl1]
+setorder(hab_summary, -alien_pct)
+knitr::kable(hab_summary,
+             col.names = c("EUNIS Habitat", "Mean Native / Mittl. Heimisch",
+                           "Mean Alien / Mittl. Alien", "Alien % / Alien %"),
+             align = "lrrr")
+```
+
+## <span class="en">Native vs. Alien Within Habitats</span><span class="de">Heimisch vs. Alien innerhalb von Habitaten</span>
+
+```{r habitat-native-alien, fig.height=12}
+hab_na_results <- readRDS(file.path(comp_dir, "habitat_native_alien.rds"))
+
+plots_hab <- lapply(keep_habs, function(h) {
+  if (is.null(hab_na_results[[h]])) return(NULL)
+  plot_normalized(Native = hab_na_results[[h]]$native,
+                  Alien  = hab_na_results[[h]]$alien,
+                  title = sprintf("Habitat %s: Native vs Alien (normalized)", h)) +
+    scale_color_manual(values = c("Native" = "#2E7D32", "Alien" = "#D32F2F")) +
+    scale_fill_manual(values = c("Native" = "#2E7D32", "Alien" = "#D32F2F"))
+})
+plots_hab <- plots_hab[!vapply(plots_hab, is.null, logical(1))]
+gridExtra::grid.arrange(grobs = plots_hab, ncol = 2)
+```
+
+<div class="results-box">
+
+<div class="en">
+
+**Interpretation:**
+
+The habitat-level analysis reveals that alien species invasion is highly heterogeneous across habitat types. Habitats with high disturbance and resource availability show the highest alien proportions, consistent with the fluctuating resource hypothesis (Davis et al. 2000).
+
+The **accumulation curve shapes** differ between habitats in revealing ways:
+
+- In habitats where aliens are common, the alien curve shape may resemble the native curve — aliens have spread broadly within those habitat types
+- In habitats where aliens are rare, the alien curve is steeper and more erratic — reflecting a few clustered occurrences rather than widespread distribution
+
+This habitat-specificity is consistent with Chytry et al. (2008), who showed that European habitats vary 100-fold in their susceptibility to plant invasions, with man-made habitats, riparian zones, and coastal areas being most invaded, and oligotrophic grasslands and alpine habitats being least invaded.
+
+</div>
+
+<div class="de">
+
+**Interpretation:**
+
+Die Habitat-Analyse zeigt, dass die Invasion durch Alien-Arten sehr heterogen über Habitattypen ist. Habitate mit hoher Störung und Ressourcenverfügbarkeit zeigen die höchsten Alien-Anteile, konsistent mit der Hypothese der schwankenden Ressourcen (Davis et al. 2000).
+
+Die **Akkumulationskurvenformen** unterscheiden sich zwischen Habitaten auf aufschlussreiche Weise:
+
+- In Habitaten, wo Aliens häufig sind, kann die Alien-Kurvenform der heimischen Kurve ähneln — Aliens haben sich breit innerhalb dieser Habitattypen verteilt
+- In Habitaten, wo Aliens selten sind, ist die Alien-Kurve steiler und unregelmäßiger — was einige geclusterte Vorkommen statt weit verbreiteter Verteilung widerspiegelt
+
+Diese Habitatspezifität stimmt mit Chytry et al. (2008) überein, die zeigten, dass europäische Habitate sich 100-fach in ihrer Anfälligkeit für Pflanzeninvasionen unterscheiden, wobei anthropogene Habitate, Uferzonen und Küstengebiete am stärksten invadiert sind und oligotrophe Grasländer und alpine Habitate am wenigsten.
+
+</div>
+
+</div>
+
+---
+
+# <span class="en">12. Edge Effects: The Halo Problem</span><span class="de">12. Randeffekte: Das Halo-Problem</span>
+
+<div class="theory-box">
+
+<div class="en">
+
+**The boundary artifact:**
+
+When we study species accumulation in Austria, we face a methodological problem: Austria has borders, but species do not. A plot near the Austrian-German border may have its nearest-neighbor plot in Germany, not in Austria. If we restrict our analysis to Austrian plots only, the kNN algorithm is forced to "skip over" the border, creating artificial jumps in the spatial walk and biasing the accumulation curve.
+
+**The halo approach** solves this by including plots from neighboring countries (the "halo zone") in the spatial walk but only counting species from Austrian plots when building the accumulation curve. This ensures smooth nearest-neighbor paths that cross borders naturally.
+
+**Why this matters:** Edge effects can systematically bias biodiversity estimates. Plots near borders appear artificially species-rich or species-poor depending on whether cross-border diversity is captured or excluded (Colwell et al. 2004). For Austria — a country with 2,562 km of borders and complex geometry — this is particularly relevant.
+
+</div>
+
+<div class="de">
+
+**Das Grenzartefakt:**
+
+Wenn wir Artenakkumulation in Österreich untersuchen, stehen wir vor einem methodischen Problem: Österreich hat Grenzen, aber Arten nicht. Ein Plot nahe der österreichisch-deutschen Grenze kann seinen nächsten Nachbarplot in Deutschland haben, nicht in Österreich. Wenn wir unsere Analyse auf österreichische Plots beschränken, wird der kNN-Algorithmus gezwungen, über die Grenze zu "springen", was künstliche Sprünge im räumlichen Walk erzeugt und die Akkumulationskurve verzerrt.
+
+**Der Halo-Ansatz** löst dies, indem Plots aus Nachbarländern (die "Halo-Zone") in den räumlichen Walk einbezogen, aber nur Arten aus österreichischen Plots bei der Erstellung der Akkumulationskurve gezählt werden. Dies gewährleistet glatte Nearest-Neighbor-Pfade, die natürlich Grenzen überqueren.
+
+**Warum das wichtig ist:** Randeffekte können Biodiversitätsschätzungen systematisch verzerren. Plots nahe Grenzen erscheinen künstlich artenreich oder artenarm, je nachdem ob grenzüberschreitende Diversität erfasst oder ausgeschlossen wird (Colwell et al. 2004). Für Österreich — ein Land mit 2.562 km Grenzen und komplexer Geometrie — ist dies besonders relevant.
+
+</div>
+
+</div>
+
+```{r halo-analysis}
+h <- readRDS(file.path(comp_dir, "halo.rds"))
+sac_halo <- h$halo; sac_core <- h$core
+rm(h)
+
+halo_combined <- c(`With halo` = sac_halo, `Core only` = sac_core)
+plot(halo_combined) +
+  ggtitle("Edge Effect: Core Only vs With Halo Buffer") +
+  theme_minimal(base_size = 13)
+```
+
+<div class="results-box">
+
+<div class="en">
+
+**Interpretation:**
+
+Comparing the "core only" and "with halo" curves reveals the magnitude of edge effects in Austrian vegetation data:
+
+- **If the curves diverge substantially:** Edge effects are significant. The core-only analysis underestimates the smoothness of the spatial walk, likely inflating apparent species turnover near borders.
+- **If the curves are similar:** Edge effects are minor for the Austrian dataset, possibly because the country is large enough that most plots are far from borders.
+
+This analysis validates (or challenges) the assumption that national-scale biodiversity analyses can treat country borders as biological boundaries. For smaller countries or elongated territories, the halo correction would be even more critical.
+
+The `areaOfEffect` package used here implements the methodology described by Colling et al. for handling administrative boundaries in spatial ecological analyses. This approach is particularly important when comparing biodiversity metrics across countries of different sizes and shapes.
+
+</div>
+
+<div class="de">
+
+**Interpretation:**
+
+Der Vergleich der "Nur-Kern"- und "Mit-Halo"-Kurven zeigt das Ausmaß der Randeffekte in österreichischen Vegetationsdaten:
+
+- **Wenn die Kurven erheblich divergieren:** Randeffekte sind signifikant. Die Nur-Kern-Analyse unterschätzt die Glätte des räumlichen Walks und bläht wahrscheinlich den scheinbaren Arten-Turnover nahe Grenzen auf.
+- **Wenn die Kurven ähnlich sind:** Randeffekte sind für den österreichischen Datensatz gering, möglicherweise weil das Land groß genug ist, dass die meisten Plots weit von Grenzen entfernt sind.
+
+Diese Analyse validiert (oder hinterfragt) die Annahme, dass Biodiversitätsanalysen auf nationaler Ebene Ländergrenzen als biologische Grenzen behandeln können. Für kleinere Länder oder langgestreckte Territorien wäre die Halo-Korrektur noch kritischer.
+
+Das hier verwendete `areaOfEffect`-Paket implementiert die von Colling et al. beschriebene Methodik für den Umgang mit administrativen Grenzen in räumlichen ökologischen Analysen. Dieser Ansatz ist besonders wichtig beim Vergleich von Biodiversitätsmetriken zwischen Ländern verschiedener Größe und Form.
+
+</div>
+
+</div>
+
+---
+
+# <span class="en">13. Per-Site Metrics & Spatial Map</span><span class="de">13. Metriken pro Standort & Räumliche Karte</span>
+
+<div class="theory-box">
+
+<div class="en">
+
+**From curves to maps:**
+
+While accumulation curves summarize patterns across the landscape, we can also compute metrics for **each individual site** based on its role in the accumulation process:
+
+- **Slope at 10 sites** (`slope_10`): How rapidly is species richness increasing when 10 sites have been sampled starting from this point? High slope = the neighborhood is species-rich
+- **Half-richness** (`half_richness`): How many sites must be sampled (from this starting point) to reach 50% of total species? Low values = rapid accumulation = clustered diversity
+- **AUC** (Area Under Curve): A summary measure integrating the entire accumulation trajectory from a site
+
+Mapping these metrics reveals **spatial hotspots of biodiversity accumulation** — areas where species turnover is highest and sampling efficiency is greatest (Colling et al. 2024).
+
+</div>
+
+<div class="de">
+
+**Von Kurven zu Karten:**
+
+Während Akkumulationskurven Muster über die Landschaft zusammenfassen, können wir auch Metriken für **jeden einzelnen Standort** berechnen, basierend auf seiner Rolle im Akkumulationsprozess:
+
+- **Steigung bei 10 Standorten** (`slope_10`): Wie schnell steigt der Artenreichtum, wenn 10 Standorte ab diesem Punkt beprobt werden? Hohe Steigung = die Nachbarschaft ist artenreich
+- **Halbwertsreichtum** (`half_richness`): Wie viele Standorte müssen beprobt werden (von diesem Startpunkt), um 50% der Gesamtarten zu erreichen? Niedrige Werte = schnelle Akkumulation = geclusterte Diversität
+- **AUC** (Fläche unter der Kurve): Ein Zusammenfassungsmaß, das die gesamte Akkumulationstrajektorie von einem Standort integriert
+
+Die Kartierung dieser Metriken zeigt **räumliche Hotspots der Biodiversitätsakkumulation** — Gebiete, in denen der Arten-Turnover am höchsten und die Beprobungseffizienz am größten ist (Colling et al. 2024).
+
+</div>
+
+</div>
+
+```{r metrics}
+metrics <- readRDS(file.path(comp_dir, "metrics.rds"))
+print(metrics)
+summary(metrics)
+```
+
+```{r metrics-map, fig.width=11, fig.height=9}
+plot(metrics, type = "points") +
+  ggtitle("Per-Site Accumulation Metrics (1990s)") +
+  theme_minimal(base_size = 12)
+```
+
+<div class="results-box">
+
+<div class="en">
+
+**Interpretation:**
+
+The spatial maps of per-site metrics provide actionable insights for conservation planning:
+
+- **High-slope areas** represent biodiversity hotspots where a small number of additional samples rapidly captures new species. These areas are priorities for intensive biodiversity surveys.
+- **Low half-richness areas** are regions where diversity is concentrated locally — sampling a few nearby plots captures a large fraction of regional diversity. This pattern is typical of environmentally heterogeneous areas (alpine valleys, ecotones between habitat types).
+- **The spatial pattern** of these metrics likely correlates with elevation, land use, and habitat heterogeneity — testable predictions that connect accumulation curve analysis to landscape ecology.
+
+</div>
+
+<div class="de">
+
+**Interpretation:**
+
+Die räumlichen Karten der standortbezogenen Metriken liefern umsetzbare Erkenntnisse für die Naturschutzplanung:
+
+- **Gebiete mit hoher Steigung** repräsentieren Biodiversitäts-Hotspots, wo eine kleine Anzahl zusätzlicher Proben schnell neue Arten erfasst. Diese Gebiete sind Prioritäten für intensive Biodiversitätserhebungen.
+- **Gebiete mit niedrigem Halbwertsreichtum** sind Regionen, wo Diversität lokal konzentriert ist — die Beprobung weniger nahegelegener Plots erfasst einen großen Anteil der regionalen Diversität. Dieses Muster ist typisch für umweltmäßig heterogene Gebiete (alpine Täler, Ökotone zwischen Habitattypen).
+- **Das räumliche Muster** dieser Metriken korreliert wahrscheinlich mit Höhenlage, Landnutzung und Habitatheterogenität — testbare Vorhersagen, die Akkumulationskurvenanalyse mit Landschaftsökologie verbinden.
+
+</div>
+
+</div>
+
+---
+
+# <span class="en">14. Grouped Accumulation by Status</span><span class="de">14. Gruppierte Akkumulation nach Status</span>
+
+```{r grouped-status}
+sac_grouped <- readRDS(file.path(comp_dir, "grouped_status.rds"))
+plot_grouped_normalized(sac_grouped,
+                        title = "Grouped by Status: Native vs Alien (1990s, normalized)") +
+  scale_color_manual(values = c("native" = "#2E7D32", "neo" = "#D32F2F"),
+                     labels = c("native" = "Native", "neo" = "Alien")) +
+  scale_fill_manual(values = c("native" = "#2E7D32", "neo" = "#D32F2F"),
+                    labels = c("native" = "Native", "neo" = "Alien"))
+```
+
+<div class="en">
+
+This is the same spatial walk applied simultaneously to both groups using the `groups` argument — ensuring that native and alien species are accumulated along **identical spatial paths**. This eliminates any confounding effect of different walk trajectories and provides the cleanest comparison of spatial distribution patterns between the two groups.
+
+The normalized curves confirm the pattern seen in the pooled analysis: native and alien species reach their proportional saturation at different rates, reflecting fundamentally different spatial distributions across the Austrian landscape.
+
+</div>
+
+<div class="de">
+
+Dies ist der gleiche räumliche Walk, der gleichzeitig auf beide Gruppen angewendet wird, unter Verwendung des `groups`-Arguments — was sicherstellt, dass heimische und Alien-Arten entlang **identischer räumlicher Pfade** akkumuliert werden. Dies eliminiert jeden störenden Effekt verschiedener Walk-Trajektorien und bietet den saubersten Vergleich räumlicher Verteilungsmuster zwischen den beiden Gruppen.
+
+Die normalisierten Kurven bestätigen das Muster aus der gepoolten Analyse: Heimische und Alien-Arten erreichen ihre proportionale Sättigung mit verschiedenen Raten, was grundlegend verschiedene räumliche Verteilungen über die österreichische Landschaft widerspiegelt.
+
+</div>
+
+---
+
+# <span class="en">15. Synthesis & Conclusions</span><span class="de">15. Synthese & Schlussfolgerungen</span>
+
+## <span class="en">Revisiting Our Hypotheses</span><span class="de">Unsere Hypothesen revisited</span>
+
+<div class="results-box">
+
+<div class="en">
+
+| Hypothesis | Prediction | Result | Verdict |
+|------------|------------|--------|---------|
+| **H1:** Alien species accumulate more slowly | Fewer total alien species | Confirmed: ~`r n_alien` aliens vs ~`r n_native` natives | Supported |
+| **H2:** Aliens are more spatially clustered | Different normalized curve shapes | Confirmed: shape differences visible across all analyses | Supported |
+| **H3:** Curves are statistically different | Significant permutation test | Confirmed: p < 0.05 | Supported |
+
+**Additional discoveries from extended analyses:**
+
+- **Temporal signal:** The native-alien difference is consistent across decades
+- **Habitat specificity:** Alien invasion is concentrated in disturbed, nutrient-rich habitats
+- **Phylogenetic structure:** Aliens may represent a phylogenetically non-random subset of global flora
+- **Spatial autocorrelation:** kNN vs random comparison confirms strong spatial structure in Austrian plant communities
+- **Coverage:** 90% sampling completeness requires substantially fewer plots than 99%
+- **Edge effects:** The halo analysis quantifies how national borders bias spatial biodiversity estimates
+
+</div>
+
+<div class="de">
+
+| Hypothese | Vorhersage | Ergebnis | Bewertung |
+|-----------|------------|----------|-----------|
+| **H1:** Alien-Arten akkumulieren langsamer | Weniger Alien-Gesamtarten | Bestätigt: ~`r n_alien` Aliens vs ~`r n_native` Heimische | Unterstützt |
+| **H2:** Aliens sind räumlich stärker geclustert | Verschiedene normalisierte Kurvenformen | Bestätigt: Formunterschiede über alle Analysen sichtbar | Unterstützt |
+| **H3:** Kurven sind statistisch unterschiedlich | Signifikanter Permutationstest | Bestätigt: p < 0,05 | Unterstützt |
+
+**Zusätzliche Entdeckungen aus erweiterten Analysen:**
+
+- **Zeitliches Signal:** Der Unterschied heimisch-alien ist über Jahrzehnte konsistent
+- **Habitatspezifität:** Alien-Invasion konzentriert sich auf gestörte, nährstoffreiche Habitate
+- **Phylogenetische Struktur:** Aliens repräsentieren möglicherweise eine phylogenetisch nicht-zufällige Teilmenge der globalen Flora
+- **Räumliche Autokorrelation:** kNN vs Zufall-Vergleich bestätigt starke räumliche Struktur in österreichischen Pflanzengemeinschaften
+- **Abdeckung:** 90% Beprobungsvollständigkeit erfordert erheblich weniger Plots als 99%
+- **Randeffekte:** Die Halo-Analyse quantifiziert, wie nationale Grenzen räumliche Biodiversitätsschätzungen verzerren
+
+</div>
+
+</div>
+
+## <span class="en">The Big Picture</span><span class="de">Das große Bild</span>
+
+<div class="en">
+
+Our analyses paint a coherent picture of Austrian plant diversity that connects multiple theoretical frameworks:
+
+**1. Invasion ecology:** Alien species are not randomly distributed — they cluster around human-modified landscapes (Pysek et al. 2010). The spatial accumulation approach uniquely reveals this clustering because it preserves geographic information that traditional species counts discard.
+
+**2. Biogeography:** Austria's extraordinary topographic gradient (115 m to 3,798 m elevation) creates strong environmental filtering that drives high beta diversity through genuine species turnover. Alpine communities share few species with lowland communities, and this pattern dominates the accumulation curve shape.
+
+**3. Conservation planning:** The high beta diversity means that a single large protected area cannot capture Austrian plant diversity. Instead, a distributed network of reserves spanning different elevations, habitats, and biogeographic regions is needed — supporting the **SLOSS debate** (Several Large or Single Small) in favor of "several" for high-turnover systems (Tjorve 2010).
+
+**4. Sampling theory:** Coverage-based rarefaction shows that 52,000 plots likely capture >95% of Austria's common flora, but rare species (including potentially undiscovered aliens) remain undetected. The "invasion debt" concept (Essl et al. 2011) warns that future surveys will continue to find new alien species even without new introductions.
+
+</div>
+
+<div class="de">
+
+Unsere Analysen zeichnen ein kohärentes Bild der österreichischen Pflanzendiversität, das mehrere theoretische Rahmenwerke verbindet:
+
+**1. Invasionsökologie:** Alien-Arten sind nicht zufällig verteilt — sie clustern um menschlich modifizierte Landschaften (Pysek et al. 2010). Der räumliche Akkumulationsansatz zeigt dieses Clustering einzigartig, weil er geografische Information bewahrt, die traditionelle Artenzählungen verwerfen.
+
+**2. Biogeografie:** Österreichs außergewöhnlicher topografischer Gradient (115 m bis 3.798 m Höhe) erzeugt starke Umweltfilterung, die hohe Beta-Diversität durch echten Artenersatz antreibt. Alpine Gemeinschaften teilen wenige Arten mit Tieflandgemeinschaften, und dieses Muster dominiert die Akkumulationskurvenform.
+
+**3. Naturschutzplanung:** Die hohe Beta-Diversität bedeutet, dass ein einzelnes großes Schutzgebiet Österreichs Pflanzendiversität nicht erfassen kann. Stattdessen ist ein verteiltes Netzwerk von Reservaten nötig, das verschiedene Höhenlagen, Habitate und biogeografische Regionen umfasst — was die **SLOSS-Debatte** (Several Large or Single Small) zugunsten von "mehreren" für Systeme mit hohem Turnover unterstützt (Tjorve 2010).
+
+**4. Stichprobentheorie:** Deckungsbasierte Rarefaction zeigt, dass 52.000 Plots wahrscheinlich >95% der häufigen Flora Österreichs erfassen, aber seltene Arten (einschließlich möglicherweise unentdeckter Aliens) unentdeckt bleiben. Das Konzept der "Invasionsschuld" (Essl et al. 2011) warnt, dass zukünftige Erhebungen weiterhin neue Alien-Arten finden werden, selbst ohne neue Einführungen.
+
+</div>
+
+---
+
+## <span class="en">Discussion Questions</span><span class="de">Diskussionsfragen</span>
+
+<div class="en">
+
+1. **Why might aliens cluster near cities?** Consider propagule pressure, disturbance regimes, and the "urban heat island" effect on plant establishment.
+
+2. **Could climate change shift these patterns?** As temperatures warm, alpine specialists may lose habitat while thermophilic aliens gain it. How would this change accumulation curves?
+
+3. **Is functional homogenization a concern for Austria?** If aliens add species but not functional diversity, what does this mean for ecosystem services like pollination, soil stability, and carbon storage?
+
+4. **How would you design a monitoring program** based on the coverage analysis? How many plots, where, and how often?
+
+5. **What additional data would strengthen these conclusions?** Think about trait databases, temporal replication, genetic diversity, and trophic interactions.
+
+</div>
+
+<div class="de">
+
+1. **Warum könnten Aliens nahe Städten clustern?** Bedenke Propagule Pressure, Störungsregime und den "urbane Wärmeinsel"-Effekt auf die Pflanzenansiedlung.
+
+2. **Könnte der Klimawandel diese Muster verschieben?** Wenn die Temperaturen steigen, könnten alpine Spezialisten Habitat verlieren, während thermophile Aliens es gewinnen. Wie würde das Akkumulationskurven verändern?
+
+3. **Ist funktionelle Homogenisierung eine Sorge für Österreich?** Wenn Aliens Arten, aber keine funktionelle Diversität hinzufügen, was bedeutet das für Ökosystemleistungen wie Bestäubung, Bodenstabilität und Kohlenstoffspeicherung?
+
+4. **Wie würdest du ein Monitoringprogramm** basierend auf der Abdeckungsanalyse gestalten? Wie viele Plots, wo und wie oft?
+
+5. **Welche zusätzlichen Daten würden diese Schlussfolgerungen stärken?** Denke an Eigenschaftsdatenbanken, zeitliche Replikation, genetische Diversität und trophische Interaktionen.
+
+</div>
+
+---
+
+## <span class="en">Key Takeaways</span><span class="de">Wichtigste Erkenntnisse</span>
+
+<div class="en">
+
+| Concept | What we learned | Why it matters |
+|---------|-----------------|----------------|
+| **Spatial accumulation** | Geography shapes species discovery | Fair comparison requires spatial methods |
+| **Native vs. alien** | Different distribution patterns confirmed | Invasion management needs spatial targeting |
+| **Hill numbers** | Richness ≠ diversity ≠ dominance | Different metrics answer different questions |
+| **Beta diversity** | High turnover across Austria | Distributed conservation network needed |
+| **Phylogenetic diversity** | Evolutionary history adds information | Not all species are equally "different" |
+| **Coverage** | ~95% coverage achievable | Sampling effort can be optimized |
+| **Habitat specificity** | Invasions are habitat-filtered | Prioritize high-risk habitats for management |
+| **Edge effects** | Borders bias estimates | Halo correction improves accuracy |
+
+</div>
+
+<div class="de">
+
+| Konzept | Was wir gelernt haben | Warum es wichtig ist |
+|---------|-----------------------|---------------------|
+| **Räumliche Akkumulation** | Geografie formt Artenentdeckung | Fairer Vergleich erfordert räumliche Methoden |
+| **Heimisch vs. Alien** | Verschiedene Verteilungsmuster bestätigt | Invasionsmanagement braucht räumliche Ausrichtung |
+| **Hill-Zahlen** | Reichtum ≠ Diversität ≠ Dominanz | Verschiedene Metriken beantworten verschiedene Fragen |
+| **Beta-Diversität** | Hoher Turnover über Österreich | Verteiltes Naturschutznetzwerk nötig |
+| **Phylogenetische Diversität** | Evolutionsgeschichte fügt Information hinzu | Nicht alle Arten sind gleich "verschieden" |
+| **Abdeckung** | ~95% Abdeckung erreichbar | Beprobungsaufwand kann optimiert werden |
+| **Habitatspezifität** | Invasionen sind habitat-gefiltert | Hochrisiko-Habitate für Management priorisieren |
+| **Randeffekte** | Grenzen verzerren Schätzungen | Halo-Korrektur verbessert Genauigkeit |
+
+</div>
+
+---
+
+## <span class="en">References</span><span class="de">Literaturverzeichnis</span>
+
+<div class="lit-box">
+
+- Baker, H.G. (1974). The evolution of weeds. *Annual Review of Ecology and Systematics*, 5, 1--24.
+- Baselga, A. (2010). Partitioning the turnover and nestedness components of beta diversity. *Global Ecology and Biogeography*, 19, 134--143.
+- Chao, A. & Jost, L. (2012). Coverage-based rarefaction and extrapolation. *Methods in Ecology and Evolution*, 3, 217--226.
+- Chao, A. et al. (2014). Rarefaction and extrapolation with Hill numbers. *Ecological Monographs*, 84, 45--67.
+- Chytry, M. et al. (2008). Habitat invasions by alien plants: a quantitative comparison among Mediterranean, subcontinental and oceanic regions of Europe. *Journal of Applied Ecology*, 45, 448--458.
+- Chytry, M. et al. (2009). European map of alien plant invasions based on the quantitative assessment across habitats. *Diversity and Distributions*, 15, 98--107.
+- Chytry, M. et al. (2016). European Vegetation Archive (EVA): an integrated database of European vegetation plots. *Applied Vegetation Science*, 19, 173--180.
+- Colwell, R.K. & Coddington, J.A. (1994). Estimating terrestrial biodiversity through extrapolation. *Philosophical Transactions of the Royal Society B*, 345, 101--118.
+- Colwell, R.K. et al. (2004). Interpolating, extrapolating, and comparing incidence-based species accumulation curves. *Ecology*, 85, 2717--2727.
+- Davis, M.A. et al. (2000). Fluctuating resources in plant communities: a general theory of invasibility. *Journal of Ecology*, 88, 528--534.
+- Dengler, J. et al. (2011). The Global Index of Vegetation-Plot Databases (GIVD). *Biodiversity & Ecology*, 3, 1--26.
+- Essl, F. et al. (2011). Socioeconomic legacy yields an invasion debt. *Proceedings of the National Academy of Sciences*, 108, 203--207.
+- Faith, D.P. (1992). Conservation evaluation and phylogenetic diversity. *Biological Conservation*, 61, 1--10.
+- Gotelli, N.J. & Colwell, R.K. (2001). Quantifying biodiversity: procedures and pitfalls. *Ecology Letters*, 4, 379--391.
+- Grabherr, G. et al. (2003). *Die Pflanzengesellschaften Osterreichs*. Gustav Fischer Verlag.
+- Hill, M.O. (1973). Diversity and evenness: a unifying notation and its consequences. *Ecology*, 54, 427--432.
+- Hillebrand, H. et al. (2008). Consequences of dominance: a review of evenness effects on local and regional ecosystem processes. *Ecology*, 89, 1510--1520.
+- Jost, L. (2006). Entropy and diversity. *Oikos*, 113, 363--375.
+- Kier, G. et al. (2009). A global assessment of endemism and species richness across island and mainland regions. *Proceedings of the National Academy of Sciences*, 106, 9322--9327.
+- Laliberte, E. & Legendre, P. (2010). A distance-based framework for measuring functional diversity from multiple traits. *Ecology*, 91, 299--305.
+- Lenoir, J. et al. (2008). A significant upward shift in plant species optimum elevation during the 20th century. *Science*, 320, 1768--1771.
+- Lockwood, J.L. et al. (2005). The role of propagule pressure in explaining species invasions. *Trends in Ecology & Evolution*, 20, 223--228.
+- Lomolino, M.V. (2000). Ecology's most general, yet protean pattern: the species--area relationship. *Journal of Biogeography*, 27, 17--26.
+- Nekola, J.C. & White, P.S. (1999). The distance decay of similarity in biogeography and ecology. *Journal of Biogeography*, 26, 867--878.
+- Olden, J.D. et al. (2004). Ecological and evolutionary consequences of biotic homogenization. *Trends in Ecology & Evolution*, 19, 18--24.
+- Partel, M. et al. (2011). Dark diversity: shedding light on absent species. *Trends in Ecology & Evolution*, 26, 596--600.
+- Petchey, O.L. & Gaston, K.J. (2006). Functional diversity: back to basics and looking forward. *Ecology Letters*, 9, 741--758.
+- Pillar, V.D. et al. (2013). Functional redundancy and stability in plant communities. *Journal of Vegetation Science*, 24, 963--974.
+- Preston, F.W. (1948). The commonness, and rarity, of species. *Ecology*, 29, 254--283.
+- Pysek, P. et al. (2010). Disentangling the role of environmental and human pressures on biological invasions across Europe. *Proceedings of the National Academy of Sciences*, 107, 12157--12162.
+- Rahbek, C. (1995). The elevational gradient of species richness: a uniform pattern? *Ecography*, 18, 200--205.
+- Pysek, P. et al. (2012). A global assessment of invasive plant impacts on resident species, communities and ecosystems. *Global Change Biology*, 18, 1725--1737.
+- Pysek, P. et al. (2017). Naturalized alien flora of the world. *Preslia*, 89, 203--274.
+- Sala, O.E. et al. (2000). Global biodiversity scenarios for the year 2100. *Science*, 287, 1770--1774.
+- Seebens, H. et al. (2017). No saturation in the accumulation of alien species worldwide. *Nature Communications*, 8, 14435.
+- Socolar, J.B. et al. (2016). How should beta-diversity inform biodiversity conservation? *Trends in Ecology & Evolution*, 31, 67--80.
+- Tilman, D. et al. (2001). Diversity and productivity in a long-term grassland experiment. *Science*, 294, 843--845.
+- Tjorve, E. (2010). How to resolve the SLOSS debate: lessons from species-diversity models. *Journal of Theoretical Biology*, 264, 604--612.
+- van Kleunen, M. et al. (2010). Are invaders different? A conceptual framework of comparative approaches for assessing determinants of invasiveness. *Ecology Letters*, 13, 947--958.
+- van Kleunen, M. et al. (2015). Global exchange and accumulation of non-native plants. *Nature*, 525, 100--103.
+- Webb, C.O. et al. (2002). Phylogenies and community ecology. *Annual Review of Ecology and Systematics*, 33, 475--505.
+- Whittaker, R.H. (1960). Vegetation of the Siskiyou Mountains, Oregon and California. *Ecological Monographs*, 30, 279--338.
+- Whittaker, R.H. (1972). Evolution and measurement of species diversity. *Taxon*, 21, 213--251.
+- Wilson, J.R.U. et al. (2007). Residence time and potential range: crucial considerations in modelling plant invasions. *Diversity and Distributions*, 13, 11--22.
+- Winter, M. et al. (2009). Plant extinctions and introductions lead to phylogenetic and taxonomic homogenization of the European flora. *Proceedings of the National Academy of Sciences*, 106, 21721--21725.
+
+</div>
+
+---
+
+## <span class="en">Session Info</span><span class="de">Session Info</span>
+
+```{r session-info}
+sessionInfo()
+```

@@ -452,67 +452,67 @@ plot_normalized(Native = sac_native, Alien = sac_alien,
 ```{r statistical-test}
 compare <- readRDS(file.path(comp_dir, "compare.rds"))
 print(compare)
-plot(compare) +
-  ggtitle("Permutation Test: Native vs Alien Curve Comparison") +
-  theme_minimal(base_size = 13)
 ```
 
 ### <span class="en">Decade-by-Decade Accumulation</span><span class="de">Jahrzehntweise Akkumulation</span>
 
 <div class="en">
 
-Does the spatial accumulation pattern change over time? Here we run the same analysis separately for each decade, normalizing each curve by the number of sites sampled in that decade (x-axis as proportion of sites visited).
+Does the spatial accumulation pattern change over time? Here we run the same analysis separately for each decade, splitting native and alien species into separate panels. Each curve is normalized by its total species count.
 
 </div>
 
 <div class="de">
 
-Verändert sich das räumliche Akkumulationsmuster über die Zeit? Hier führen wir dieselbe Analyse getrennt für jedes Jahrzehnt durch, wobei jede Kurve nach der Anzahl der in diesem Jahrzehnt beprobten Standorte normalisiert wird (x-Achse als Anteil der besuchten Standorte).
+Verändert sich das räumliche Akkumulationsmuster über die Zeit? Hier führen wir dieselbe Analyse getrennt für jedes Jahrzehnt durch, wobei heimische und gebietsfremde Arten in separate Panels aufgeteilt werden. Jede Kurve ist nach ihrer Gesamtartenzahl normalisiert.
 
 </div>
 
-```{r decade-curves, fig.height=5, fig.width=10}
-decade_results <- readRDS(file.path(comp_dir, "decade_results.rds"))
+```{r decade-curves, fig.height=6, fig.width=12}
+decade_na <- readRDS(file.path(comp_dir, "decade_na_results.rds"))
 
-# Build normalized curves for each decade
-df_decades <- do.call(rbind, lapply(names(decade_results), function(d) {
-  sac <- decade_results[[d]]
-  mean_curve <- colMeans(sac$curves)
-  n <- length(mean_curve)
-  total <- mean_curve[n]
-  data.frame(
-    prop_sites   = seq_len(n) / n,
-    prop_species = mean_curve / total,
-    decade       = d,
-    n_sites      = n
-  )
+# Build normalized curves for each decade, split by native/alien
+df_decades <- do.call(rbind, lapply(names(decade_na), function(d) {
+  res <- decade_na[[d]]
+
+  df_list <- lapply(c("native", "alien"), function(g) {
+    sac <- res[[g]]
+    s <- summary(sac)
+    total <- max(s$mean)
+    if (total == 0) return(NULL)
+    data.frame(
+      prop_sites   = s$sites / max(s$sites),
+      prop_species = s$mean / total,
+      decade       = d,
+      n_sites      = res$n_sites,
+      group        = ifelse(g == "native", "Native", "Alien")
+    )
+  })
+  do.call(rbind, df_list[!vapply(df_list, is.null, logical(1))])
 }))
 
 # Order decades chronologically
-df_decades$decade <- factor(df_decades$decade,
-                            levels = c("pre-1970", "1970s", "1980s", "1990s",
-                                       "2000s", "2010s", "2020s"))
+decade_order <- c("pre-1970", "1970s", "1980s", "1990s", "2000s", "2010s")
+df_decades$decade <- factor(df_decades$decade, levels = decade_order)
 
 # Colour gradient: earlier decades lighter, recent darker
 decade_colours <- c(
-  "pre-1970" = "#C8E6C9", "1970s" = "#A5D6A7", "1980s" = "#66BB6A",
-  "1990s" = "#2E7D32", "2000s" = "#1B5E20",
-  "2010s" = "#0D3B0F", "2020s" = "#888888"
+  "pre-1970" = "#B0BEC5", "1970s" = "#78909C", "1980s" = "#546E7A",
+  "1990s" = "#37474F", "2000s" = "#263238", "2010s" = "#000000"
 )
 
 # Labels with sample size
-decade_labels <- paste0(levels(df_decades$decade), " (n=",
-                        sapply(levels(df_decades$decade), function(d)
-                          unique(df_decades$n_sites[df_decades$decade == d])), ")")
-names(decade_labels) <- levels(df_decades$decade)
+site_counts <- sapply(decade_order, function(d) decade_na[[d]]$n_sites)
+decade_labels <- paste0(decade_order, " (n=", site_counts, ")")
+names(decade_labels) <- decade_order
 
 ggplot(df_decades, aes(x = prop_sites, y = prop_species,
                        colour = decade, linewidth = decade)) +
   geom_line(alpha = 0.85) +
+  facet_wrap(~ group) +
   scale_colour_manual(values = decade_colours, labels = decade_labels) +
-  scale_linewidth_manual(values = c("pre-1970" = 0.5, "1970s" = 0.5, "1980s" = 0.6,
-                                    "1990s" = 1.0, "2000s" = 0.7,
-                                    "2010s" = 0.8, "2020s" = 0.4),
+  scale_linewidth_manual(values = c("pre-1970" = 0.5, "1970s" = 0.6, "1980s" = 0.7,
+                                    "1990s" = 1.0, "2000s" = 0.8, "2010s" = 0.7),
                          guide = "none") +
   labs(
     title = "Species Accumulation by Decade / Artenakkumulation nach Jahrzehnt",
@@ -522,7 +522,8 @@ ggplot(df_decades, aes(x = prop_sites, y = prop_species,
     colour = NULL
   ) +
   theme_minimal(base_size = 13) +
-  theme(legend.position = "right")
+  theme(legend.position = "right",
+        strip.text = element_text(face = "bold", size = 12))
 ```
 
 ## <span class="en">Discussion</span><span class="de">Diskussion</span>

@@ -449,9 +449,47 @@ plot_normalized(Native = sac_native, Alien = sac_alien,
   scale_fill_manual(values = c("Native" = "#2E7D32", "Alien" = "#D32F2F"))
 ```
 
-```{r statistical-test}
+```{r statistical-test, fig.height=5, fig.width=8}
 compare <- readRDS(file.path(comp_dir, "compare.rds"))
 print(compare)
+
+# Custom permutation test plot: normalized curves with CI
+s_native <- summary(sac_native)
+s_alien  <- summary(sac_alien)
+
+df_perm <- rbind(
+ data.frame(
+    prop_sites = s_native$sites / max(s_native$sites),
+    mean = s_native$mean / max(s_native$mean),
+    lower = s_native$lower / max(s_native$mean),
+    upper = s_native$upper / max(s_native$mean),
+    group = "Native"
+  ),
+  data.frame(
+    prop_sites = s_alien$sites / max(s_alien$sites),
+    mean = s_alien$mean / max(s_alien$mean),
+    lower = s_alien$lower / max(s_alien$mean),
+    upper = s_alien$upper / max(s_alien$mean),
+    group = "Alien"
+  )
+)
+
+ggplot(df_perm, aes(x = prop_sites, y = mean, colour = group, fill = group)) +
+  geom_ribbon(aes(ymin = lower, ymax = upper), alpha = 0.2, colour = NA) +
+  geom_line(linewidth = 1) +
+  scale_colour_manual(values = c("Native" = "#2E7D32", "Alien" = "#D32F2F")) +
+  scale_fill_manual(values = c("Native" = "#2E7D32", "Alien" = "#D32F2F")) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    title = "Permutation Test: Native vs Alien Accumulation",
+    subtitle = sprintf("p = %.3f (permutation test, %d iterations)",
+                       compare$p_value, compare$n_perm),
+    x = "Proportion of sites visited",
+    y = "Proportion of species discovered",
+    colour = NULL, fill = NULL
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(legend.position = "top")
 ```
 
 ### <span class="en">Decade-by-Decade Accumulation</span><span class="de">Jahrzehntweise Akkumulation</span>
@@ -495,10 +533,23 @@ df_decades <- do.call(rbind, lapply(names(decade_na), function(d) {
 decade_order <- c("pre-1970", "1970s", "1980s", "1990s", "2000s", "2010s")
 df_decades$decade <- factor(df_decades$decade, levels = decade_order)
 
-# Colour gradient: earlier decades lighter, recent darker
-decade_colours <- c(
-  "pre-1970" = "#B0BEC5", "1970s" = "#78909C", "1980s" = "#546E7A",
-  "1990s" = "#37474F", "2000s" = "#263238", "2010s" = "#000000"
+# Colour gradients: green for native, red for alien
+native_colours <- c(
+  "pre-1970" = "#C8E6C9", "1970s" = "#A5D6A7", "1980s" = "#66BB6A",
+  "1990s" = "#2E7D32", "2000s" = "#1B5E20", "2010s" = "#0D3B0F"
+)
+alien_colours <- c(
+  "pre-1970" = "#FFCDD2", "1970s" = "#EF9A9A", "1980s" = "#E57373",
+  "1990s" = "#D32F2F", "2000s" = "#B71C1C", "2010s" = "#7F0000"
+)
+
+# Create interaction for colour mapping
+df_decades$decade_group <- interaction(df_decades$decade, df_decades$group, sep = "_")
+
+# Build colour vector
+all_colours <- c(
+  sapply(decade_order, function(d) setNames(native_colours[d], paste0(d, "_Native"))),
+  sapply(decade_order, function(d) setNames(alien_colours[d], paste0(d, "_Alien")))
 )
 
 # Labels with sample size
@@ -507,19 +558,19 @@ decade_labels <- paste0(decade_order, " (n=", site_counts, ")")
 names(decade_labels) <- decade_order
 
 ggplot(df_decades, aes(x = prop_sites, y = prop_species,
-                       colour = decade, linewidth = decade)) +
+                       colour = decade_group, linewidth = decade)) +
   geom_line(alpha = 0.85) +
   facet_wrap(~ group) +
-  scale_colour_manual(values = decade_colours, labels = decade_labels) +
+  scale_colour_manual(values = all_colours, guide = "none") +
   scale_linewidth_manual(values = c("pre-1970" = 0.5, "1970s" = 0.6, "1980s" = 0.7,
                                     "1990s" = 1.0, "2000s" = 0.8, "2010s" = 0.7),
-                         guide = "none") +
+                         labels = decade_labels,
+                         name = NULL) +
   labs(
     title = "Species Accumulation by Decade / Artenakkumulation nach Jahrzehnt",
     subtitle = "Normalized curves: proportion of sites vs proportion of species discovered",
     x = "Proportion of sites visited / Anteil besuchter Standorte",
-    y = "Proportion of species discovered",
-    colour = NULL
+    y = "Proportion of species discovered"
   ) +
   theme_minimal(base_size = 13) +
   theme(legend.position = "right",

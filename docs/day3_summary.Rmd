@@ -287,7 +287,8 @@ ggplot() +
   geom_sf(data = hex_polys, aes(fill = mean_native), color = "white", linewidth = 0.3) +
   geom_sf(data = austria_sf, fill = NA, color = "#333333", linewidth = 1) +
   scale_fill_gradient(low = "white", high = "#2E7D32",
-                      name = "Mean native\nrichness") +
+                      name = "Mean native\nrichness",
+                      na.value = "grey95") +
   labs(title = "Native Species Richness Hotspots / Heimische Arten Hotspots",
        subtitle = "Mean species per plot, equal-area hexagonal grid (min. 3 plots)",
        x = "Longitude", y = "Latitude") +
@@ -301,7 +302,8 @@ ggplot() +
   geom_sf(data = hex_polys, aes(fill = mean_alien), color = "white", linewidth = 0.3) +
   geom_sf(data = austria_sf, fill = NA, color = "#333333", linewidth = 1) +
   scale_fill_gradient(low = "white", high = "#D32F2F",
-                      name = "Mean alien\nrichness") +
+                      name = "Mean alien\nrichness",
+                      na.value = "grey95") +
   labs(title = "Alien Species Richness Hotspots / Alien-Arten Hotspots",
        subtitle = "Mean alien species per plot, equal-area hexagonal grid",
        x = "Longitude", y = "Latitude") +
@@ -315,7 +317,8 @@ ggplot() +
   geom_sf(data = hex_polys, aes(fill = mean_alien_pct), color = "white", linewidth = 0.3) +
   geom_sf(data = austria_sf, fill = NA, color = "#333333", linewidth = 1) +
   scale_fill_distiller(palette = "YlOrRd", direction = 1,
-                       name = "Alien %") +
+                       name = "Alien %",
+                       na.value = "grey95") +
   labs(title = "Alien Species Proportion / Alien-Artenanteil",
        subtitle = "Mean % alien species per plot",
        x = "Longitude", y = "Latitude") +
@@ -441,7 +444,7 @@ sac_native <- p$native; sac_alien <- p$alien; sac_all <- p$all
 rm(p)
 
 plot_normalized(Native = sac_native, Alien = sac_alien,
-                title = "Pooled: Native vs Alien Accumulation (normalized)") +
+                title = "Pooled: Native vs Alien Accumulation (1990s, normalized)") +
   scale_color_manual(values = c("Native" = "#2E7D32", "Alien" = "#D32F2F")) +
   scale_fill_manual(values = c("Native" = "#2E7D32", "Alien" = "#D32F2F"))
 ```
@@ -462,6 +465,74 @@ plot_grouped_normalized(sac_grouped,
                      labels = c("native" = "Native", "neo" = "Alien")) +
   scale_fill_manual(values = c("native" = "#2E7D32", "neo" = "#D32F2F"),
                     labels = c("native" = "Native", "neo" = "Alien"))
+```
+
+### <span class="en">Decade-by-Decade Accumulation</span><span class="de">Jahrzehntweise Akkumulation</span>
+
+<div class="en">
+
+Does the spatial accumulation pattern change over time? Here we run the same analysis separately for each decade, normalizing each curve by the number of sites sampled in that decade (x-axis as proportion of sites visited).
+
+</div>
+
+<div class="de">
+
+Verändert sich das räumliche Akkumulationsmuster über die Zeit? Hier führen wir dieselbe Analyse getrennt für jedes Jahrzehnt durch, wobei jede Kurve nach der Anzahl der in diesem Jahrzehnt beprobten Standorte normalisiert wird (x-Achse als Anteil der besuchten Standorte).
+
+</div>
+
+```{r decade-curves, fig.height=5, fig.width=10}
+decade_results <- readRDS(file.path(comp_dir, "decade_results.rds"))
+
+# Build normalized curves for each decade
+df_decades <- do.call(rbind, lapply(names(decade_results), function(d) {
+  sac <- decade_results[[d]]
+  mean_curve <- colMeans(sac$curves)
+  n <- length(mean_curve)
+  total <- mean_curve[n]
+  data.frame(
+    prop_sites   = seq_len(n) / n,
+    prop_species = mean_curve / total,
+    decade       = d,
+    n_sites      = n
+  )
+}))
+
+# Order decades chronologically
+df_decades$decade <- factor(df_decades$decade,
+                            levels = c("pre-1970", "1970s", "1980s", "1990s",
+                                       "2000s", "2010s", "2020s"))
+
+# Colour gradient: earlier decades lighter, recent darker
+decade_colours <- c(
+  "pre-1970" = "#C8E6C9", "1970s" = "#A5D6A7", "1980s" = "#66BB6A",
+  "1990s" = "#2E7D32", "2000s" = "#1B5E20",
+  "2010s" = "#0D3B0F", "2020s" = "#888888"
+)
+
+# Labels with sample size
+decade_labels <- paste0(levels(df_decades$decade), " (n=",
+                        sapply(levels(df_decades$decade), function(d)
+                          unique(df_decades$n_sites[df_decades$decade == d])), ")")
+names(decade_labels) <- levels(df_decades$decade)
+
+ggplot(df_decades, aes(x = prop_sites, y = prop_species,
+                       colour = decade, linewidth = decade)) +
+  geom_line(alpha = 0.85) +
+  scale_colour_manual(values = decade_colours, labels = decade_labels) +
+  scale_linewidth_manual(values = c("pre-1970" = 0.5, "1970s" = 0.5, "1980s" = 0.6,
+                                    "1990s" = 1.0, "2000s" = 0.7,
+                                    "2010s" = 0.8, "2020s" = 0.4),
+                         guide = "none") +
+  labs(
+    title = "Species Accumulation by Decade / Artenakkumulation nach Jahrzehnt",
+    subtitle = "Normalized curves: proportion of sites vs proportion of species discovered",
+    x = "Proportion of sites visited / Anteil besuchter Standorte",
+    y = "Proportion of species discovered",
+    colour = NULL
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(legend.position = "right")
 ```
 
 ## <span class="en">Discussion</span><span class="de">Diskussion</span>
@@ -544,7 +615,7 @@ The **Michaelis-Menten model** fits a saturating curve to the species accumulati
 
 $$S(n) = \frac{S_{max} \cdot n}{K_m + n}$$
 
-where $S_{max}$ is the estimated total species richness (the asymptote) and $K_m$ is the half-saturation constant. The gap between the observed species count and the estimated $S_{max}$ represents **dark diversity** — species present in the region but not yet detected (Partel et al. 2011).
+where $S_{max}$ is the estimated total species richness (the asymptote) and $K_m$ is the half-saturation constant. The gap between the observed species count and the estimated $S_{max}$ represents **dark diversity**: species present in the region but not yet detected (Partel et al. 2011).
 
 </div>
 
@@ -554,7 +625,7 @@ Das **Michaelis-Menten-Modell** passt eine sättigende Kurve an die Artenakkumul
 
 $$S(n) = \frac{S_{max} \cdot n}{K_m + n}$$
 
-wobei $S_{max}$ der geschätzte Gesamtartenreichtum (die Asymptote) und $K_m$ die Halbsättigungskonstante ist. Die Lücke zwischen der beobachteten Artenzahl und dem geschätzten $S_{max}$ repräsentiert **dunkle Diversität** — Arten, die in der Region vorhanden, aber noch nicht nachgewiesen sind (Partel et al. 2011).
+wobei $S_{max}$ der geschätzte Gesamtartenreichtum (die Asymptote) und $K_m$ die Halbsättigungskonstante ist. Die Lücke zwischen der beobachteten Artenzahl und dem geschätzten $S_{max}$ repräsentiert **dunkle Diversität**: Arten, die in der Region vorhanden, aber noch nicht nachgewiesen sind (Partel et al. 2011).
 
 </div>
 
@@ -678,11 +749,12 @@ hex_undersampled <- hex_polys[!hex_polys$cell_id %in% hex_estimates$cell_id, ]
 # Estimated native richness
 p1 <- ggplot() +
   geom_sf(data = austria_sf, fill = "grey95", color = "#333333", linewidth = 0.8) +
-  geom_sf(data = hex_undersampled, fill = "#BDBDBD", color = "grey70", linewidth = 0.3) +
+  geom_sf(data = hex_undersampled, fill = "grey95", color = "grey95", linewidth = 0.3) +
   geom_sf(data = hex_polys_sac, aes(fill = est_native), color = "white", linewidth = 0.3) +
   geom_sf(data = austria_sf, fill = NA, color = "#333333", linewidth = 1) +
   scale_fill_gradient(low = "white", high = "#2E7D32",
-                      name = "Estimated\nnative S_max") +
+                      name = "Estimated\nnative S_max",
+                      na.value = "grey95") +
   labs(title = "Estimated Native Richness (Michaelis-Menten) / Geschätzter heimischer Reichtum",
        subtitle = "Per-hexagon SAC extrapolation, 10 seeds each (grey = <20 plots, excluded)",
        x = "Longitude", y = "Latitude") +
@@ -692,11 +764,12 @@ p1 <- ggplot() +
 # Estimated alien richness
 p2 <- ggplot() +
   geom_sf(data = austria_sf, fill = "grey95", color = "#333333", linewidth = 0.8) +
-  geom_sf(data = hex_undersampled, fill = "#BDBDBD", color = "grey70", linewidth = 0.3) +
+  geom_sf(data = hex_undersampled, fill = "grey95", color = "grey95", linewidth = 0.3) +
   geom_sf(data = hex_polys_sac, aes(fill = est_alien), color = "white", linewidth = 0.3) +
   geom_sf(data = austria_sf, fill = NA, color = "#333333", linewidth = 1) +
   scale_fill_gradient(low = "white", high = "#D32F2F",
-                      name = "Estimated\nalien S_max") +
+                      name = "Estimated\nalien S_max",
+                      na.value = "grey95") +
   labs(title = "Estimated Alien Richness (Michaelis-Menten) / Geschätzter Alien-Reichtum",
        subtitle = "Per-hexagon SAC extrapolation, 10 seeds each (grey = <20 plots, excluded)",
        x = "Longitude", y = "Latitude") +
@@ -708,11 +781,12 @@ hex_polys_sac$completeness_alien <- hex_estimates$obs_alien / hex_estimates$est_
 
 p3 <- ggplot() +
   geom_sf(data = austria_sf, fill = "grey95", color = "#333333", linewidth = 0.8) +
-  geom_sf(data = hex_undersampled, fill = "#BDBDBD", color = "grey70", linewidth = 0.3) +
+  geom_sf(data = hex_undersampled, fill = "grey95", color = "grey95", linewidth = 0.3) +
   geom_sf(data = hex_polys_sac, aes(fill = completeness_alien), color = "white", linewidth = 0.3) +
   geom_sf(data = austria_sf, fill = NA, color = "#333333", linewidth = 1) +
   scale_fill_distiller(palette = "YlOrRd", direction = 1,
-                       name = "Alien\ncompleteness %") +
+                       name = "Alien\ncompleteness %",
+                       na.value = "grey95") +
   labs(title = "Alien Sampling Completeness / Alien-Beprobungsvollständigkeit",
        subtitle = "Observed / estimated species per hexagon (grey = <20 plots, excluded)",
        x = "Longitude", y = "Latitude") +
@@ -744,66 +818,66 @@ Diese Karten übersetzen die Invasionsschuld in Geografie. Während die erste Ka
 
 <div class="en">
 
-Sections 3a--b showed estimated richness and completeness separately. Here we place the **observed** and **estimated** total species counts side by side on the same colour scale, making the sampling gap immediately visible. Where the estimated map is darker than the observed map, there are likely unrecorded species.
+How many species are still missing in each hexagon? These maps show the **sampling gap**: the difference between the Michaelis-Menten estimate ($S_{max}$) and the observed species count. Darker hexagons have more unrecorded species.
 
 </div>
 
 <div class="de">
 
-Abschnitte 3a--b zeigten geschätzten Reichtum und Vollständigkeit getrennt. Hier stellen wir die **beobachteten** und **geschätzten** Gesamtartenzahlen nebeneinander auf derselben Farbskala dar, sodass die Beprobungslücke sofort sichtbar wird. Wo die geschätzte Karte dunkler ist als die beobachtete, gibt es wahrscheinlich unerfasste Arten.
+Wie viele Arten fehlen in jedem Hexagon noch? Diese Karten zeigen die **Beprobungslücke**: die Differenz zwischen dem Michaelis-Menten-Schätzwert ($S_{max}$) und der beobachteten Artenzahl. Dunklere Hexagone haben mehr unerfasste Arten.
 
 </div>
 
 ```{r sampling-gaps, fig.height=10, fig.width=10}
-# Total observed vs total estimated per hexagon
-hex_polys_sac$obs_total <- hex_estimates$obs_native + hex_estimates$obs_alien
-hex_polys_sac$est_total <- hex_estimates$est_native + hex_estimates$est_alien
+# Sampling gap = estimated - observed (number of missing species)
+# Clamp to 0 (MM can occasionally undershoot)
+hex_polys_sac$gap_native <- pmax(0, hex_estimates$est_native - hex_estimates$obs_native)
+hex_polys_sac$gap_alien  <- pmax(0, hex_estimates$est_alien  - hex_estimates$obs_alien)
 
-# Shared colour range for direct comparison
-total_range <- range(c(hex_polys_sac$obs_total, hex_polys_sac$est_total), na.rm = TRUE)
-
-p_obs <- ggplot() +
+p_gap_native <- ggplot() +
   geom_sf(data = austria_sf, fill = "grey95", color = "#333333", linewidth = 0.8) +
-  geom_sf(data = hex_undersampled, fill = "#BDBDBD", color = "grey70", linewidth = 0.3) +
-  geom_sf(data = hex_polys_sac, aes(fill = obs_total), color = "white", linewidth = 0.3) +
+  geom_sf(data = hex_undersampled, fill = "grey95", color = "grey95", linewidth = 0.3) +
+  geom_sf(data = hex_polys_sac, aes(fill = gap_native), color = "white", linewidth = 0.3) +
   geom_sf(data = austria_sf, fill = NA, color = "#333333", linewidth = 1) +
-  scale_fill_viridis_c(option = "viridis", direction = 1,
-                       name = "Species\ncount",
-                       limits = total_range) +
-  labs(title = "Observed Total Richness / Beobachteter Gesamtreichtum",
-       subtitle = "Native + alien species actually recorded per hexagon",
+  scale_fill_gradient(low = "white", high = "#2E7D32",
+                      name = "Missing\nnative\nspecies",
+                      trans = "log1p",
+                      na.value = "grey95") +
+  labs(title = "Native Sampling Gap / Heimische Beprobungslücke",
+       subtitle = "Estimated minus observed native species per hexagon, log scale (grey = <20 plots, excluded)",
        x = "Longitude", y = "Latitude") +
   theme_minimal(base_size = 13) +
   coord_sf(xlim = c(9.3, 17.2), ylim = c(46.3, 49.1))
 
-p_est <- ggplot() +
+p_gap_alien <- ggplot() +
   geom_sf(data = austria_sf, fill = "grey95", color = "#333333", linewidth = 0.8) +
-  geom_sf(data = hex_undersampled, fill = "#BDBDBD", color = "grey70", linewidth = 0.3) +
-  geom_sf(data = hex_polys_sac, aes(fill = est_total), color = "white", linewidth = 0.3) +
+  geom_sf(data = hex_undersampled, fill = "grey95", color = "grey95", linewidth = 0.3) +
+  geom_sf(data = hex_polys_sac, aes(fill = gap_alien), color = "white", linewidth = 0.3) +
   geom_sf(data = austria_sf, fill = NA, color = "#333333", linewidth = 1) +
-  scale_fill_viridis_c(option = "viridis", direction = 1,
-                       name = "Species\ncount",
-                       limits = total_range) +
-  labs(title = "Estimated Total Richness (Michaelis-Menten) / Geschätzter Gesamtreichtum",
-       subtitle = "Extrapolated total species (S_max) per hexagon",
+  scale_fill_gradient(low = "white", high = "#D32F2F",
+                      name = "Missing\nalien\nspecies",
+                      trans = "log1p",
+                      na.value = "grey95") +
+  labs(title = "Alien Sampling Gap / Alien-Beprobungslücke",
+       subtitle = "Estimated minus observed alien species per hexagon, log scale (grey = <20 plots, excluded)",
        x = "Longitude", y = "Latitude") +
   theme_minimal(base_size = 13) +
   coord_sf(xlim = c(9.3, 17.2), ylim = c(46.3, 49.1))
 
-gridExtra::grid.arrange(p_obs, p_est, ncol = 1)
+gridExtra::grid.arrange(p_gap_native, p_gap_alien, ncol = 1)
 ```
 
 <div class="discussion-box">
 
 <div class="en">
 
-Comparing the two maps on the same scale reveals the sampling gap at a glance. Hexagons where the estimated map is noticeably darker harbour undetected species. The overall pattern shows that most hexagons have not yet reached their predicted asymptote, especially in the Alpine interior and along lowland transport corridors. This reinforces the message from section 3a: Austria's alien flora in particular remains incompletely sampled.
+The native gap map shows moderate shortfalls across much of Austria, with the largest absolute gaps in species-rich Alpine valleys and foothills. The alien gap map tells a different story: the biggest gaps concentrate in lowland corridors (Danube valley, Vienna basin, eastern border), precisely the regions where new introductions arrive and dispersal lags are longest. Even hexagons with relatively few observed aliens can show large gaps, indicating that the invasion debt is geographically concentrated rather than uniformly distributed.
 
 </div>
 
 <div class="de">
 
-Der Vergleich beider Karten auf derselben Skala macht die Beprobungslücke auf einen Blick sichtbar. Hexagone, in denen die geschätzte Karte deutlich dunkler ist, beherbergen unentdeckte Arten. Das Gesamtmuster zeigt, dass die meisten Hexagone ihre vorhergesagte Asymptote noch nicht erreicht haben, besonders im alpinen Innenraum und entlang der Tiefland-Verkehrskorridore. Dies bekräftigt die Botschaft aus Abschnitt 3a: Insbesondere Österreichs Alien-Flora ist noch unvollständig beprobt.
+Die heimische Lückenkarte zeigt moderate Defizite über weite Teile Österreichs, mit den größten absoluten Lücken in artenreichen Alpentälern und Vorgebirgsregionen. Die Alien-Lückenkarte erzählt eine andere Geschichte: Die größten Lücken konzentrieren sich in Tieflandkorridoren (Donautal, Wiener Becken, östliche Grenzregion), genau den Regionen, wo neue Einführungen ankommen und die Ausbreitungsverzögerung am längsten ist. Selbst Hexagone mit relativ wenigen beobachteten Aliens können große Lücken aufweisen, was darauf hindeutet, dass die Invasionsschuld geografisch konzentriert und nicht gleichmäßig verteilt ist.
 
 </div>
 
@@ -973,6 +1047,7 @@ hab_alien <- merge(hab_alien,
                            by = PlotObservationID],
                    by = "PlotObservationID")
 keep_habs <- names(which(table(header$Eunis_lvl1) >= 100))
+keep_habs <- keep_habs[!keep_habs %in% c("", "~")]
 hab_summary <- hab_alien[Eunis_lvl1 %in% keep_habs,
                          .(mean_native = round(mean(n_native), 1),
                            mean_alien  = round(mean(n_alien), 1),
@@ -1170,21 +1245,29 @@ Chytry et al. (2008) zeigten, dass europäische Habitate sich 100-fach in ihrer 
 
 ---
 
-# <span class="en">6. Beyond Species Counts: Diversity Partitioning and Phylogeny</span><span class="de">6. Jenseits der Artenzahlen: Diversitätspartitionierung und Phylogenie</span>
+# <span class="en">6. What Kind of Diversity? Dominance, Partitioning, and Evolutionary Breadth</span><span class="de">6. Welche Art von Diversität? Dominanz, Partitionierung und evolutionäre Breite</span>
 
 <div class="en">
 
-Species accumulation curves count species, but biodiversity has multiple dimensions. Here we present three additional analyses from the `spacc` pipeline: **Hill numbers** (effective diversity at different weighting), **alpha/beta/gamma partitioning**, and **phylogenetic diversity accumulation**.
+So far we have counted species. But not all species contribute equally: some are common, others are rare; some represent unique evolutionary lineages, others are close relatives of species already present. This section asks three questions that go beyond raw counts:
+
+1. **Are rare or common species driving the accumulation?** (Hill numbers)
+2. **Does most of Austria's diversity come from within-site richness or between-site differences?** (Alpha/beta/gamma partitioning)
+3. **Do aliens add evolutionary novelty, or just more of the same?** (Phylogenetic diversity)
 
 </div>
 
 <div class="de">
 
-Artenakkumulationskurven zählen Arten, aber Biodiversität hat mehrere Dimensionen. Hier präsentieren wir drei zusätzliche Analysen aus der `spacc`-Pipeline: **Hill-Zahlen** (effektive Diversität bei verschiedener Gewichtung), **Alpha/Beta/Gamma-Partitionierung** und **phylogenetische Diversitätsakkumulation**.
+Bisher haben wir Arten gezählt. Aber nicht alle Arten tragen gleich bei: Einige sind häufig, andere selten; einige repräsentieren einzigartige evolutionäre Linien, andere sind nahe Verwandte bereits vorhandener Arten. Dieser Abschnitt stellt drei Fragen, die über reine Artenzahlen hinausgehen:
+
+1. **Treiben seltene oder häufige Arten die Akkumulation?** (Hill-Zahlen)
+2. **Kommt Österreichs Diversität hauptsächlich aus dem Artenreichtum innerhalb einzelner Standorte oder aus den Unterschieden zwischen Standorten?** (Alpha/Beta/Gamma-Partitionierung)
+3. **Bringen Aliens evolutionäre Neuheit, oder nur mehr vom Gleichen?** (Phylogenetische Diversität)
 
 </div>
 
-## <span class="en">Hill Numbers: How Dominance Shapes Diversity</span><span class="de">Hill-Zahlen: Wie Dominanz Diversität formt</span>
+## <span class="en">6a. Rare Species Drive the Tail: Hill Numbers</span><span class="de">6a. Seltene Arten treiben das Ende: Hill-Zahlen</span>
 
 <div class="theory-box">
 
@@ -1212,7 +1295,7 @@ As $q$ increases, rare species contribute less. If the curves diverge strongly, 
 
 </div>
 
-```{r hill-native-alien, fig.height=8, fig.width=10}
+```{r hill-native-alien, fig.height=5, fig.width=10}
 hill_na <- readRDS(file.path(comp_dir, "hill_native_alien.rds"))
 
 # Build a combined data frame for native and alien Hill curves
@@ -1233,17 +1316,40 @@ df_hill <- rbind(
   build_hill_df(hill_na$native, "Native / Heimisch"),
   build_hill_df(hill_na$alien,  "Alien / Alien")
 )
-df_hill$q <- factor(df_hill$q,
-                    levels = c("q0.0", "q1.0", "q2.0"),
-                    labels = c("q = 0 (Richness)", "q = 1 (Shannon)", "q = 2 (Simpson)"))
 
-ggplot(df_hill, aes(x = sites, y = value, colour = group)) +
+# Interaction label for colour: gradient within each group
+df_hill$curve <- interaction(df_hill$group, df_hill$q, sep = ": ")
+df_hill$curve <- factor(df_hill$curve, levels = c(
+  "Native / Heimisch: q0.0", "Native / Heimisch: q1.0", "Native / Heimisch: q2.0",
+  "Alien / Alien: q0.0",     "Alien / Alien: q1.0",     "Alien / Alien: q2.0"
+))
+
+df_hill$q_label <- factor(df_hill$q,
+                          levels = c("q0.0", "q1.0", "q2.0"),
+                          labels = c("q=0 (Richness)", "q=1 (Shannon)", "q=2 (Simpson)"))
+df_hill$group <- factor(df_hill$group,
+                        levels = c("Native / Heimisch", "Alien / Alien"))
+
+# Light-to-dark gradient within each group colour
+hill_colours <- c(
+  "Native / Heimisch: q0.0" = "#A5D6A7",  # light green
+  "Native / Heimisch: q1.0" = "#43A047",  # medium green
+  "Native / Heimisch: q2.0" = "#1B5E20",  # dark green
+  "Alien / Alien: q0.0"     = "#EF9A9A",  # light red
+  "Alien / Alien: q1.0"     = "#E53935",  # medium red
+  "Alien / Alien: q2.0"     = "#7F0000"   # dark red
+)
+
+ggplot(df_hill, aes(x = sites, y = value, colour = curve)) +
   geom_line(linewidth = 0.8, alpha = 0.9) +
-  facet_wrap(~ q, scales = "free_y", ncol = 1) +
-  scale_colour_manual(values = c("Native / Heimisch" = "#2E7D32", "Alien / Alien" = "#C62828")) +
+  facet_wrap(~ group, scales = "free_y") +
+  scale_colour_manual(values = hill_colours,
+                      labels = c("Native q=0", "Native q=1", "Native q=2",
+                                 "Alien q=0",  "Alien q=1",  "Alien q=2"),
+                      guide = guide_legend(nrow = 2, byrow = TRUE)) +
   labs(
-    title = "Hill Numbers: Native vs Alien Species Accumulation",
-    subtitle = "q=0: species richness, q=1: Shannon, q=2: Simpson / Artenreichtum, Shannon, Simpson",
+    title = "Hill Numbers: Native vs Alien (1990s)",
+    subtitle = "Lighter = all species equal; darker = dominant species weighted more",
     x = "Number of sites in spatial walk / Anzahl Standorte",
     y = "Effective number of species",
     colour = NULL
@@ -1253,89 +1359,211 @@ ggplot(df_hill, aes(x = sites, y = value, colour = group)) +
         strip.text = element_text(face = "bold", size = 12))
 ```
 
-## <span class="en">Alpha, Beta, Gamma Partition</span><span class="de">Alpha-, Beta-, Gamma-Partitionierung</span>
+## <span class="en">6b. Where Does Diversity Live? Alpha vs Beta</span><span class="de">6b. Wo steckt die Diversität? Alpha vs Beta</span>
 
-```{r diversity-partition, fig.height=5}
-partition <- readRDS(file.path(comp_dir, "partition.rds"))
-plot(partition) +
-  ggtitle("Diversity Partitioning: Alpha, Beta, Gamma") +
-  theme_minimal(base_size = 13)
-```
-
-## <span class="en">Phylogenetic Diversity Accumulation</span><span class="de">Phylogenetische Diversitätsakkumulation</span>
+<div class="theory-box">
 
 <div class="en">
 
-Phylogenetic diversity captures the evolutionary breadth of a community. We tracked **Mean Pairwise Distance (MPD)** as the spatial accumulation expands: as more distantly related species are added, MPD increases. We also compared native vs alien phylogenetic diversity separately.
+Total diversity (**gamma**, $\gamma$) can be split into two components:
+
+- **Alpha** ($\alpha$): the average number of species at a single site
+- **Beta** ($\beta$): how many times you need to multiply alpha to reach gamma ($\beta = \gamma / \alpha$)
+
+A high beta means sites are very different from each other; a low beta means every site looks similar. This multiplicative decomposition (Jost 2007) works at each Hill number order $q$.
 
 </div>
 
 <div class="de">
 
-Phylogenetische Diversität erfasst die evolutionäre Breite einer Gemeinschaft. Wir haben die **mittlere paarweise Distanz (MPD)** verfolgt, während sich die räumliche Akkumulation ausdehnt. Wir haben auch die phylogenetische Diversität für Einheimische und Aliens getrennt verglichen.
+Die Gesamtdiversität (**Gamma**, $\gamma$) lässt sich in zwei Komponenten zerlegen:
+
+- **Alpha** ($\alpha$): die durchschnittliche Artenzahl an einem einzelnen Standort
+- **Beta** ($\beta$): wie oft man Alpha multiplizieren muss, um Gamma zu erreichen ($\beta = \gamma / \alpha$)
+
+Ein hoher Beta-Wert bedeutet, dass sich Standorte stark unterscheiden; ein niedriger, dass alle Standorte ähnlich aussehen.
 
 </div>
 
-```{r phylo-accumulation, fig.height=6, fig.width=10}
-phylo_sac <- readRDS(file.path(comp_dir, "phylo_sac.rds"))
+</div>
 
-# Extract mean curves across seeds
-mpd_mean  <- colMeans(phylo_sac$curves$mpd)
-mntd_mean <- colMeans(phylo_sac$curves$mntd)
+```{r diversity-partition, fig.height=5, fig.width=10}
+part_decades <- readRDS(file.path(comp_dir, "partition_decades.rds"))
 
-df_phylo_all <- data.frame(
-  sites  = rep(seq_along(mpd_mean), 2),
-  value  = c(mpd_mean, mntd_mean),
-  metric = factor(
-    rep(c("MPD (Mean Pairwise Distance)",
-          "MNTD (Mean Nearest Taxon Distance)"), each = length(mpd_mean)),
-    levels = c("MPD (Mean Pairwise Distance)",
-               "MNTD (Mean Nearest Taxon Distance)"))
-)
+# Build data frame with q=0 (richness) for all decades (exclude 2020s, n=104)
+decade_order <- c("pre-1970", "1970s", "1980s", "1990s", "2000s", "2010s")
+part_decades <- part_decades[names(part_decades) %in% decade_order]
 
-ggplot(df_phylo_all, aes(x = sites, y = value, colour = metric)) +
-  geom_line(linewidth = 0.9) +
-  facet_wrap(~ metric, scales = "free_y", ncol = 1) +
-  scale_colour_manual(values = c(
-    "MPD (Mean Pairwise Distance)" = "#1565C0",
-    "MNTD (Mean Nearest Taxon Distance)" = "#E65100")) +
-  labs(
-    title = "Phylogenetic Diversity Accumulation (1990s)",
-    subtitle = "MPD and MNTD accumulation across spatial walk / MPD- und MNTD-Akkumulation",
-    x = "Number of sites in spatial walk / Anzahl Standorte",
-    y = "Phylogenetic distance"
-  ) +
+df_part <- do.call(rbind, lapply(names(part_decades), function(d) {
+  p <- part_decades[[d]]
+  data.frame(
+    decade = d,
+    component = c("\u03b1 (per site)", "\u03b2 (multiplier)", "\u03b3 (total)"),
+    value = c(round(p$alpha[1], 1), round(p$beta[1], 1), round(p$gamma[1])),
+    n_sites = p$n_sites
+  )
+}))
+df_part$decade <- factor(df_part$decade, levels = decade_order)
+df_part$component <- factor(df_part$component,
+                            levels = c("\u03b1 (per site)", "\u03b2 (multiplier)", "\u03b3 (total)"))
+
+# Labels with sample size
+decade_labs <- paste0(decade_order, "\n(n=",
+                      sapply(decade_order, function(d) part_decades[[d]]$n_sites), ")")
+names(decade_labs) <- decade_order
+
+ggplot(df_part, aes(x = decade, y = value, fill = component)) +
+  geom_col(position = position_dodge(width = 0.7), width = 0.6) +
+  geom_text(aes(label = value),
+            position = position_dodge(width = 0.7), vjust = -0.3, size = 3) +
+  scale_x_discrete(labels = decade_labs) +
+  scale_fill_manual(values = c("\u03b1 (per site)" = "#66BB6A",
+                               "\u03b2 (multiplier)" = "#1B5E20",
+                               "\u03b3 (total)" = "#333333")) +
+  scale_y_log10() +
+  annotation_logticks(sides = "l") +
+  labs(title = "Diversity Partitioning by Decade / Diversitätspartitionierung nach Jahrzehnt",
+       subtitle = "\u03b3 = \u03b1 \u00d7 \u03b2 at q=0 (species richness); \u03b2 rising over time = sites becoming more different",
+       x = NULL, y = "Effective number of species (log scale)", fill = NULL) +
   theme_minimal(base_size = 13) +
-  theme(legend.position = "none",
-        strip.text = element_text(face = "bold", size = 12))
+  theme(legend.position = "top",
+        panel.grid.minor = element_blank())
 ```
 
-```{r phylo-native-alien, fig.height=5, fig.width=10}
-pna <- readRDS(file.path(comp_dir, "phylo_native_alien.rds"))
+## <span class="en">6c. Do Aliens Add Evolutionary Novelty?</span><span class="de">6c. Bringen Aliens evolutionäre Neuheit?</span>
 
-# Extract mean MPD curves across seeds
-native_mpd <- colMeans(pna$native$curves$mpd)
-alien_mpd  <- colMeans(pna$alien$curves$mpd)
+<div class="en">
 
-df_phylo <- data.frame(
-  sites = rep(seq_along(native_mpd), 2),
-  mpd   = c(native_mpd, alien_mpd),
-  group = rep(c("Native / Heimisch", "Alien / Alien"), each = length(native_mpd))
+Phylogenetic diversity measures how evolutionarily distant species are from each other. Two complementary metrics capture different aspects:
+
+- **Mean Pairwise Distance (MPD)** tracks the average evolutionary distance between all species pairs. High MPD means the community spans many different plant lineages (broad phylogenetic spread).
+- **Mean Nearest Taxon Distance (MNTD)** tracks the average distance to the closest relative for each species. Low MNTD means species tend to cluster in closely related groups (phylogenetic clustering at the tips).
+
+Together, MPD shows the forest and MNTD shows the trees. Comparing native vs alien values reveals whether aliens broaden or narrow the evolutionary portfolio.
+
+</div>
+
+<div class="de">
+
+Phylogenetische Diversität misst, wie evolutionär entfernt Arten voneinander sind. Zwei komplementäre Metriken erfassen verschiedene Aspekte:
+
+- **Mittlere paarweise Distanz (MPD)** verfolgt die durchschnittliche evolutionäre Distanz zwischen allen Artenpaaren. Hoher MPD bedeutet, dass die Gemeinschaft viele verschiedene Pflanzenlinien umfasst (breite phylogenetische Spreizung).
+- **Mittlere nächste Taxon-Distanz (MNTD)** verfolgt die durchschnittliche Distanz zum nächsten Verwandten jeder Art. Niedriger MNTD bedeutet, dass Arten in eng verwandten Gruppen clustern (phylogenetisches Clustering an den Spitzen).
+
+Zusammen zeigt MPD den Wald und MNTD die Bäume. Der Vergleich zwischen heimischen und Alien-Werten zeigt, ob Aliens das evolutionäre Portfolio erweitern oder verengen.
+
+</div>
+
+```{r phylo-decades, fig.height=8, fig.width=10}
+phylo_dec <- readRDS(file.path(comp_dir, "phylo_decades.rds"))
+
+decade_order <- c("pre-1970", "1970s", "1980s", "1990s", "2000s", "2010s")
+
+# Build normalized curves for all decades and both metrics
+df_phylo_dec <- do.call(rbind, lapply(decade_order, function(d) {
+  n <- phylo_dec[[d]]$n_sites
+  rbind(
+    data.frame(prop_sites = seq_along(phylo_dec[[d]]$mpd_mean) / n,
+               value = phylo_dec[[d]]$mpd_mean,
+               metric = "MPD", decade = d, n_sites = n),
+    data.frame(prop_sites = seq_along(phylo_dec[[d]]$mntd_mean) / n,
+               value = phylo_dec[[d]]$mntd_mean,
+               metric = "MNTD", decade = d, n_sites = n)
+  )
+}))
+
+df_phylo_dec$decade <- factor(df_phylo_dec$decade, levels = decade_order)
+df_phylo_dec$metric <- factor(df_phylo_dec$metric, levels = c("MPD", "MNTD"))
+
+decade_colours <- c(
+  "pre-1970" = "#BBDEFB", "1970s" = "#90CAF9", "1980s" = "#42A5F5",
+  "1990s" = "#1565C0", "2000s" = "#0D47A1", "2010s" = "#0A1929"
 )
 
-ggplot(df_phylo, aes(x = sites, y = mpd, colour = group)) +
-  geom_line(linewidth = 0.8, alpha = 0.8) +
-  facet_wrap(~ group, scales = "free_y") +
-  scale_colour_manual(values = c("Native / Heimisch" = "#2E7D32", "Alien / Alien" = "#C62828")) +
+decade_labels <- paste0(decade_order, " (n=",
+                        sapply(decade_order, function(d) phylo_dec[[d]]$n_sites), ")")
+names(decade_labels) <- decade_order
+
+ggplot(df_phylo_dec, aes(x = prop_sites, y = value, colour = decade)) +
+  geom_line(linewidth = 0.7, alpha = 0.85) +
+  facet_wrap(~ metric, scales = "free_y", ncol = 1) +
+  scale_colour_manual(values = decade_colours, labels = decade_labels) +
   labs(
-    title = "Phylogenetic Diversity: Native vs Alien MPD Accumulation",
-    subtitle = "Spatial accumulation of MPD for native vs alien species / MPD-Akkumulation: heimisch vs. gebietsfremd",
-    x = "Number of sites in spatial walk / Anzahl Standorte im räumlichen Walk",
-    y = "Mean Pairwise Distance (MPD)"
+    title = "Phylogenetic Diversity by Decade",
+    subtitle = "MPD (broad lineage spread) and MNTD (nearest-relative clustering) across spatial walk",
+    x = "Proportion of sites visited / Anteil besuchter Standorte",
+    y = "Phylogenetic distance",
+    colour = NULL
   ) +
   theme_minimal(base_size = 13) +
-  theme(legend.position = "none",
+  theme(legend.position = "right",
         strip.text = element_text(face = "bold", size = 13))
+```
+
+```{r phylo-native-alien, fig.height=8, fig.width=10}
+pna_dec <- readRDS(file.path(comp_dir, "phylo_na_decades.rds"))
+
+decade_order <- c("pre-1970", "1970s", "1980s", "1990s", "2000s", "2010s")
+
+# Build data frame: group × metric × decade
+df_pna <- do.call(rbind, lapply(decade_order, function(d) {
+  dd <- pna_dec[[d]]
+  n  <- dd$native$n_sites
+  rbind(
+    data.frame(prop = seq_along(dd$native$mpd_mean) / n,
+               value = dd$native$mpd_mean,
+               group = "Native / Heimisch", metric = "MPD", decade = d),
+    data.frame(prop = seq_along(dd$native$mntd_mean) / n,
+               value = dd$native$mntd_mean,
+               group = "Native / Heimisch", metric = "MNTD", decade = d),
+    data.frame(prop = seq_along(dd$alien$mpd_mean) / n,
+               value = dd$alien$mpd_mean,
+               group = "Alien / Alien", metric = "MPD", decade = d),
+    data.frame(prop = seq_along(dd$alien$mntd_mean) / n,
+               value = dd$alien$mntd_mean,
+               group = "Alien / Alien", metric = "MNTD", decade = d)
+  )
+}))
+
+df_pna$decade <- factor(df_pna$decade, levels = decade_order)
+df_pna$metric <- factor(df_pna$metric, levels = c("MPD", "MNTD"))
+df_pna$group  <- factor(df_pna$group, levels = c("Native / Heimisch", "Alien / Alien"))
+
+# Green gradient for native, red gradient for alien
+native_cols <- c("pre-1970" = "#C8E6C9", "1970s" = "#81C784", "1980s" = "#4CAF50",
+                 "1990s" = "#2E7D32", "2000s" = "#1B5E20", "2010s" = "#0D3B0F")
+alien_cols  <- c("pre-1970" = "#FFCDD2", "1970s" = "#EF9A9A", "1980s" = "#E57373",
+                 "1990s" = "#E53935", "2000s" = "#C62828", "2010s" = "#7F0000")
+
+# Plot native and alien separately, then combine
+p_native <- ggplot(df_pna[df_pna$group == "Native / Heimisch", ],
+                   aes(x = prop, y = value, colour = decade)) +
+  geom_line(linewidth = 0.7, alpha = 0.85) +
+  facet_wrap(~ metric, scales = "free_y") +
+  scale_colour_manual(values = native_cols) +
+  labs(title = "Native / Heimisch", x = NULL, y = "Phylogenetic distance", colour = NULL) +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "right",
+        strip.text = element_text(face = "bold", size = 12))
+
+p_alien <- ggplot(df_pna[df_pna$group == "Alien / Alien", ],
+                  aes(x = prop, y = value, colour = decade)) +
+  geom_line(linewidth = 0.7, alpha = 0.85) +
+  facet_wrap(~ metric, scales = "free_y") +
+  scale_colour_manual(values = alien_cols) +
+  labs(title = "Alien / Alien",
+       x = "Proportion of sites visited / Anteil besuchter Standorte",
+       y = "Phylogenetic distance", colour = NULL) +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "right",
+        strip.text = element_text(face = "bold", size = 12))
+
+library(patchwork)
+p_native / p_alien +
+  plot_annotation(
+    title = "Phylogenetic Diversity: Native vs Alien by Decade",
+    subtitle = "MPD (broad lineage spread) and MNTD (nearest-relative clustering) across spatial walk"
+  )
 ```
 
 ## <span class="en">Discussion</span><span class="de">Diskussion</span>
@@ -1344,21 +1572,29 @@ ggplot(df_phylo, aes(x = sites, y = mpd, colour = group)) +
 
 <div class="en">
 
-**Hill numbers** show that the gap between $q=0$ (all species) and $q=2$ (dominant species) widens as sampling extends. This means many of the species added in later stages of the spatial walk are rare, occurring at only a few sites. The early accumulation is driven by common species shared broadly; the late accumulation adds rare specialists that inflate richness ($q=0$) without affecting dominance-weighted diversity ($q=2$) much.
+The three analyses converge on a single picture:
 
-**Diversity partitioning** confirms that beta diversity (among-site turnover) accounts for a large share of total (gamma) diversity. This is consistent with the turnover dominance found in section 4 using Baselga's decomposition.
+**Most of the species we are still "finding" are rare.** The Hill number plots show that the $q=0$ curve (raw richness) keeps climbing long after $q=2$ (dominance-weighted diversity) levels off. The late accumulation adds species that occur at only a few sites. This is true for both natives and aliens, but the effect is proportionally larger for aliens, where a small number of widespread generalists dominate and the remainder are rare, localised newcomers.
 
-**Phylogenetic results** show that MPD rises as the sampling window expands geographically: distant sites add not just different species but species from different lineages. This is expected in a country spanning lowland steppe to alpine tundra. The native flora covers broader phylogenetic space than the alien flora, which is concentrated in a few families (Asteraceae, Poaceae, Brassicaceae). Alien species tend to be phylogenetically clustered, consistent with trait-based filters favouring particular lineages for successful invasion (Cadotte et al. 2009).
+**Diversity lives between sites, not within them.** The alpha/beta/gamma partitioning confirms what section 4 already showed: beta diversity (turnover between sites) accounts for the bulk of Austria's total (gamma) diversity. Any single site captures only a fraction of the national flora.
+
+**Aliens are evolutionary copycats.** Native MPD is consistently higher than alien MPD, meaning the native flora spans a broader range of plant lineages. Aliens are phylogenetically clustered in a few families (Asteraceae, Poaceae, Brassicaceae) that share traits favourable for colonisation: fast growth, high seed output, and disturbance tolerance (Cadotte et al. 2009). The ~88 "missing" alien species from section 3 are therefore likely to be more of the same functional types, not representatives of novel lineages.
+
+**What this means:** counting species overstates the ecological impact of alien arrivals. The invasion debt is real, but the incoming species are unlikely to add much functional or evolutionary novelty to Austrian plant communities.
 
 </div>
 
 <div class="de">
 
-**Hill-Zahlen** zeigen, dass die Lücke zwischen $q=0$ (alle Arten) und $q=2$ (dominante Arten) sich erweitert, wenn die Beprobung zunimmt. Viele der spät hinzugefügten Arten sind selten. Die frühe Akkumulation wird von häufigen, breit geteilten Arten angetrieben; die späte Akkumulation fügt seltene Spezialisten hinzu.
+Die drei Analysen ergeben ein einheitliches Bild:
 
-**Diversitätspartitionierung** bestätigt, dass Beta-Diversität (Turnover zwischen Standorten) einen großen Anteil an der gesamten Gamma-Diversität ausmacht.
+**Die meisten Arten, die wir noch "finden", sind selten.** Die Hill-Zahlen-Plots zeigen, dass die $q=0$-Kurve (Artenreichtum) weiter ansteigt, lange nachdem $q=2$ (dominanzgewichtete Diversität) abflacht. Die späte Akkumulation fügt Arten hinzu, die nur an wenigen Standorten vorkommen. Dieser Effekt ist bei Aliens proportional größer: Wenige weitverbreitete Generalisten dominieren, der Rest sind seltene, lokalisierte Neuankömmlinge.
 
-**Phylogenetische Ergebnisse** zeigen, dass MPD mit zunehmender geografischer Ausdehnung ansteigt: Entfernte Standorte fügen nicht nur andere Arten hinzu, sondern Arten aus anderen Abstammungslinien. Die heimische Flora umfasst einen breiteren phylogenetischen Raum als die Alien-Flora, die sich auf wenige Familien konzentriert (Asteraceae, Poaceae, Brassicaceae).
+**Die Diversität steckt zwischen den Standorten, nicht innerhalb.** Die Alpha/Beta/Gamma-Partitionierung bestätigt, was Abschnitt 4 bereits zeigte: Beta-Diversität (Turnover zwischen Standorten) macht den Großteil von Österreichs Gesamtdiversität (Gamma) aus.
+
+**Aliens sind evolutionäre Nachahmer.** Der heimische MPD ist durchgehend höher als der Alien-MPD, d.h. die heimische Flora umfasst eine breitere Palette von Pflanzenlinien. Aliens konzentrieren sich phylogenetisch auf wenige Familien (Asteraceae, Poaceae, Brassicaceae), die Merkmale teilen, die Kolonisierung begünstigen: schnelles Wachstum, hohe Samenproduktion und Störungstoleranz (Cadotte et al. 2009). Die ~88 "fehlenden" Alien-Arten aus Abschnitt 3 dürften daher eher dieselben Funktionstypen sein, nicht Vertreter neuer Linien.
+
+**Was das bedeutet:** Artenzählung allein überschätzt die ökologische Wirkung von Alien-Ankünften. Die Invasionsschuld ist real, aber die kommenden Arten werden wahrscheinlich wenig funktionelle oder evolutionäre Neuheit zu Österreichs Pflanzengemeinschaften beitragen.
 
 </div>
 
@@ -1384,7 +1620,7 @@ The six findings connect:
 
 **5. Habitat filters.** Invasion concentrates in disturbed, nutrient-rich, well-connected habitats and is excluded from alpine, oligotrophic, and closed-canopy environments.
 
-**6. Multiple dimensions of diversity.** Hill numbers, diversity partitioning, and phylogenetic accumulation all tell the same story from different angles: rare species drive the tail of the accumulation curve, beta diversity dominates gamma, and alien species are phylogenetically more clustered than natives.
+**6. What kind of diversity?** Rare species drive the tail of the accumulation curve, beta diversity dominates gamma, and aliens are phylogenetically clustered in a few families. The invasion debt is real in numbers, but the incoming species are unlikely to add much evolutionary novelty.
 
 These results show that **spatial species accumulation curves** are more than a sampling tool. They connect biogeography, invasion ecology, and conservation planning. The `spacc` package makes this type of analysis available for any georeferenced community dataset.
 
@@ -1404,7 +1640,7 @@ Diese sechs Ergebnisse bilden ein Gesamtbild über Österreichs Pflanzendiversit
 
 **5. Habitatfilter.** Alien-Invasion konzentriert sich in gestörten, nährstoffreichen Habitaten und wird aus rauen, oligotrophen Umgebungen ausgeschlossen.
 
-**6. Mehrere Diversitätsdimensionen.** Hill-Zahlen, Diversitätspartitionierung und phylogenetische Akkumulation erzählen dieselbe Geschichte aus verschiedenen Blickwinkeln: Seltene Arten treiben das Ende der Akkumulationskurve, Beta-Diversität dominiert Gamma, und Alien-Arten sind phylogenetisch stärker geclustert als Einheimische.
+**6. Welche Art von Diversität?** Seltene Arten treiben das Ende der Akkumulationskurve, Beta-Diversität dominiert Gamma, und Aliens konzentrieren sich phylogenetisch auf wenige Familien. Die Invasionsschuld ist zahlenmäßig real, aber die kommenden Arten dürften wenig evolutionäre Neuheit bringen.
 
 Zusammen zeigen diese Ergebnisse, dass **räumliche Artenakkumulationskurven** weit mehr als eine Beprobungsmethode sind.
 

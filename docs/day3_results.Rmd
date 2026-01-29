@@ -26,6 +26,38 @@ library(hexify)
 
 comp_dir  <- file.path(dirname(getwd()), "comp")
 data_path <- file.path(dirname(getwd()), "data")
+
+# Helper: plot grouped spacc object with normalized y-axis
+plot_grouped_normalized <- function(x, title = "Normalized Accumulation",
+                                     ci = TRUE, ci_level = 0.95, ci_alpha = 0.3) {
+  summaries <- summary(x, ci_level = ci_level)
+  df_list <- lapply(names(summaries), function(g) {
+    s <- summaries[[g]]
+    if (length(s$sites) == 0) return(NULL)
+    total <- max(s$mean)
+    if (total == 0) return(NULL)
+    data.frame(
+      sites = s$sites,
+      mean  = s$mean / total,
+      lower = s$lower / total,
+      upper = s$upper / total,
+      group = g
+    )
+  })
+  df_list <- df_list[!vapply(df_list, is.null, logical(1))]
+  df <- do.call(rbind, df_list)
+  df$group <- factor(df$group, levels = x$group_names)
+  p <- ggplot(df, aes(x = sites, y = mean, color = group, fill = group))
+  if (ci) {
+    p <- p + geom_ribbon(aes(ymin = lower, ymax = upper),
+                         alpha = ci_alpha, color = NA)
+  }
+  p + geom_line(linewidth = 1) +
+    scale_y_continuous(labels = scales::percent) +
+    labs(x = "Sites sampled", y = "Proportion of total species",
+         title = title, color = "Group", fill = "Group") +
+    theme_minimal(base_size = 12)
+}
 ```
 
 ```{css, echo=FALSE}
@@ -562,31 +594,43 @@ Die Akkumulationskurven auf Jahrzehntsebene zeigen mehrere Muster:
 ```{r decade-native-alien, fig.height=10}
 decade_na_results <- readRDS(file.path(comp_dir, "decade_na_results.rds"))
 
-# Helper for normalized grouped plots
-plot_grouped_normalized <- function(x, title = "Normalized Accumulation",
-                                     ci = TRUE, ci_level = 0.95, ci_alpha = 0.3) {
-  summaries <- summary(x, ci_level = ci_level)
-  df_list <- lapply(names(summaries), function(g) {
-    s <- summaries[[g]]
-    if (length(s$sites) == 0) return(NULL)
-    total <- max(s$mean)
-    if (total == 0) return(NULL)
+# Helper for normalized comparison of two spacc objects
+plot_native_alien_normalized <- function(native_spacc, alien_spacc, title = "Normalized Accumulation",
+                                          ci = TRUE, ci_level = 0.95, ci_alpha = 0.3) {
+  # Get summaries for each spacc object
+  s_native <- summary(native_spacc, ci_level = ci_level)
+  s_alien <- summary(alien_spacc, ci_level = ci_level)
+
+  # Normalize each to their respective totals
+  total_native <- max(s_native$mean)
+  total_alien <- max(s_alien$mean)
+
+  df <- rbind(
     data.frame(
-      sites = s$sites, mean = s$mean / total,
-      lower = s$lower / total, upper = s$upper / total, group = g
+      sites = s_native$sites,
+      mean = s_native$mean / total_native,
+      lower = s_native$lower / total_native,
+      upper = s_native$upper / total_native,
+      group = "native"
+    ),
+    data.frame(
+      sites = s_alien$sites,
+      mean = s_alien$mean / total_alien,
+      lower = s_alien$lower / total_alien,
+      upper = s_alien$upper / total_alien,
+      group = "alien"
     )
-  })
-  df_list <- df_list[!vapply(df_list, is.null, logical(1))]
-  df <- do.call(rbind, df_list)
-  df$group <- factor(df$group)
+  )
+  df$group <- factor(df$group, levels = c("native", "alien"))
+
   ggplot(df, aes(x = sites, y = mean, color = group, fill = group)) +
     { if (ci) geom_ribbon(aes(ymin = lower, ymax = upper), alpha = ci_alpha, color = NA) } +
     geom_line(linewidth = 1) +
     scale_y_continuous(labels = scales::percent) +
-    scale_color_manual(values = c("native" = "#2E7D32", "neo" = "#D32F2F"),
-                       labels = c("native" = "Native", "neo" = "Alien")) +
-    scale_fill_manual(values = c("native" = "#2E7D32", "neo" = "#D32F2F"),
-                      labels = c("native" = "Native", "neo" = "Alien")) +
+    scale_color_manual(values = c("native" = "#2E7D32", "alien" = "#D32F2F"),
+                       labels = c("native" = "Native", "alien" = "Alien")) +
+    scale_fill_manual(values = c("native" = "#2E7D32", "alien" = "#D32F2F"),
+                      labels = c("native" = "Native", "alien" = "Alien")) +
     labs(x = "Sites sampled", y = "Proportion of total species",
          title = title, color = "Status", fill = "Status") +
     theme_minimal(base_size = 12)
@@ -594,7 +638,9 @@ plot_grouped_normalized <- function(x, title = "Normalized Accumulation",
 
 decades <- sort(names(decade_na_results))
 plots <- lapply(decades, function(d) {
-  plot_grouped_normalized(decade_na_results[[d]],
+  plot_native_alien_normalized(
+    decade_na_results[[d]]$native,
+    decade_na_results[[d]]$alien,
     title = sprintf("%s: Native vs Alien (normalized)", d))
 })
 gridExtra::grid.arrange(grobs = plots, ncol = 2)
@@ -710,10 +756,95 @@ plot_normalized(Native = sac_native, Alien = sac_alien,
 
 ## <span class="en">Statistical Comparison</span><span class="de">Statistischer Vergleich</span>
 
+<div class="theory-box">
+
+<div class="en">
+
+**What is a permutation test?**
+
+A permutation test is a non-parametric statistical method that creates a **null distribution** by shuffling labels. The logic is:
+
+1. **Observed statistic:** Calculate the difference between the two curves (here: AUC difference = Area Under Curve of native − alien)
+2. **Null hypothesis:** "The curves come from the same underlying distribution" — if true, which curve a replicate belongs to is arbitrary
+3. **Create null distribution:** Randomly reassign curve labels many times (999 permutations), recalculating the statistic each time
+4. **p-value:** The proportion of permuted differences as extreme as (or more extreme than) the observed difference
+
+If the observed statistic falls far into the tails of the null distribution, we reject the null hypothesis — the curves are genuinely different.
+
+</div>
+
+<div class="de">
+
+**Was ist ein Permutationstest?**
+
+Ein Permutationstest ist eine nicht-parametrische statistische Methode, die eine **Nullverteilung** durch Durchmischen von Labels erstellt. Die Logik ist:
+
+1. **Beobachtete Statistik:** Berechne die Differenz zwischen den beiden Kurven (hier: AUC-Differenz = Fläche unter der Kurve heimisch − alien)
+2. **Nullhypothese:** "Die Kurven stammen aus derselben zugrundeliegenden Verteilung" — wenn wahr, ist die Zugehörigkeit einer Replikation zu einer Kurve willkürlich
+3. **Nullverteilung erstellen:** Zufällige Neuzuweisung der Kurven-Labels viele Male (999 Permutationen), jedes Mal die Statistik neu berechnen
+4. **p-Wert:** Der Anteil der permutierten Differenzen, die so extrem (oder extremer) sind wie die beobachtete Differenz
+
+Wenn die beobachtete Statistik weit in die Ränder der Nullverteilung fällt, verwerfen wir die Nullhypothese — die Kurven sind wirklich unterschiedlich.
+
+</div>
+
+</div>
+
 ```{r compare-curves}
 comp <- readRDS(file.path(comp_dir, "compare.rds"))
 print(comp)
 plot(comp)
+```
+
+```{r permutation-test-viz, fig.width=9, fig.height=5}
+# Re-run permutation test to capture null distribution for visualization
+set.seed(42)
+all_curves <- rbind(comp$x$curves, comp$y$curves)
+n_x <- nrow(comp$x$curves)
+n_total <- nrow(all_curves)
+n_perm <- 999
+
+# Generate null distribution
+null_diffs <- vapply(seq_len(n_perm), function(i) {
+  perm_idx <- sample(n_total)
+  perm_x <- all_curves[perm_idx[1:n_x], , drop = FALSE]
+  perm_y <- all_curves[perm_idx[(n_x + 1):n_total], , drop = FALSE]
+  sum(colMeans(perm_x)) - sum(colMeans(perm_y))
+}, numeric(1))
+
+# Observed statistic
+obs_diff <- comp$auc_diff
+
+# Calculate two-tailed p-value
+p_value <- mean(abs(null_diffs) >= abs(obs_diff))
+
+# Create visualization
+null_df <- data.frame(diff = null_diffs)
+
+ggplot(null_df, aes(x = diff)) +
+  geom_histogram(aes(y = after_stat(density)), bins = 40,
+                 fill = "grey70", color = "grey50", alpha = 0.7) +
+  geom_density(color = "steelblue", linewidth = 1) +
+  geom_vline(xintercept = obs_diff, color = "firebrick", linewidth = 1.2, linetype = "solid") +
+  geom_vline(xintercept = -obs_diff, color = "firebrick", linewidth = 1.2, linetype = "dashed") +
+  annotate("text", x = obs_diff, y = Inf, label = sprintf("Observed\n%.0f", obs_diff),
+           vjust = 1.5, hjust = -0.1, color = "firebrick", fontface = "bold", size = 3.5) +
+  annotate("label", x = min(null_diffs) * 0.8, y = Inf, vjust = 1.2, hjust = 0,
+           label = sprintf("p = %.3f\n(two-tailed)", p_value),
+           fill = ifelse(p_value < 0.05, "#f8d7da", "#d4edda"),
+           color = ifelse(p_value < 0.05, "#721c24", "#155724"),
+           fontface = "bold", size = 4) +
+  labs(
+    title = "Permutation Test: Are Native and Alien Accumulation Curves Different?",
+    subtitle = sprintf("Null distribution of AUC differences under label shuffling (n = %d permutations)", n_perm),
+    x = "AUC Difference (Native − Alien)",
+    y = "Density"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(color = "grey40")
+  )
 ```
 
 <div class="results-box">
@@ -721,6 +852,14 @@ plot(comp)
 <div class="en">
 
 **Result — H3:** The permutation test confirms that native and alien accumulation curves are **statistically significantly different** (p < 0.05). This is not merely a difference in total species counts — the *spatial pattern* of accumulation differs.
+
+**Reading the permutation plot:**
+
+- **Grey histogram/blue curve:** The null distribution — what differences we'd expect if native/alien labels were meaningless
+- **Red solid line:** Our observed difference (native AUC − alien AUC)
+- **Red dashed line:** The mirror of our observation (for two-tailed test)
+
+The observed statistic falls **far outside** the null distribution — not a single permutation produced a difference this large. This tells us: the probability of seeing such a large difference by chance alone is essentially zero.
 
 **What does this mean biologically?**
 
@@ -735,6 +874,14 @@ The significant difference tells us that if we walk across the Austrian landscap
 <div class="de">
 
 **Ergebnis — H3:** Der Permutationstest bestätigt, dass heimische und Alien-Akkumulationskurven **statistisch signifikant unterschiedlich** sind (p < 0,05). Dies ist nicht nur ein Unterschied in der Gesamtartenzahl — das *räumliche Muster* der Akkumulation unterscheidet sich.
+
+**Das Permutationsdiagramm lesen:**
+
+- **Graues Histogramm/blaue Kurve:** Die Nullverteilung — welche Unterschiede wir erwarten würden, wenn heimisch/alien Labels bedeutungslos wären
+- **Rote durchgezogene Linie:** Unsere beobachtete Differenz (heimische AUC − Alien AUC)
+- **Rote gestrichelte Linie:** Der Spiegel unserer Beobachtung (für zweiseitigen Test)
+
+Die beobachtete Statistik liegt **weit außerhalb** der Nullverteilung — keine einzige Permutation ergab eine so große Differenz. Das sagt uns: Die Wahrscheinlichkeit, einen so großen Unterschied allein durch Zufall zu sehen, ist im Wesentlichen null.
 
 **Was bedeutet das biologisch?**
 

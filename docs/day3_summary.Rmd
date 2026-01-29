@@ -438,16 +438,85 @@ plot_grouped_normalized <- function(x, title = "Normalized Accumulation",
 }
 ```
 
-```{r pooled-curves}
+```{r pooled-vs-grouped, fig.height=5, fig.width=12}
+# Load both datasets
 p <- readRDS(file.path(comp_dir, "pooled.rds"))
 sac_native <- p$native; sac_alien <- p$alien; sac_all <- p$all
 rm(p)
+sac_grouped <- readRDS(file.path(comp_dir, "grouped_status.rds"))
 
-plot_normalized(Native = sac_native, Alien = sac_alien,
-                title = "Pooled: Native vs Alien Accumulation (1990s, normalized)") +
-  scale_color_manual(values = c("Native" = "#2E7D32", "Alien" = "#D32F2F")) +
-  scale_fill_manual(values = c("Native" = "#2E7D32", "Alien" = "#D32F2F"))
+# Build pooled data frame
+build_pooled_df <- function(sac, group_name) {
+  s <- summary(sac)
+  total <- max(s$mean)
+
+  data.frame(
+    sites = s$sites, mean = s$mean / total,
+    lower = s$lower / total, upper = s$upper / total,
+    group = group_name
+  )
+}
+df_pooled <- rbind(
+
+  build_pooled_df(sac_native, "Native"),
+  build_pooled_df(sac_alien, "Alien")
+)
+df_pooled$method <- "Separate runs"
+
+# Build grouped data frame
+summaries <- summary(sac_grouped)
+df_list <- lapply(names(summaries), function(g) {
+  s <- summaries[[g]]
+  if (length(s$sites) == 0) return(NULL)
+  total <- max(s$mean)
+  if (total == 0) return(NULL)
+  data.frame(
+    sites = s$sites, mean = s$mean / total,
+    lower = s$lower / total, upper = s$upper / total,
+    group = ifelse(g == "native", "Native", "Alien")
+  )
+})
+df_list <- df_list[!vapply(df_list, is.null, logical(1))]
+df_grouped <- do.call(rbind, df_list)
+df_grouped$method <- "Same spatial walk"
+
+# Combine
+df_both <- rbind(df_pooled, df_grouped)
+df_both$method <- factor(df_both$method, levels = c("Separate runs", "Same spatial walk"))
+
+ggplot(df_both, aes(x = sites, y = mean, colour = group, fill = group)) +
+  geom_ribbon(aes(ymin = lower, ymax = upper), alpha = 0.2, colour = NA) +
+  geom_line(linewidth = 1) +
+  facet_wrap(~ method) +
+  scale_y_continuous(labels = scales::percent) +
+  scale_colour_manual(values = c("Native" = "#2E7D32", "Alien" = "#D32F2F")) +
+  scale_fill_manual(values = c("Native" = "#2E7D32", "Alien" = "#D32F2F")) +
+  labs(
+    title = "Native vs Alien Accumulation: Two Approaches (1990s)",
+    subtitle = "Left: independent spatial walks | Right: both groups tracked on the same walk",
+    x = "Sites sampled", y = "Proportion of total species",
+    colour = NULL, fill = NULL
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(legend.position = "top",
+        strip.text = element_text(face = "bold", size = 12))
 ```
+
+<div class="discussion-box">
+
+<div class="en">
+
+**Why two methods?** The left panel runs separate spatial accumulations for native and alien species, each finding its own optimal path through the landscape. The right panel tracks both groups along the *same* spatial walk, ensuring a fair comparison under identical sampling order. If the two panels look similar, the result is robust. If they differ, the "same spatial walk" version is more rigorous because it controls for spatial autocorrelation. We use the 1990s here as the reference decade due to its large sample size.
+
+</div>
+
+<div class="de">
+
+**Warum zwei Methoden?** Das linke Panel führt separate räumliche Akkumulationen für heimische und gebietsfremde Arten durch, wobei jede ihren eigenen optimalen Pfad durch die Landschaft findet. Das rechte Panel verfolgt beide Gruppen entlang des *gleichen* räumlichen Pfads und gewährleistet so einen fairen Vergleich unter identischer Stichprobenreihenfolge. Wenn beide Panels ähnlich aussehen, ist das Ergebnis robust. Falls sie sich unterscheiden, ist die Version mit "gleichem räumlichen Pfad" rigoroser, da sie die räumliche Autokorrelation kontrolliert. Wir verwenden hier die 1990er Jahre als Referenzdekade aufgrund ihrer großen Stichprobengröße.
+
+</div>
+
+</div>
 
 ```{r statistical-test}
 compare <- readRDS(file.path(comp_dir, "compare.rds"))
@@ -455,16 +524,6 @@ print(compare)
 plot(compare) +
   ggtitle("Permutation Test: Native vs Alien Curve Comparison") +
   theme_minimal(base_size = 13)
-```
-
-```{r grouped-status}
-sac_grouped <- readRDS(file.path(comp_dir, "grouped_status.rds"))
-plot_grouped_normalized(sac_grouped,
-                        title = "Grouped by Status: Native vs Alien (1990s, normalized)") +
-  scale_color_manual(values = c("native" = "#2E7D32", "neo" = "#D32F2F"),
-                     labels = c("native" = "Native", "neo" = "Alien")) +
-  scale_fill_manual(values = c("native" = "#2E7D32", "neo" = "#D32F2F"),
-                    labels = c("native" = "Native", "neo" = "Alien"))
 ```
 
 ### <span class="en">Decade-by-Decade Accumulation</span><span class="de">Jahrzehntweise Akkumulation</span>
